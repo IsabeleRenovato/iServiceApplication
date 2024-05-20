@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# service_app
-
-A new Flutter project.
-
 ## Getting Started
 
 This project is a starting point for a Flutter application.
@@ -18,4 +13,3 @@ samples, guidance on mobile development, and a full API reference.
 =======
 # iServiceApplication
 TCC
->>>>>>> f7f517577cd96e7839baa0d9afafb589d48f2e49
