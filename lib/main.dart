@@ -6,7 +6,6 @@ void main() {
   runApp(const ServiceApp());
 }
 
-
 //Teste
 class ServiceApp extends StatelessWidget {
   const ServiceApp({super.key});
