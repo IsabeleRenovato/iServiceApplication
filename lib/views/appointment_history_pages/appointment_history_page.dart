@@ -48,9 +48,13 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Agendamentos"),
+        title: Text(
+          "Agendamentos",
+        ),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Color(0xFF2864ff),
+          indicatorColor: Color(0xFF2864ff),
           tabs: const [
             Tab(text: 'Agendado'),
             Tab(text: 'Finalizado'),
@@ -62,7 +66,8 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
         future: appointmentsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF2864ff)));
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erro ao carregar os dados"));
           } else if (snapshot.hasData) {

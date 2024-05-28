@@ -33,7 +33,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^0.13.3
-  intl: ^0.18.1
+  intl: ^0.19.0
   image_picker: ^0.8.4+4
   image_cropper: ^4.0.1
   fl_chart: ^0.67.0
@@ -121,3 +121,5 @@ flutter:
     - assets/testeCorte.jpeg
     - assets/horarios.png
     - assets/lista.png
+    - assets/confirmed.png
+    - assets/confirmed.gif

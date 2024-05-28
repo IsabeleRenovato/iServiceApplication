@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
                   height: 10,
                 ),
                 Text(
-                  "Simplifique sua vida agendando serviços de forma rápida e fácil com nosso aplicativo intuitivo.",
+                  "Simplifique sua vida agendando serviços de forma rápida e fácil com o iService.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey[700],

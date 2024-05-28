@@ -78,7 +78,8 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
         future: listaEstabelecimentos,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF2864ff)));
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erro ao carregar os dados"));
           } else if (snapshot.hasData) {

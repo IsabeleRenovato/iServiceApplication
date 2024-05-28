@@ -52,9 +52,9 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.establishmentUserInfo.userProfile!.commercialName!),
+        backgroundColor: Colors.white,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(250),
+          preferredSize: const Size.fromHeight(180),
           child: Column(
             children: [
               Container(
@@ -68,7 +68,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: 40, // Define o tamanho do avatar
+                          radius: 40,
                           backgroundColor: Colors.grey[300],
                           backgroundImage: NetworkImage(
                             widget.establishmentUserInfo.userProfile!
@@ -101,7 +101,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                               ),
                               Text(
                                 '${widget.establishmentUserInfo.address!.street} - ${widget.establishmentUserInfo.address!.number}\n${widget.establishmentUserInfo.address!.neighborhood} - ${widget.establishmentUserInfo.address!.city}\nCEP: ${widget.establishmentUserInfo.address!.postalCode}',
-                                style: const TextStyle(fontSize: 16),
+                                style: const TextStyle(fontSize: 14),
                               ),
                             ],
                           ),
@@ -180,12 +180,23 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
             ],
           ),
         ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: FutureBuilder<List<Service>>(
         future: servicesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF2864ff)));
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erro ao carregar os dados"));
           } else if (snapshot.hasData) {
@@ -226,10 +237,15 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
 
             return Column(
               children: [
-                TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabs: tabs,
+                Container(
+                  color: const Color.fromARGB(255, 248, 248, 248),
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: Color(0xFF2864ff),
+                    indicatorColor: Color(0xFF2864ff),
+                    isScrollable: true,
+                    tabs: tabs,
+                  ),
                 ),
                 Expanded(
                   child: TabBarView(

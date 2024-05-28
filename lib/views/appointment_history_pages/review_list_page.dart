@@ -85,7 +85,8 @@ class _ReviewListPageState extends State<ReviewListPage> {
         future: fetchFeedbacks(), // Chamada do método fetchFeedbacks
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(color: Color(0xFF2864ff)));
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erro ao carregar os dados"));
           } else if (snapshot.hasData) {

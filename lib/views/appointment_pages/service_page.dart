@@ -38,14 +38,23 @@ class _ServicePageState extends State<ServicePage> {
           SliverAppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_new,
-                size: 20,
-                color: Colors.black,
+            leading: Padding(
+              padding: EdgeInsets.only(left: 15),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 25,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
             expandedHeight: MediaQuery.of(context).size.height * 0.6,

@@ -5,6 +5,7 @@ import 'package:service_app/models/service.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
 import 'package:service_app/services/service_services.dart';
+import 'package:service_app/views/appointment_pages/appointment_confirm.dart';
 import 'package:service_app/views/main_pages/client_main_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dots_indicator/dots_indicator.dart';
@@ -88,14 +89,44 @@ class _AppointmentPageState extends State<AppointmentPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Selecione o dia da semana e o horário do atendimento",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Selecione o',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' dia da semana ',
+                      style: TextStyle(
+                        color: Color(0xFF2864ff),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'e o',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' horário do atendimento',
+                      style: TextStyle(
+                        color: Color(0xFF2864ff),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               Container(
                 margin: const EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(
@@ -151,7 +182,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 future: availableTimes,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const CircularProgressIndicator(
+                        color: Color(0xFF2864ff));
                   } else if (snapshot.hasError) {
                     return Text("Erro: ${snapshot.error}");
                   } else if (snapshot.data!.isEmpty) {
@@ -279,25 +311,10 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     await AppointmentServices()
                         .addAppointment(request)
                         .then((Appointment appointment) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Agendamento realizado com sucesso',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          duration: Duration(seconds: 3),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                            builder: (context) => ClientMainPage(
-                                  userInfo: widget.clientUserInfo,
+                            builder: (context) => AppointmentConfirm(
+                                  userInfo: widget.establishmentUserInfo,
                                 )),
                         (Route<dynamic> route) => false,
                       );
