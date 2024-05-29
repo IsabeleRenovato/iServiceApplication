@@ -1,4 +1,5 @@
 import 'package:service_app/models/feedback.dart';
+import 'package:service_app/models/schedule.dart';
 
 class UserProfile {
   int userProfileId;
@@ -16,6 +17,7 @@ class UserProfile {
   DateTime creationDate;
   DateTime lastUpdateDate;
   Rating? rating;
+  Schedule? schedule;
 
   UserProfile({
     required this.userProfileId,
@@ -33,6 +35,7 @@ class UserProfile {
     required this.creationDate,
     required this.lastUpdateDate,
     this.rating,
+    this.schedule,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -54,6 +57,8 @@ class UserProfile {
       creationDate: DateTime.parse(json['creationDate']),
       lastUpdateDate: DateTime.parse(json['lastUpdateDate']),
       rating: json['rating'] != null ? Rating.fromJson(json['rating']) : null,
+      schedule:
+          json['schedule'] != null ? Schedule.fromJson(json['schedule']) : null,
     );
   }
 
@@ -74,6 +79,7 @@ class UserProfile {
       'creationDate': creationDate.toIso8601String(),
       'lastUpdateDate': lastUpdateDate.toIso8601String(),
       'rating': rating?.toJson(),
+      'schedule': schedule?.toJson(),
     };
   }
 }

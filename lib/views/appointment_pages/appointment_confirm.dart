@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/models/user_info.dart';
-import 'package:service_app/views/appointment_history_pages/appointment_history_page.dart';
-import 'package:service_app/views/auth_pages/profile_choice_page.dart';
-import 'package:service_app/views/home_pages/home_page.dart';
 import 'package:service_app/views/main_pages/client_main_page.dart';
 
 class AppointmentConfirm extends StatelessWidget {
@@ -18,7 +15,7 @@ class AppointmentConfirm extends StatelessWidget {
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
-          color: Color(0xFFFAFAFA),
+          color: const Color(0xFFFAFAFA),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -27,7 +24,7 @@ class AppointmentConfirm extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     height: MediaQuery.of(context).size.height / 2.5,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage('assets/confirmed.gif'))),
                   ),
@@ -36,7 +33,7 @@ class AppointmentConfirm extends StatelessWidget {
                     alignment: Alignment.center,
                     child: RichText(
                       textAlign: TextAlign.center,
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(
                           fontSize: 26,
                           color: Colors.black,
@@ -60,7 +57,7 @@ class AppointmentConfirm extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     "Abaixo disponibilizamos o contato do estabelecimento",
                     textAlign: TextAlign.center,
@@ -69,40 +66,40 @@ class AppointmentConfirm extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(
+                      const Icon(
                         Icons.phone,
                         color: Color(0xFF2864ff),
                         size: 24.0,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         userInfo.userProfile!.commercialPhone ??
                             'Telefone não disponível',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Colors.black,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(
+                      const Icon(
                         Icons.email,
                         color: Color(0xFF2864ff),
                         size: 24.0,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         userInfo.userProfile!.commercialEmail ??
                             'Email não disponível',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Colors.black,
                         ),
@@ -126,11 +123,11 @@ class AppointmentConfirm extends StatelessWidget {
                         ),
                       );
                     },
-                    color: Color(0xFF2864ff),
+                    color: const Color(0xFF2864ff),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
-                    child: Text(
+                    child: const Text(
                       "Avançar",
                       style: TextStyle(
                         color: Colors.white,

@@ -116,6 +116,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                           children: <Widget>[
                             ElevatedButton(
                               onPressed: () {
+                                print(widget.establishmentUserInfo.userProfile
+                                    ?.schedule!.days);
                                 showModalBottomSheet(
                                   context: context,
                                   builder: (BuildContext context) {
