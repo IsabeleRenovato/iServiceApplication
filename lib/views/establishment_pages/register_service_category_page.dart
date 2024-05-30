@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/models/service_category.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/service_category_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
+import 'package:service_app/views/establishment_pages/service_category_page.dart';
 
 class RegisterServiceCategoryPage extends StatefulWidget {
   final UserInfo userInfo;
@@ -97,7 +100,30 @@ class _RegisterServiceCategoryPageState
                 MaterialButton(
                   minWidth: double.infinity,
                   height: 60,
-                  onPressed: () async {},
+                  onPressed: () async {
+                    var request = ServiceCategory(
+                        serviceCategoryId: 0,
+                        establishmentUserProfileId:
+                            widget.userInfo.userProfile!.userProfileId,
+                        name: categoryController.text,
+                        active: true,
+                        deleted: false,
+                        creationDate: DateTime.now(),
+                        lastUpdateDate: DateTime.now());
+
+                    await ServiceCategoryServices()
+                        .addServiceCategory(request)
+                        .then((ServiceCategory serviceCategory) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ServiceCategoryPage(
+                            userInfo: widget.userInfo,
+                          ),
+                        ),
+                      );
+                    });
+                  },
                   color: filledFields ? const Color(0xFF2864ff) : Colors.grey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

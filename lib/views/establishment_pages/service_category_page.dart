@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/models/service_category.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/service_category_services.dart';
 import 'package:service_app/views/establishment_pages/register_service_category_page.dart';
 
 class ServiceCategoryPage extends StatefulWidget {
@@ -12,24 +14,37 @@ class ServiceCategoryPage extends StatefulWidget {
 }
 
 class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
-  List<Map<String, String>> specialDaysList = [];
+  Future<List<ServiceCategory>> _serviceCategoriesFuture = Future.value([]);
 
   @override
   void initState() {
     super.initState();
-    _loadSpecialDays();
+    fetchData();
   }
 
-  void _loadSpecialDays() {
-    // Dados falsos para simular
-    specialDaysList = [
-      {
-        'category': 'Corte',
-      },
-      {
-        'category': 'Barbear',
-      },
-    ];
+  void refreshData() {
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      List<ServiceCategory> serviceCategories = await ServiceCategoryServices()
+          .getByUserProfileId(widget.userInfo.userProfile!
+              .userProfileId); // Suponha que este método busque as categorias do serviço
+
+      if (mounted) {
+        setState(() {
+          _serviceCategoriesFuture = Future.value(serviceCategories);
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro ao buscar Service Categories: $e');
+      if (mounted) {
+        setState(() {
+          _serviceCategoriesFuture = Future.value([]);
+        });
+      }
+    }
   }
 
   @override
@@ -96,10 +111,34 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: specialDaysList.length,
-              itemBuilder: (context, index) {
-                return SchedulesCard(specialDay: specialDaysList[index]);
+            child: FutureBuilder<List<ServiceCategory>>(
+              future: _serviceCategoriesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child:
+                          CircularProgressIndicator(color: Color(0xFF2864ff)));
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Erro: ${snapshot.error}'));
+                } else if (snapshot.hasData) {
+                  if (snapshot.data!.isNotEmpty) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final serviceCategory = snapshot.data![index];
+                        return SchedulesCard(
+                          serviceCategory: serviceCategory,
+                          onDeleted: refreshData,
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(
+                        child:
+                            Text('Nenhuma categoria de serviço cadastrada.'));
+                  }
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
@@ -110,9 +149,11 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
 }
 
 class SchedulesCard extends StatelessWidget {
-  final Map<String, String> specialDay;
+  final ServiceCategory serviceCategory;
+  final VoidCallback onDeleted;
 
-  const SchedulesCard({super.key, required this.specialDay});
+  const SchedulesCard(
+      {super.key, required this.serviceCategory, required this.onDeleted});
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +180,7 @@ class SchedulesCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  specialDay['category']!,
+                  serviceCategory.name,
                   style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -149,9 +190,6 @@ class SchedulesCard extends StatelessWidget {
                   width: 15,
                 ),
                 InkWell(
-                  onTap: () {
-                    // Ação para Remover
-                  },
                   child: Container(
                     decoration: const BoxDecoration(
                       color: Color.fromARGB(
@@ -161,7 +199,14 @@ class SchedulesCard extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.delete), // Ícone de lixeira
                       color: Colors.black, // Cor do ícone
-                      onPressed: () {},
+                      onPressed: () async {
+                        var result = await ServiceCategoryServices()
+                            .deleteServiceCategory(
+                                serviceCategory.serviceCategoryId);
+                        if (result) {
+                          onDeleted(); // Chama o callback após retornar com sucesso
+                        }
+                      },
                     ),
                   ),
                 ),

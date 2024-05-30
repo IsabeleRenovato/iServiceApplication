@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 
@@ -25,14 +27,8 @@ class _EditEstablishmentProfilePageState
   TextEditingController commercialEmailController = TextEditingController();
   TextEditingController categoryController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  List<String> opcoes = [
-    'Escolha uma opção',
-    'Opção 1',
-    'Opção 2',
-    'Opção 3',
-    'Opção 4'
-  ];
-  String? selectedValue;
+  List<EstablishmentCategory> establishmentCategories = [];
+  int? selectedCategoryId;
   String mensagemErro = '';
   bool filledFields = false;
 
@@ -55,7 +51,27 @@ class _EditEstablishmentProfilePageState
     commercialEmailController.addListener(atualizarEstadoCampos);
     categoryController.addListener(atualizarEstadoCampos);
     descriptionController.addListener(atualizarEstadoCampos);
-    selectedValue = opcoes[0];
+    fetchEstablishmentCategories().then((_) {
+      if (establishmentCategories.any((category) =>
+          category.establishmentCategoryId ==
+          widget.userInfo.userProfile!.establishmentCategoryId)) {
+        setState(() {
+          selectedCategoryId =
+              widget.userInfo.userProfile!.establishmentCategoryId;
+        });
+      }
+    });
+  }
+
+  Future fetchEstablishmentCategories() async {
+    try {
+      var fetchedCategories = await EstablishmentCategoryServices().get();
+      setState(() {
+        establishmentCategories = fetchedCategories;
+      });
+    } catch (e) {
+      print('Erro ao buscar as categorias de serviço: $e');
+    }
   }
 
   void atualizarMensagemErro(String mensagem) {
@@ -234,52 +250,34 @@ class _EditEstablishmentProfilePageState
                 ),
                 SizedBox(
                   width: double.infinity,
-                  child: DropdownButton<String>(
-                    value: selectedValue,
+                  child: DropdownButton<int>(
+                    value: selectedCategoryId,
                     onChanged: (newValue) {
                       setState(() {
-                        selectedValue = newValue;
-                        mensagemErro = '';
+                        selectedCategoryId = newValue;
                       });
                     },
-                    items:
-                        opcoes.map<DropdownMenuItem<String>>((String? value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
+                    items: establishmentCategories.map<DropdownMenuItem<int>>(
+                        (EstablishmentCategory category) {
+                      return DropdownMenuItem<int>(
+                        value: category.establishmentCategoryId,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12),
                           child: Row(
                             children: [
-                              const Icon(
-                                Icons.category,
-                                color: Colors.blue,
-                              ),
+                              const Icon(Icons.category, color: Colors.blue),
                               const SizedBox(width: 8),
-                              Text(
-                                value ?? '',
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w100,
-                                  fontSize: 16,
-                                ),
-                              ),
+                              Text(category.name,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w100,
+                                    fontSize: 16,
+                                  )),
                             ],
                           ),
                         ),
                       );
                     }).toList(),
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ),
-                    underline: Container(
-                      height: 1.5,
-                      decoration: const UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -298,7 +296,7 @@ class _EditEstablishmentProfilePageState
                               widget.userInfo.userProfile!.userProfileId,
                           userId: widget.userInfo.userProfile!.userId,
                           document: cnpjController.text,
-                          establishmentCategoryId: 1,
+                          establishmentCategoryId: selectedCategoryId,
                           addressId: widget.userInfo.address!.addressId,
                           commercialName: establishmntNameController.text,
                           commercialEmail: commercialEmailController.text,
