@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/utils/barChart.dart';
 import 'package:service_app/views/appointment_history_pages/appointment_history_page.dart';
 
 class EstablishmentHomePage extends StatefulWidget {
@@ -151,7 +152,8 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
             ),
             const SizedBox(
               height: 20,
-            )
+            ),
+            BarChartSample7()
           ],
         ),
       ),
