@@ -8,11 +8,15 @@ import 'package:service_app/utils/clip_path_widget.dart';
 import 'package:service_app/views/main_pages/client_main_page.dart';
 
 class ReviewPage extends StatefulWidget {
-  final UserInfo userInfo;
+  final UserInfo clientUserInfo;
+  final UserInfo establishmentUserInfo;
   final Appointment appointment;
 
   const ReviewPage(
-      {required this.userInfo, required this.appointment, super.key});
+      {required this.clientUserInfo,
+      required this.establishmentUserInfo,
+      required this.appointment,
+      super.key});
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
@@ -175,7 +179,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ClientMainPage(
-                                            userInfo: widget.userInfo)));
+                                            userInfo: widget.clientUserInfo)));
                               });
                             },
                             color: const Color(0xFF2864ff),
