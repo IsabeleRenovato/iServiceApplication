@@ -32,7 +32,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Hello, ${widget.userInfo.user.name}",
+                    "Olá, ${widget.userInfo.user.name}",
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,

@@ -19,6 +19,10 @@ class AppointmentServices {
     return _postRequest('', request);
   }
 
+  Future<bool> cancelAppointment(int userRoleId, int appointmentId) async {
+    return _deleteRequest('/CancelAppointment', userRoleId, appointmentId);
+  }
+
   Future<List<Appointment>> _getListRequest(String path) async {
     var url = Uri.parse('$_baseUrl$path');
     var response =
@@ -59,6 +63,21 @@ class AppointmentServices {
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Appointment.fromJson(jsonDecode(response.body));
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<bool> _deleteRequest(
+      String path, int userRoleId, int appointmentId) async {
+    var url = Uri.parse('$_baseUrl$path/$userRoleId/$appointmentId');
+    var response = await http.delete(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
     } else {
       _handleError(response.body);
     }

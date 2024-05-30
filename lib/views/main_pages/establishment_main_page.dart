@@ -63,7 +63,7 @@ class _EstablishmentMainPageState extends State<EstablishmentMainPage> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
+          selectedItemColor: Color(0xFF2864ff),
           unselectedItemColor: Colors.black,
           onTap: _onItemTapped,
         ),

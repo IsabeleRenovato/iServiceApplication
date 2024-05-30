@@ -19,16 +19,15 @@ class _MyProfilePageState extends State<MyProfilePage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Colors.black,
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            "Perfil",
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -221,7 +220,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   ),
                 ),
               ),
-              Padding(
+              /* Padding(
                 padding: const EdgeInsets.only(left: 6),
                 child: TextButton(
                   style: TextButton.styleFrom(
@@ -258,7 +257,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     ],
                   ),
                 ),
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(

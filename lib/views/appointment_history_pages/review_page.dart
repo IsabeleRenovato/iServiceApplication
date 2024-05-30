@@ -181,7 +181,7 @@ class _ReviewPageState extends State<ReviewPage> {
                             color: const Color(0xFF2864ff),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50)),
-                            child: const Text("Estabelecimento",
+                            child: const Text("Avaliar",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,

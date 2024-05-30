@@ -19,8 +19,8 @@ class _ClientMainPage extends State<ClientMainPage> {
 
   late final List<Widget> _pages = <Widget>[
     ClientHomePage(userInfo: widget.userInfo),
-    AppointmentHistoryPage(userInfo: widget.userInfo),
     SearchPage(userInfo: widget.userInfo),
+    AppointmentHistoryPage(userInfo: widget.userInfo),
     MyProfilePage(userInfo: widget.userInfo)
   ];
 
@@ -50,12 +50,12 @@ class _ClientMainPage extends State<ClientMainPage> {
               label: 'Inicio',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
-              label: 'Agendamentos',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: 'Busca',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Agendamentos',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
@@ -63,7 +63,7 @@ class _ClientMainPage extends State<ClientMainPage> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
+          selectedItemColor: Color(0xFF2864ff),
           unselectedItemColor: Colors.black,
           onTap: _onItemTapped,
         ),

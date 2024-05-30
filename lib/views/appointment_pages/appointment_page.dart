@@ -6,6 +6,7 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
 import 'package:service_app/services/service_services.dart';
 import 'package:service_app/views/appointment_pages/appointment_confirm.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
@@ -89,7 +90,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.black,
@@ -313,7 +314,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => AppointmentConfirm(
-                                  userInfo: widget.clientUserInfo,
+                                  userInfo: widget.establishmentUserInfo,
                                 )),
                         (Route<dynamic> route) => false,
                       );

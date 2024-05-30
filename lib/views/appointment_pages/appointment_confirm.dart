@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/models/user_info.dart';
+
 import 'package:service_app/views/main_pages/client_main_page.dart';
 
 class AppointmentConfirm extends StatelessWidget {
@@ -33,7 +34,7 @@ class AppointmentConfirm extends StatelessWidget {
                     alignment: Alignment.center,
                     child: RichText(
                       textAlign: TextAlign.center,
-                      text: const TextSpan(
+                      text: TextSpan(
                         style: TextStyle(
                           fontSize: 26,
                           color: Colors.black,
@@ -57,7 +58,7 @@ class AppointmentConfirm extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Text(
                     "Abaixo disponibilizamos o contato do estabelecimento",
                     textAlign: TextAlign.center,
@@ -66,40 +67,40 @@ class AppointmentConfirm extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Icon(
+                      Icon(
                         Icons.phone,
                         color: Color(0xFF2864ff),
                         size: 24.0,
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Text(
                         userInfo.userProfile!.commercialPhone ??
                             'Telefone não disponível',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           color: Colors.black,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Icon(
+                      Icon(
                         Icons.email,
                         color: Color(0xFF2864ff),
                         size: 24.0,
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Text(
                         userInfo.userProfile!.commercialEmail ??
                             'Email não disponível',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           color: Colors.black,
                         ),
@@ -123,11 +124,11 @@ class AppointmentConfirm extends StatelessWidget {
                         ),
                       );
                     },
-                    color: const Color(0xFF2864ff),
+                    color: Color(0xFF2864ff),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Avançar",
                       style: TextStyle(
                         color: Colors.white,

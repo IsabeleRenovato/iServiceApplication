@@ -3,6 +3,7 @@ import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/views/appointment_pages/establishment_category_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchPage extends StatefulWidget {
   final UserInfo userInfo;
@@ -10,16 +11,18 @@ class SearchPage extends StatefulWidget {
   const SearchPage({required this.userInfo, super.key});
 
   static final List<Color> colors = [
-    Colors.blue,
+    Colors.pink,
     Colors.red,
-    Colors.yellow,
-    Colors.purple
+    Color.fromARGB(255, 216, 198, 40),
+    Colors.blue,
+    Colors.green
   ];
   static final List<IconData> icons = [
+    Icons.spa,
     Icons.content_cut,
-    Icons.shopping_cart,
+    FontAwesomeIcons.wrench,
+    FontAwesomeIcons.paw,
     Icons.local_hospital,
-    Icons.restaurant_menu
   ];
 
   @override
@@ -66,26 +69,13 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 55.0),
-            child: Text(
-              "Busca",
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+          child: Text(
+            "Busca",
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Colors.black,
           ),
         ),
       ),

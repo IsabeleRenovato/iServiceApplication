@@ -44,12 +44,26 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
     }
   }
 
+  void refreshData() {
+    setState(() {
+      appointmentsFuture = fetchAppointments();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Agendamentos",
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            "Agendamentos",
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -87,16 +101,17 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
                 AppointmentListView(
                     userInfo: widget.userInfo,
                     appointments: scheduled,
-                    showCancelarButton: true),
+                    showCancelarButton: true,
+                    onUpdated: refreshData),
                 AppointmentListView(
-                  userInfo: widget.userInfo,
-                  appointments: finished,
-                  showAvaliarButton: true,
-                ),
+                    userInfo: widget.userInfo,
+                    appointments: finished,
+                    showAvaliarButton: true,
+                    onUpdated: refreshData),
                 AppointmentListView(
-                  userInfo: widget.userInfo,
-                  appointments: canceled,
-                ),
+                    userInfo: widget.userInfo,
+                    appointments: canceled,
+                    onUpdated: refreshData),
               ],
             );
           } else {
@@ -113,12 +128,14 @@ class AppointmentListView extends StatelessWidget {
   final List<Appointment> appointments;
   final bool showCancelarButton;
   final bool showAvaliarButton;
+  final VoidCallback onUpdated;
 
   const AppointmentListView(
       {required this.userInfo,
       required this.appointments,
       this.showCancelarButton = false,
-      this.showAvaliarButton = false, // Default é false
+      this.showAvaliarButton = false,
+      required this.onUpdated, // Default é false
       super.key});
 
   @override
@@ -249,7 +266,7 @@ class AppointmentListView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        if (showCancelar) // Verifica se showAvaliar é true
+                        if (showCancelar)
                           InkWell(
                             onTap: () {
                               showDialog(
@@ -261,8 +278,35 @@ class AppointmentListView extends StatelessWidget {
                                         "Tem certeza de que deseja cancelar o agendamento?"),
                                     actions: <Widget>[
                                       TextButton(
-                                        onPressed: () {
-                                          //cancelar o agendamento
+                                        onPressed: () async {
+                                          await AppointmentServices()
+                                              .cancelAppointment(
+                                                  userInfo.userRole.userRoleId,
+                                                  appointment.appointmentId)
+                                              .then((bool status) {
+                                            if (status) {
+                                              Navigator.of(context).pop();
+                                              onUpdated();
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Serviço cancelado',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            }
+                                          });
                                         },
                                         child: const Text("Sim"),
                                       ),

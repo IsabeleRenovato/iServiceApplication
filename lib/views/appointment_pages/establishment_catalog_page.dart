@@ -116,16 +116,85 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                           children: <Widget>[
                             ElevatedButton(
                               onPressed: () {
-                                print(widget.establishmentUserInfo.userProfile
-                                    ?.schedule!.days);
+                                // Supondo que 'widget.establishmentUserInfo.userProfile?.schedule!.days' seja algo como "1,3,5"
+                                String numericDays = widget
+                                        .establishmentUserInfo
+                                        .userProfile
+                                        ?.schedule
+                                        ?.days ??
+                                    "";
+                                String schedule =
+                                    '${widget.establishmentUserInfo.userProfile?.schedule?.start ?? "--:--"} às ${widget.establishmentUserInfo.userProfile?.schedule?.breakStart ?? "--:--"} - ${widget.establishmentUserInfo.userProfile?.schedule?.breakEnd ?? "--:--"} às ${widget.establishmentUserInfo.userProfile?.schedule?.end ?? "--:--"}';
+
+                                List<String> daysWithSchedule =
+                                    numericDays.split(',').map((day) {
+                                  String dayName;
+                                  switch (day) {
+                                    case '0':
+                                      dayName = 'Segunda-feira';
+                                      break;
+                                    case '1':
+                                      dayName = 'Terça-feira';
+                                      break;
+                                    case '2':
+                                      dayName = 'Quarta-feira';
+                                      break;
+                                    case '3':
+                                      dayName = 'Quinta-feira';
+                                      break;
+                                    case '4':
+                                      dayName = 'Sexta-feira';
+                                      break;
+                                    case '5':
+                                      dayName = 'Sábado';
+                                      break;
+                                    case '6':
+                                      dayName = 'Domingo';
+                                      break;
+                                    default:
+                                      dayName = 'Dia desconhecido';
+                                  }
+                                  return '$dayName: $schedule';
+                                }).toList();
+
                                 showModalBottomSheet(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return SizedBox(
                                       height: 200,
                                       width: MediaQuery.of(context).size.width,
-                                      child: const Center(
-                                        child: Text("Lista de horarios aqui"),
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Center(
+                                              child: Text(
+                                                  'Horário de funcionamento',
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      color: const Color(
+                                                          0xFF2864ff),
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            SizedBox(height: 15),
+                                            ...daysWithSchedule
+                                                .map((day) => Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 30),
+                                                      child: Text(
+                                                        day,
+                                                        style: TextStyle(
+                                                            fontSize: 16),
+                                                      ),
+                                                    ))
+                                                .toList(),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
