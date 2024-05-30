@@ -97,53 +97,7 @@ class _RegisterServiceCategoryPageState
                 MaterialButton(
                   minWidth: double.infinity,
                   height: 60,
-                  onPressed: () async {
-                    /*
-                    if (!filledFields) {
-                      atualizarMensagemErro(
-                          'Por favor, preencha todos os campos.');
-                    } else {
-                      try {
-                        
-
-                        ScheduleModel request = ScheduleModel(
-                          establishmentProfileId: widget.userInfo
-                              .establishmentProfile!.establishmentProfileId,
-                          days: 
-                          start: timeStartController.text,
-                          end: timeEndController.text,
-                          breakStart: timeBreakStartController.text,
-                          breakEnd: timeBreakEndController.text,
-                        );
-                        request.days = request.days.replaceAll(" ", "");
-                        await ScheduleServices()
-                            .addSchedule(request)
-                            .then((Schedule schedule) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Dados cadastrados com sucesso',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              duration: Duration(seconds: 3),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }).catchError((e) {
-                          print('Erro ao registrar servidor: $e');
-                          atualizarMensagemErro(
-                              'Erro ao registrar servidor: $e');
-                        });
-                      } catch (error) {
-                        atualizarMensagemErro(
-                            'Erro ao registrar servidor: $error');
-                      }
-                    }*/
-                  },
+                  onPressed: () async {},
                   color: filledFields ? const Color(0xFF2864ff) : Colors.grey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

@@ -56,59 +56,65 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 55.0),
-            child: Text(
-              "Catalogo",
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+          child: Text(
+            "Catálogo",
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Colors.black,
           ),
         ),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => RegisterServicePage(
+          SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: InkWell(
+                  onTap: () {
+                    if (widget.userInfo.userProfile?.schedule?.days == null ||
+                        widget.userInfo.userProfile?.establishmentCategoryId ==
+                            null) {
+                      final snackBar = SnackBar(
+                        content: Text(
+                          "Para criar um serviço, você precisa obrigatoriamente registrar um horário de funcionamento e uma categoria de serviço. Acesse seu perfil para registrá-los.",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        duration: Duration(seconds: 10),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterServicePage(
                             userInfo: widget.userInfo,
                             serviceId: 0,
-                          )),
-                );
-              },
-              child: Container(
-                width: 390,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2864ff),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Adicionar um novo serviço",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: Container(
+                    width: 390,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2864ff),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Adicionar um novo serviço",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),

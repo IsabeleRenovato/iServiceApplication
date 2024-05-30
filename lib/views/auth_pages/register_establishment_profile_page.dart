@@ -193,7 +193,7 @@ class _RegisterEstablishmentProfilePageState
                 const SizedBox(
                   height: 10,
                 ),
-                SizedBox(
+                /* SizedBox(
                   width: double.infinity,
                   child: DropdownButton<String>(
                     value: selectedValue,
@@ -242,7 +242,7 @@ class _RegisterEstablishmentProfilePageState
                       ),
                     ),
                   ),
-                ),
+                ),*/
                 const SizedBox(height: 10),
                 Text(
                   mensagemErro,

@@ -132,11 +132,12 @@ class _EditEstablishmentProfilePageState
       ),
       body: SingleChildScrollView(
         child: SizedBox(
-          height: 500,
+          height: 550,
           width: double.infinity,
           child: Padding(
             padding: const EdgeInsets.only(left: 18.0, right: 18.0),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 const Expanded(
                   child: Column(

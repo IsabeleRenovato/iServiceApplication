@@ -6,6 +6,7 @@ import 'package:service_app/views/establishment_pages/edit_establishment_profile
 import 'package:service_app/views/establishment_pages/register_schedule_page.dart';
 import 'package:service_app/views/establishment_pages/service_category_page.dart';
 import 'package:service_app/views/establishment_pages/special_schedule_page.dart';
+import 'package:service_app/views/home_pages/home_page.dart';
 
 class MyEstablishmentPage extends StatefulWidget {
   final UserInfo userInfo;
@@ -25,26 +26,13 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 55.0),
-            child: Text(
-              "Meu Estabelecimento",
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+          child: Text(
+            "Meu estabelecimento",
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Colors.black,
           ),
         ),
       ),
@@ -142,7 +130,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       const SizedBox(width: 17),
                       const Expanded(
                         child: Text(
-                          "Horários",
+                          "Horário de Funcionamento",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -232,7 +220,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                   child: Row(
                     children: [
                       Image.asset(
-                        'assets/localizacao.png',
+                        'assets/categoria.png',
                         width: 25,
                         height: 25,
                       ),
@@ -442,6 +430,46 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                         color: Colors.black,
                         size: 20,
                       )
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.all(20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push<UserInfo>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/sair.png',
+                        width: 25,
+                        height: 25,
+                      ),
+                      const SizedBox(width: 18),
+                      const Expanded(
+                        child: Text(
+                          "Sair",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

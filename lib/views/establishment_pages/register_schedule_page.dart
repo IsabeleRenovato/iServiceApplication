@@ -274,7 +274,7 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                              'Dados editados com sucesso',
+                              'Dados cadastrados com sucesso',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
