@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:service_app/models/appointment.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
+import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_page.dart';
 
 class AppointmentHistoryPage extends StatefulWidget {
@@ -233,14 +234,21 @@ class AppointmentListView extends StatelessWidget {
                             userInfo.userRole.userRoleId == 3 &&
                             showAvaliarButton) // Verifica se showAvaliar é true
                           InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ReviewPage(
-                                        userInfo: userInfo,
-                                        appointment: appointment)),
-                              );
+                            onTap: () async {
+                              await UserInfoServices()
+                                  .getUserInfoByUserId(
+                                      appointment.establishmentUserProfileId)
+                                  .then((UserInfo establishmentUserInfo) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ReviewPage(
+                                          clientUserInfo: userInfo,
+                                          establishmentUserInfo:
+                                              establishmentUserInfo,
+                                          appointment: appointment)),
+                                );
+                              });
                             },
                             child: Container(
                               width: 340,
