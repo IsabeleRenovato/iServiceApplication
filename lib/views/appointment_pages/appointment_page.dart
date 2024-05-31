@@ -90,7 +90,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               RichText(
-                text: TextSpan(
+                text: const TextSpan(
                   style: TextStyle(
                     fontSize: 24,
                     color: Colors.black,
@@ -314,7 +314,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                             builder: (context) => AppointmentConfirm(
-                                  userInfo: widget.establishmentUserInfo,
+                                  clientUserInfo: widget.clientUserInfo,
+                                  establishmentUserInfo:
+                                      widget.establishmentUserInfo,
                                 )),
                         (Route<dynamic> route) => false,
                       );

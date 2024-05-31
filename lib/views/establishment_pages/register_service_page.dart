@@ -38,6 +38,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
   List<int> durationsInMinutes = List.generate(20, (index) => (index + 1) * 15);
   ServiceServices serviceServices = ServiceServices();
   List<ServiceCategory> serviceCategories = [];
+  bool isEdited = false;
 
   Future<void> _getImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -45,6 +46,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
 
     if (pickedImage != null) {
       setState(() {
+        isEdited = true;
         imagePath = pickedImage.path;
         _image = File(pickedImage.path);
       });
@@ -78,10 +80,12 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
           if (mounted) {
             setState(() {
               _image = service.serviceImage;
+              imagePath = service.serviceImage;
               durationController.text = service.estimatedDuration.toString();
               serviceNameController.text = service.name;
               priceController.text = service.price.toString();
               descriptionController.text = service.description;
+              doubleValue = service.price;
             });
           }
         }
@@ -414,38 +418,73 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                               'Por favor, preencha todos os campos.');
                         } else {
                           try {
-                            var request = Service(
-                                serviceId: 0,
-                                establishmentUserProfileId:
-                                    widget.userInfo.userProfile!.userProfileId,
-                                serviceCategoryId: selectedCategory!,
-                                name: serviceNameController.text,
-                                description: descriptionController.text,
-                                price: doubleValue,
-                                estimatedDuration: selectedDuration!,
-                                serviceImage: imagePath,
-                                active: true,
-                                deleted: false,
-                                creationDate: DateTime.now(),
-                                lastUpdateDate: DateTime.now());
+                            if (widget.serviceId > 0) {
+                              var request = Service(
+                                  serviceId: widget.serviceId,
+                                  establishmentUserProfileId: widget
+                                      .userInfo.userProfile!.userProfileId,
+                                  serviceCategoryId: selectedCategory!,
+                                  name: serviceNameController.text,
+                                  description: descriptionController.text,
+                                  price: doubleValue,
+                                  estimatedDuration: selectedDuration!,
+                                  serviceImage: imagePath,
+                                  active: true,
+                                  deleted: false,
+                                  creationDate: DateTime.now(),
+                                  lastUpdateDate: DateTime.now());
 
-                            await ServiceServices()
-                                .addService(request)
-                                .then((Service service) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      EstablishmentCatalogPage(
-                                    userInfo: widget.userInfo,
+                              await ServiceServices()
+                                  .updateService(request, isEdited)
+                                  .then((Service service) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EstablishmentCatalogPage(
+                                      userInfo: widget.userInfo,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).catchError((e) {
-                              print('Erro ao registrar servidor: $e');
-                              atualizarMensagemErro(
-                                  'Erro ao registrar servidor: $e');
-                            });
+                                );
+                              }).catchError((e) {
+                                print('Erro ao registrar servidor: $e');
+                                atualizarMensagemErro(
+                                    'Erro ao registrar servidor: $e');
+                              });
+                            } else {
+                              var request = Service(
+                                  serviceId: 0,
+                                  establishmentUserProfileId: widget
+                                      .userInfo.userProfile!.userProfileId,
+                                  serviceCategoryId: selectedCategory!,
+                                  name: serviceNameController.text,
+                                  description: descriptionController.text,
+                                  price: doubleValue,
+                                  estimatedDuration: selectedDuration!,
+                                  serviceImage: imagePath,
+                                  active: true,
+                                  deleted: false,
+                                  creationDate: DateTime.now(),
+                                  lastUpdateDate: DateTime.now());
+
+                              await ServiceServices()
+                                  .addService(request)
+                                  .then((Service service) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        EstablishmentCatalogPage(
+                                      userInfo: widget.userInfo,
+                                    ),
+                                  ),
+                                );
+                              }).catchError((e) {
+                                print('Erro ao registrar servidor: $e');
+                                atualizarMensagemErro(
+                                    'Erro ao registrar servidor: $e');
+                              });
+                            }
                           } catch (error) {
                             atualizarMensagemErro(
                                 'Erro ao registrar servidor: $error');

@@ -22,6 +22,10 @@ class ServiceServices {
     return _postRequest('', request);
   }
 
+  Future<Service> updateService(Service request, bool isEdited) async {
+    return _putRequest('', request, isEdited);
+  }
+
   Future<Service?> _getRequest(String path, int id) async {
     var url = Uri.parse('$_baseUrl$path/$id');
     var response =
@@ -91,6 +95,47 @@ class ServiceServices {
     if (request.serviceImage != null) {
       multipartRequest.files.add(
           await http.MultipartFile.fromPath('File', request.serviceImage!));
+    }
+
+    http.StreamedResponse streamedResponse = await multipartRequest.send();
+
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var jsonResponse = jsonDecode(response.body);
+      return Service.fromJson(jsonResponse);
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<Service> _putRequest(
+      String path, Service request, bool isEdited) async {
+    var url = Uri.parse(_baseUrl);
+    var multipartRequest = http.MultipartRequest('PUT', url);
+
+    multipartRequest.fields['ServiceId'] = request.serviceId.toString();
+    multipartRequest.fields['EstablishmentUserProfileId'] =
+        request.establishmentUserProfileId.toString();
+    multipartRequest.fields['ServiceCategoryId'] =
+        request.serviceCategoryId.toString();
+    multipartRequest.fields['Name'] = request.name;
+    multipartRequest.fields['Description'] = request.description;
+    multipartRequest.fields['Price'] = request.price.toString();
+    multipartRequest.fields['EstimatedDuration'] =
+        request.estimatedDuration.toString();
+    multipartRequest.fields['Active'] = request.active.toString();
+    multipartRequest.fields['Deleted'] = request.deleted.toString();
+    multipartRequest.fields['CreationDate'] = request.creationDate.toString();
+    multipartRequest.fields['LastUpdateDate'] =
+        request.lastUpdateDate.toString();
+
+    if (request.serviceImage != null && isEdited) {
+      multipartRequest.files.add(
+          await http.MultipartFile.fromPath('File', request.serviceImage!));
+    } else {
+      multipartRequest.fields['ServiceImage'] = request.serviceImage.toString();
     }
 
     http.StreamedResponse streamedResponse = await multipartRequest.send();

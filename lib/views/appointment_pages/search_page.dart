@@ -3,7 +3,6 @@ import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/views/appointment_pages/establishment_category_page.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SearchPage extends StatefulWidget {
   final UserInfo userInfo;
@@ -20,8 +19,6 @@ class SearchPage extends StatefulWidget {
   static final List<IconData> icons = [
     Icons.spa,
     Icons.content_cut,
-    FontAwesomeIcons.wrench,
-    FontAwesomeIcons.paw,
     Icons.local_hospital,
   ];
 

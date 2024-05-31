@@ -30,12 +30,10 @@ class _ReviewListPageState extends State<ReviewListPage> {
     try {
       UserInfo userInfo =
           await UserInfoServices().getUserInfoByUserId(widget.userId);
-      if (userInfo.userProfile != null &&
-          userInfo.userProfile!.rating != null) {
-        establishmentUserInfo = userInfo;
-        List<Map<String, dynamic>> feedbacks = establishmentUserInfo!
-            .userProfile!.rating!.feedback
-            .map((feedback) {
+      establishmentUserInfo = userInfo;
+      if (userInfo.userProfile!.rating != null) {
+        List<Map<String, dynamic>> feedbacks =
+            userInfo.userProfile!.rating!.feedback.map((feedback) {
           return {
             'name': feedback.name,
             'rating': feedback.rating,
@@ -43,13 +41,11 @@ class _ReviewListPageState extends State<ReviewListPage> {
           };
         }).toList();
         return feedbacks;
-      } else {
-        return []; // Retorna uma lista vazia se algum dos dados for nulo
       }
     } catch (e) {
       print('Erro ao buscar feedbacks: $e');
-      return []; // Retorna uma lista vazia em caso de erro
     }
+    return []; // Retorna uma lista vazia se alguma condição não for atendida ou houver exceção
   }
 
   @override

@@ -81,7 +81,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "9",
+                            "0",
                             style: TextStyle(
                               fontSize: 30,
                               color: Colors.white,
@@ -128,7 +128,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "5",
+                            "0",
                             style: TextStyle(
                               fontSize: 30,
                               color: Colors.white,
@@ -150,6 +150,11 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 20,
+            ),
+            Text('   Relatório',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(
               height: 20,
             ),

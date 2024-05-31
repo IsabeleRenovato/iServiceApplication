@@ -8,11 +8,11 @@ class BarChartSample7 extends StatefulWidget {
 
   final shadowColor = const Color(0xFFCCCCCC);
   final dataList = [
-    const _BarData(Colors.blue, 18, 18),
-    const _BarData(Colors.blue, 17, 8),
-    const _BarData(Colors.blue, 10, 15),
-    const _BarData(Colors.blue, 2.5, 5),
-    const _BarData(Colors.blue, 2, 2.5),
+    const _BarData(Colors.blue, 0, 0),
+    const _BarData(Colors.blue, 0, 0),
+    const _BarData(Colors.blue, 0, 0),
+    const _BarData(Colors.blue, 0, 0),
+    const _BarData(Colors.blue, 0, 0),
   ];
 
   @override

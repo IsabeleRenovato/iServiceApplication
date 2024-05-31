@@ -74,29 +74,15 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                 padding: const EdgeInsets.all(15),
                 child: InkWell(
                   onTap: () {
-                    if (widget.userInfo.userProfile?.schedule?.days == null ||
-                        widget.userInfo.userProfile?.establishmentCategoryId ==
-                            null) {
-                      final snackBar = SnackBar(
-                        content: Text(
-                          "Para criar um serviço, você precisa obrigatoriamente registrar um horário de funcionamento e uma categoria de serviço. Acesse seu perfil para registrá-los.",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegisterServicePage(
+                          userInfo: widget.userInfo,
+                          serviceId: 0,
                         ),
-                        duration: Duration(seconds: 10),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterServicePage(
-                            userInfo: widget.userInfo,
-                            serviceId: 0,
-                          ),
-                        ),
-                      );
-                    }
+                      ),
+                    );
                   },
                   child: Container(
                     width: 390,
