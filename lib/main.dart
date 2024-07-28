@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:service_app/views/home_pages/home_page.dart';
+import 'package:service_app/utils/token_provider.dart';
 
 void main() {
-  runApp(const ServiceApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) =>
+          TokenProvider(), // Cria uma instância do TokenProvider
+
+      child: const ServiceApp(),
+    ),
+  );
 }
 
 //Teste
@@ -28,6 +38,10 @@ class ServiceApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/login': (context) => HomePage(),
+      },
     );
   }
 }

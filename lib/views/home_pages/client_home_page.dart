@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 class ClientHomePage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const ClientHomePage({required this.userInfo, super.key});
+  const ClientHomePage({super.key});
 
   @override
   State<ClientHomePage> createState() => _ClientHomePageState();
@@ -13,6 +14,14 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
+    var tokenProvider = Provider.of<TokenProvider>(context);
+    print(tokenProvider.token);
+    if (tokenProvider.token == null) {
+      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+    }
+
+    Map<String, dynamic> payload = Jwt.parseJwt(tokenProvider.token!);
+
     List<Map<String, dynamic>> categoria = [
       {"icon": "assets/cuidados-com-a-pele.png", "text": "salão de beleza"},
       {"icon": "assets/ferramentas.png", "text": "mecânico"},
@@ -32,7 +41,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Olá, ${widget.userInfo.user.name}",
+                    "Olá, ",
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,

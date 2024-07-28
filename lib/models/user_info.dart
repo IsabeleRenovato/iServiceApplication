@@ -8,12 +8,14 @@ class UserInfo {
   UserRole userRole;
   UserProfile? userProfile;
   Address? address;
+  String? token;
 
   UserInfo({
     required this.user,
     required this.userRole,
     this.userProfile,
     this.address,
+    this.token,
   });
 
   factory UserInfo.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class UserInfo {
       address: json['address'] != null
           ? Address.fromJson(json['address'] as Map<String, dynamic>)
           : null,
+      token: json['token'] != null ? json['token'] as String : null,
     );
   }
 
@@ -35,6 +38,7 @@ class UserInfo {
       'userRole': userRole.toJson(),
       'userProfile': userProfile?.toJson(),
       'address': address?.toJson(),
+      'token': token,
     };
   }
 }

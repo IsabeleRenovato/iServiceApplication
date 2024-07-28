@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/service.dart';
 
 class ServiceServices {
   final String _baseUrl = 'http://10.0.2.2:5120/Service';
+  final storage = FlutterSecureStorage();
 
   Future<Service?> getById(int serviceId) async {
     return _getRequest('', serviceId);
@@ -27,9 +29,13 @@ class ServiceServices {
   }
 
   Future<Service?> _getRequest(String path, int id) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path/$id');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Service?.fromJson(jsonDecode(response.body));
     } else {
@@ -39,9 +45,13 @@ class ServiceServices {
   }
 
   Future<List<Service>> _getListRequest(String path, int id) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path/$id');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
       return jsonResponse
@@ -55,10 +65,14 @@ class ServiceServices {
 
   Future<List<String>> _getAvailableTimesRequest(
       String path, int id, DateTime date) async {
+    var token = await storage.read(key: 'token');
     var formattedDate = date.toIso8601String();
     var url = Uri.parse('$_baseUrl$path/$id/$formattedDate');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
       return jsonResponse.map((time) => time.toString()).toList();
@@ -152,10 +166,15 @@ class ServiceServices {
   }
 
   Future<bool> _deleteRequest(String path, int id) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl/$id$path');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
     var response = await http.delete(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(true),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {

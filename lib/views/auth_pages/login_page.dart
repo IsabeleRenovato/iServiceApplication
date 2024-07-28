@@ -202,7 +202,9 @@ class _LoginPageState extends State<LoginPage> {
                   var request = Login(
                       email: emailController.text,
                       password: passwordController.text);
-                  AuthServices().login(request).then((UserInfo userInfo) {
+                  AuthServices()
+                      .login(context, request)
+                      .then((UserInfo userInfo) {
                     if (userInfo.userRole.userRoleId == 2) {
                       if (userInfo.userProfile == null) {
                         Navigator.push(

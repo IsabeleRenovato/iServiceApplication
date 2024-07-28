@@ -1,19 +1,26 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/feedback.dart';
 
 class FeedbackServices {
   final String _baseUrl = 'http://10.0.2.2:5120/Feedback';
+  final storage = FlutterSecureStorage();
 
   Future<FeedbackModel> addFeeback(FeedbackModel request) async {
     return _postRequest('', request);
   }
 
   Future<FeedbackModel> _postRequest(String path, FeedbackModel request) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
     var response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {

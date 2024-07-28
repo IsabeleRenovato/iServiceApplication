@@ -16,6 +16,7 @@ class UserProfileServices {
     var url = Uri.parse('$_baseUrl$path/$id');
     var response =
         await http.get(url, headers: {'Content-Type': 'application/json'});
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
       return jsonResponse
@@ -39,6 +40,7 @@ class UserProfileServices {
     var url = Uri.parse('$_baseUrl$path/$id');
     var response =
         await http.get(url, headers: {'Content-Type': 'application/json'});
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return UserInfo.fromJson(jsonDecode(response.body));
     } else {

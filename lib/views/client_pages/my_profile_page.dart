@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/client_pages/edit_client_profile_page.dart';
 import 'package:service_app/views/edit_address_page.dart';
 import 'package:service_app/views/home_pages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProfilePage extends StatefulWidget {
   final UserInfo userInfo;
-  const MyProfilePage({required this.userInfo, super.key});
+
+  MyProfilePage({required this.userInfo, super.key});
 
   @override
   State<MyProfilePage> createState() => _MyProfilePageState();
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
+  final AuthServices _authService = AuthServices();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,8 +116,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            EditClientProfilePage(userInfo: widget.userInfo),
+                        builder: (context) => EditClientProfilePage(),
                       ),
                     );
                     if (updatedUserInfo != null) {
@@ -164,8 +168,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            EditAddressPage(userInfo: widget.userInfo),
+                        builder: (context) => EditAddressPage(),
                       ),
                     );
                     if (updatedUserInfo != null) {
@@ -268,13 +271,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
                       borderRadius: BorderRadius.circular(0),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push<UserInfo>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
+                  onPressed: () async {
+                    _authService.logout(context);
                   },
                   child: Row(
                     children: [

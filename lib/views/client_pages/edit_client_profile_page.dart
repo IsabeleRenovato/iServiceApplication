@@ -1,16 +1,17 @@
 import 'dart:async';
-
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 
 class EditClientProfilePage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const EditClientProfilePage({required this.userInfo, super.key});
+  const EditClientProfilePage({Key? key}) : super(key: key);
 
   @override
   State<EditClientProfilePage> createState() => _EditClientProfilePageState();
@@ -18,6 +19,7 @@ class EditClientProfilePage extends StatefulWidget {
 
 class _EditClientProfilePageState extends State<EditClientProfilePage> {
   late UserInfo _userInfo;
+  Map<String, dynamic> initialData = {};
   TextEditingController nameController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
   TextEditingController birthController = TextEditingController();
@@ -25,17 +27,25 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   DateTime? selectedDate = DateTime.now();
   String mensagemErro = '';
   bool filledFields = false;
+  Map<String, dynamic> payload = {};
+  bool isDataLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _userInfo = widget.userInfo;
-    });
-    fetchData();
+
+    nameController.addListener(atualizarEstadoCampos);
     cpfController.addListener(atualizarEstadoCampos);
     birthController.addListener(atualizarEstadoCampos);
     celController.addListener(atualizarEstadoCampos);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!isDataLoaded) {
+      fetchData();
+    }
   }
 
   void atualizarMensagemErro(String mensagem) {
@@ -45,17 +55,45 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   }
 
   Future<void> fetchData() async {
-    if (widget.userInfo.userProfile != null) {
-      await UserProfileServices()
-          .getById(widget.userInfo.user.userId)
-          .then((UserInfo? userInfo) {
-        nameController.text = userInfo!.user.name;
-        cpfController.text = userInfo.userProfile!.document;
-        birthController.text =
-            DateFormat('dd/MM/yyyy').format(userInfo.userProfile!.dateOfBirth!);
-        celController.text = userInfo.userProfile!.phone!;
-      }).catchError((e) {});
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        setState(() {
+          _userInfo = userInfo;
+          initialData = {
+            'name': userInfo.user.name,
+            'cpf': userInfo.userProfile!.document,
+            'birth': DateFormat('dd/MM/yyyy')
+                .format(userInfo.userProfile!.dateOfBirth!),
+            'cel': userInfo.userProfile!.phone!
+          };
+
+          if (!isDataLoaded) {
+            nameController.text = initialData['name'];
+            cpfController.text = initialData['cpf'];
+            birthController.text = initialData['birth'];
+            celController.text = initialData['cel'];
+            isDataLoaded = true;
+          }
+        });
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    cpfController.dispose();
+    birthController.dispose();
+    celController.dispose();
+    super.dispose();
   }
 
   void atualizarEstadoCampos() {
@@ -86,6 +124,10 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final tokenProvider = Provider.of<TokenProvider>(context);
+    if (tokenProvider.token == null) {
+      return CircularProgressIndicator();
+    }
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -94,7 +136,9 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context, _userInfo);
+            Navigator.pop(
+              context,
+            );
           },
           icon: const Icon(
             Icons.arrow_back_ios_new,
@@ -248,9 +292,8 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
                     if (filledFields) {
                       _userInfo.user.name = nameController.text;
                       _userInfo.userProfile = UserProfile(
-                          userProfileId:
-                              widget.userInfo.userProfile!.userProfileId,
-                          userId: widget.userInfo.userProfile!.userId,
+                          userProfileId: int.parse(payload['UserProfileId']),
+                          userId: int.parse(payload['UserId']),
                           document: cpfController.text,
                           dateOfBirth: DateFormat("dd/MM/yyyy")
                               .parse(birthController.text),

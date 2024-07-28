@@ -18,7 +18,7 @@ class _ClientMainPage extends State<ClientMainPage> {
   int _selectedIndex = 0;
 
   late final List<Widget> _pages = <Widget>[
-    ClientHomePage(userInfo: widget.userInfo),
+    ClientHomePage(),
     SearchPage(userInfo: widget.userInfo),
     AppointmentHistoryPage(userInfo: widget.userInfo),
     MyProfilePage(userInfo: widget.userInfo)

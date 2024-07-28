@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
@@ -7,9 +11,7 @@ import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 
 class EditEstablishmentProfilePage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const EditEstablishmentProfilePage({required this.userInfo, super.key});
+  const EditEstablishmentProfilePage({Key? key}) : super(key: key);
 
   @override
   State<EditEstablishmentProfilePage> createState() =>
@@ -31,19 +33,12 @@ class _EditEstablishmentProfilePageState
   int? selectedCategoryId;
   String mensagemErro = '';
   bool filledFields = false;
+  Map<String, dynamic> payload = {};
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _userInfo = widget.userInfo;
-    });
-    fetchData().then((_) {
-      setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
-      });
-    });
+
     commercialNameController.addListener(atualizarEstadoCampos);
     cnpjController.addListener(atualizarEstadoCampos);
     establishmntNameController.addListener(atualizarEstadoCampos);
@@ -54,12 +49,23 @@ class _EditEstablishmentProfilePageState
     fetchEstablishmentCategories().then((_) {
       if (establishmentCategories.any((category) =>
           category.establishmentCategoryId ==
-          widget.userInfo.userProfile!.establishmentCategoryId)) {
+          _userInfo!.userProfile!.establishmentCategoryId)) {
         setState(() {
-          selectedCategoryId =
-              widget.userInfo.userProfile!.establishmentCategoryId;
+          selectedCategoryId = _userInfo.userProfile!.establishmentCategoryId;
+          payload['UserId'];
         });
       }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
     });
   }
 
@@ -81,11 +87,17 @@ class _EditEstablishmentProfilePageState
   }
 
   Future<void> fetchData() async {
-    if (widget.userInfo.userProfile != null) {
-      await UserProfileServices()
-          .getById(widget.userInfo.user.userId)
-          .then((UserInfo? userInfo) {
-        commercialNameController.text = userInfo!.user.name;
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    print(tokenProvider.token!);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        _userInfo = userInfo;
+        commercialNameController.text = userInfo.user.name;
         cnpjController.text = userInfo.userProfile!.document;
         establishmntNameController.text = userInfo.userProfile!.commercialName!;
         commercialContactController.text =
@@ -114,8 +126,12 @@ class _EditEstablishmentProfilePageState
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF2864ff)));
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -137,7 +153,9 @@ class _EditEstablishmentProfilePageState
         ),
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context, _userInfo);
+            Navigator.pop(
+              context,
+            );
           },
           icon: const Icon(
             Icons.arrow_back_ios_new,
@@ -290,14 +308,13 @@ class _EditEstablishmentProfilePageState
                   height: 60,
                   onPressed: () async {
                     if (filledFields) {
-                      _userInfo.user.name = commercialNameController.text;
-                      _userInfo.userProfile = UserProfile(
-                          userProfileId:
-                              widget.userInfo.userProfile!.userProfileId,
-                          userId: widget.userInfo.userProfile!.userId,
+                      _userInfo!.user.name = commercialNameController.text;
+                      _userInfo!.userProfile = UserProfile(
+                          userProfileId: int.parse(payload['UserProfileId']),
+                          userId: int.parse(payload['UserId']),
                           document: cnpjController.text,
                           establishmentCategoryId: selectedCategoryId,
-                          addressId: widget.userInfo.address!.addressId,
+                          addressId: _userInfo!.address!.addressId,
                           commercialName: establishmntNameController.text,
                           commercialEmail: commercialEmailController.text,
                           commercialPhone: commercialContactController.text,
@@ -310,7 +327,7 @@ class _EditEstablishmentProfilePageState
                           .then((UserInfo userInfo) {
                         if (filledFields) {
                           setState(() {
-                            _userInfo = userInfo;
+                            userInfo = userInfo;
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

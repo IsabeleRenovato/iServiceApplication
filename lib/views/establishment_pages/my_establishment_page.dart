@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_list_page.dart';
 import 'package:service_app/views/edit_address_page.dart';
+import 'package:service_app/utils/token_provider.dart';
 import 'package:service_app/views/establishment_pages/edit_establishment_profile_page.dart';
 import 'package:service_app/views/establishment_pages/register_schedule_page.dart';
 import 'package:service_app/views/establishment_pages/service_category_page.dart';
@@ -18,8 +21,14 @@ class MyEstablishmentPage extends StatefulWidget {
 }
 
 class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
+  final AuthServices _authService = AuthServices();
+
   @override
   Widget build(BuildContext context) {
+    final tokenProvider = Provider.of<TokenProvider>(context);
+    if (tokenProvider.token == null) {
+      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+    }
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -259,8 +268,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            EditAddressPage(userInfo: widget.userInfo),
+                        builder: (context) => EditAddressPage(),
                       ),
                     );
                     if (updatedUserInfo != null) {
@@ -396,8 +404,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditEstablishmentProfilePage(
-                            userInfo: widget.userInfo),
+                        builder: (context) => EditEstablishmentProfilePage(),
                       ),
                     );
                     if (updatedUserInfo != null) {
@@ -444,13 +451,8 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       borderRadius: BorderRadius.circular(0),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push<UserInfo>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
+                  onPressed: () async {
+                    _authService.logout(context);
                   },
                   child: Row(
                     children: [

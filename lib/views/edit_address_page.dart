@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/address.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/via_cep.dart';
@@ -7,16 +11,16 @@ import 'package:service_app/services/via_cep_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 
 class EditAddressPage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  EditAddressPage({required this.userInfo, super.key});
+  EditAddressPage({Key? key}) : super(key: key);
 
   @override
   State<EditAddressPage> createState() => _EditAddressPageState();
 }
 
 class _EditAddressPageState extends State<EditAddressPage> {
-  late UserInfo _userInfo;
+  late UserInfo? _userInfo;
+  late Address? _address;
+  bool _isLoading = true;
   TextEditingController cepController = TextEditingController();
   TextEditingController stateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
@@ -26,14 +30,12 @@ class _EditAddressPageState extends State<EditAddressPage> {
   TextEditingController compController = TextEditingController();
   String mensagemErro = '';
   bool filledFields = false;
+  Map<String, dynamic> payload = {};
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _userInfo = widget.userInfo;
-    });
-    fetchData();
+
     cepController.addListener(atualizarEstadoCampos);
     stateController.addListener(atualizarEstadoCampos);
     cityController.addListener(atualizarEstadoCampos);
@@ -41,6 +43,18 @@ class _EditAddressPageState extends State<EditAddressPage> {
     streetController.addListener(atualizarEstadoCampos);
     numController.addListener(atualizarEstadoCampos);
     compController.addListener(atualizarEstadoCampos);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
+    fetchUserInfo();
   }
 
   void atualizarEstadoCampos() {
@@ -51,6 +65,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
           hoodController.text.isNotEmpty &&
           streetController.text.isNotEmpty &&
           numController.text.isNotEmpty;
+      fetchDataCep();
 
       if (filledFields) {
         atualizarMensagemErro('');
@@ -64,11 +79,34 @@ class _EditAddressPageState extends State<EditAddressPage> {
     });
   }
 
+  Future<UserInfo?> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    var payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    print(tokenProvider.token!);
+
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      try {
+        UserInfo userInfo =
+            await UserInfoServices().getUserInfoByUserId(userId);
+        _userInfo = userInfo;
+      } catch (e) {
+        print("Error fetching user info: $e");
+        return null;
+      }
+    }
+    return null;
+  }
+
   Future<void> fetchData() async {
-    if (widget.userInfo.address != null) {
-      await AddressServices()
-          .getById(widget.userInfo.address!.addressId)
-          .then((Address? address) {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload['AddressId']);
+    if (payload['AddressId'] != null) {
+      int AddressId = int.tryParse(payload['AddressId'].toString()) ?? 0;
+      await AddressServices().getById(AddressId).then((Address? address) {
+        _address = address;
         cepController.text = address?.postalCode ?? '';
         stateController.text = address?.state ?? '';
         cityController.text = address?.city ?? '';
@@ -90,7 +128,22 @@ class _EditAddressPageState extends State<EditAddressPage> {
   }
 
   @override
+  void dispose() {
+    cepController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -197,9 +250,9 @@ class _EditAddressPageState extends State<EditAddressPage> {
             child: MaterialButton(
               onPressed: () async {
                 setState(() {
-                  _userInfo.address = Address(
-                      addressId: widget.userInfo.address != null
-                          ? widget.userInfo.address!.addressId
+                  _userInfo!.address = Address(
+                      addressId: int.tryParse(payload['AddressId']) != null
+                          ? int.tryParse(payload['AddressId'])!
                           : 0,
                       street: streetController.text,
                       number: numController.text,
@@ -215,7 +268,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
                       lastUpdateDate: DateTime.now());
                 });
 
-                AddressServices().save(_userInfo).then((UserInfo userInfo) {
+                AddressServices().save(_userInfo!).then((UserInfo userInfo) {
                   if (filledFields) {
                     setState(() {
                       _userInfo = userInfo;

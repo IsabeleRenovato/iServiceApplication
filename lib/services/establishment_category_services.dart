@@ -1,18 +1,24 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/establishment_category.dart';
 
 class EstablishmentCategoryServices {
   final String _baseUrl = 'http://10.0.2.2:5120/EstablishmentCategory';
+  final storage = FlutterSecureStorage();
 
   Future<List<EstablishmentCategory>> get() async {
     return _getRequest('');
   }
 
   Future<List<EstablishmentCategory>> _getRequest(String path) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
       return jsonResponse

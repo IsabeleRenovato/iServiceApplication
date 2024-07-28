@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/schedule.dart';
 
 class ScheduleServices {
   final String _baseUrl = 'http://10.0.2.2:5120/Schedule';
+  final storage = FlutterSecureStorage();
 
   Future<Schedule?> getByUserProfileId(int userProfileId) async {
     return _getRequest('/GetByUserProfileId', userProfileId);
@@ -14,9 +16,13 @@ class ScheduleServices {
   }
 
   Future<Schedule?> _getRequest(String path, int id) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path/$id');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Schedule?.fromJson(jsonDecode(response.body));
     } else {
@@ -26,10 +32,15 @@ class ScheduleServices {
   }
 
   Future<Schedule> _postRequest(String path, Schedule request) async {
+    var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
     var response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: headers,
       body: jsonEncode(request.toJson()),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
