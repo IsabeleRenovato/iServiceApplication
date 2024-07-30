@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:service_app/models/appointment.dart';
 import 'package:service_app/models/feedback.dart';
@@ -8,26 +12,41 @@ import 'package:service_app/utils/clip_path_widget.dart';
 import 'package:service_app/views/main_pages/client_main_page.dart';
 
 class ReviewPage extends StatefulWidget {
-  final UserInfo clientUserInfo;
-  final UserInfo establishmentUserInfo;
   final Appointment appointment;
 
-  const ReviewPage(
-      {required this.clientUserInfo,
-      required this.establishmentUserInfo,
-      required this.appointment,
-      super.key});
+  const ReviewPage({required this.appointment, super.key});
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  late UserInfo? _userInfo;
   double _rating = 0;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<UserInfo?> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    var payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    print(tokenProvider.token!);
+
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      try {
+        UserInfo userInfo =
+            await UserInfoServices().getUserInfoByUserId(userId);
+        _userInfo = userInfo;
+      } catch (e) {
+        print("Error fetching user info: $e");
+        return null;
+      }
+    }
+    return null;
   }
 
   @override
@@ -179,7 +198,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ClientMainPage(
-                                            userInfo: widget.clientUserInfo)));
+                                            userInfo: _userInfo!)));
                               });
                             },
                             color: const Color(0xFF2864ff),

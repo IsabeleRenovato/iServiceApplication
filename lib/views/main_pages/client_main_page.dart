@@ -20,7 +20,7 @@ class _ClientMainPage extends State<ClientMainPage> {
   late final List<Widget> _pages = <Widget>[
     ClientHomePage(),
     SearchPage(userInfo: widget.userInfo),
-    AppointmentHistoryPage(userInfo: widget.userInfo),
+    AppointmentHistoryPage(),
     MyProfilePage(userInfo: widget.userInfo)
   ];
 

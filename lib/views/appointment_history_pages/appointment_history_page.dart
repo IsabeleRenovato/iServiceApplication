@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/appointment.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
@@ -7,9 +10,7 @@ import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_page.dart';
 
 class AppointmentHistoryPage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const AppointmentHistoryPage({required this.userInfo, super.key});
+  const AppointmentHistoryPage({Key? key}) : super(key: key);
 
   @override
   State<AppointmentHistoryPage> createState() => _AppointmentHistoryPageState();
@@ -18,13 +19,27 @@ class AppointmentHistoryPage extends StatefulWidget {
 class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
     with TickerProviderStateMixin {
   TabController? _tabController;
+  late UserInfo? _userInfo;
+  bool _isLoading = true;
+
   late Future<List<Appointment>> appointmentsFuture;
+  Map<String, dynamic> payload = {};
 
   @override
   void initState() {
     super.initState();
-    appointmentsFuture = fetchAppointments();
+
     _tabController = TabController(vsync: this, length: 3);
+  }
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserInfo().then((_) {
+      setState(() {
+        appointmentsFuture = fetchAppointments();
+        _isLoading = false;
+      });
+    });
   }
 
   @override
@@ -33,11 +48,37 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
     super.dispose();
   }
 
+  Future<UserInfo?> fetchUserInfo() async {
+    Stopwatch stopwatch = Stopwatch()..start();
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    var payload = Jwt.parseJwt(tokenProvider.token!);
+
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      try {
+        UserInfo userInfo =
+            await UserInfoServices().getUserInfoByUserId(userId);
+        _userInfo = userInfo;
+      } catch (e) {
+        print("Error fetching user info: $e");
+      }
+    }
+    stopwatch.stop();
+    print('UserInfo ${stopwatch.elapsed}');
+    return null;
+  }
+
   Future<List<Appointment>> fetchAppointments() async {
+    Stopwatch stopwatch = Stopwatch()..start();
+    if (_userInfo == null) {
+      print("nulo");
+    }
     try {
       var services = await AppointmentServices().getAllAppointments(
-          widget.userInfo.userRole.userRoleId,
-          widget.userInfo.userProfile!.userProfileId);
+          _userInfo!.userRole.userRoleId,
+          _userInfo!.userProfile!.userProfileId);
+      stopwatch.stop();
+      print('Appointments ${stopwatch.elapsed}');
       return services;
     } catch (e) {
       debugPrint('Erro ao buscar serviços: $e');
@@ -77,49 +118,56 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
           ],
         ),
       ),
-      body: FutureBuilder<List<Appointment>>(
-        future: appointmentsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: Color(0xFF2864ff)));
-          } else if (snapshot.hasError) {
-            return const Center(child: Text("Erro ao carregar os dados"));
-          } else if (snapshot.hasData) {
-            var scheduled = snapshot.data!
-                .where((a) => a.appointmentStatusId == 1)
-                .toList();
-            var finished = snapshot.data!
-                .where((a) => a.appointmentStatusId == 2)
-                .toList();
-            var canceled = snapshot.data!
-                .where((a) => a.appointmentStatusId == 3)
-                .toList();
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                  color: Color(0xFF2864ff))) // Indicador de carregamento
+          : FutureBuilder<List<Appointment>>(
+              future: appointmentsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                      child: CircularProgressIndicator(
+                          color: Color(
+                              0xFF2864ff))); // Indicador de carregamento enquanto espera
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text("Erro ao carregar os dados"));
+                } else if (snapshot.hasData) {
+                  var scheduled = snapshot.data!
+                      .where((a) => a.appointmentStatusId == 1)
+                      .toList();
+                  var finished = snapshot.data!
+                      .where((a) => a.appointmentStatusId == 2)
+                      .toList();
+                  var canceled = snapshot.data!
+                      .where((a) => a.appointmentStatusId == 3)
+                      .toList();
 
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                AppointmentListView(
-                    userInfo: widget.userInfo,
-                    appointments: scheduled,
-                    showCancelarButton: true,
-                    onUpdated: refreshData),
-                AppointmentListView(
-                    userInfo: widget.userInfo,
-                    appointments: finished,
-                    showAvaliarButton: true,
-                    onUpdated: refreshData),
-                AppointmentListView(
-                    userInfo: widget.userInfo,
-                    appointments: canceled,
-                    onUpdated: refreshData),
-              ],
-            );
-          } else {
-            return const Center(child: Text("Nenhum agendamento disponível"));
-          }
-        },
-      ),
+                  return TabBarView(
+                    controller: _tabController,
+                    children: [
+                      AppointmentListView(
+                          userInfo: _userInfo!,
+                          appointments: scheduled,
+                          showCancelarButton: true,
+                          onUpdated: refreshData),
+                      AppointmentListView(
+                          userInfo: _userInfo!,
+                          appointments: finished,
+                          showAvaliarButton: true,
+                          onUpdated: refreshData),
+                      AppointmentListView(
+                          userInfo: _userInfo!,
+                          appointments: canceled,
+                          onUpdated: refreshData),
+                    ],
+                  );
+                } else {
+                  return const Center(
+                      child: Text("Nenhum agendamento disponível"));
+                }
+              },
+            ),
     );
   }
 }
@@ -242,11 +290,8 @@ class AppointmentListView extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ReviewPage(
-                                          clientUserInfo: userInfo,
-                                          establishmentUserInfo:
-                                              establishmentUserInfo,
-                                          appointment: appointment)),
+                                      builder: (context) =>
+                                          ReviewPage(appointment: appointment)),
                                 );
                               });
                             },

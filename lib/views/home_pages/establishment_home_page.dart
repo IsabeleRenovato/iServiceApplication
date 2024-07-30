@@ -52,9 +52,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AppointmentHistoryPage(
-                            userInfo: widget.userInfo,
-                          ),
+                          builder: (context) => AppointmentHistoryPage(),
                         ),
                       );
                     },

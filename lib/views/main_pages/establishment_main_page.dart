@@ -19,7 +19,7 @@ class _EstablishmentMainPageState extends State<EstablishmentMainPage> {
 
   late final List<Widget> _pages = <Widget>[
     EstablishmentHomePage(userInfo: widget.userInfo),
-    AppointmentHistoryPage(userInfo: widget.userInfo),
+    AppointmentHistoryPage(),
     EstablishmentCatalogPage(userInfo: widget.userInfo),
     MyEstablishmentPage(userInfo: widget.userInfo)
   ];
