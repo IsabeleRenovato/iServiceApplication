@@ -1,19 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/user_info.dart';
 
 import 'package:service_app/views/main_pages/client_main_page.dart';
 
-class AppointmentConfirm extends StatelessWidget {
-  final UserInfo clientUserInfo;
-  final UserInfo establishmentUserInfo;
+class AppointmentConfirm extends StatefulWidget {
+  AppointmentConfirm({Key? key}) : super(key: key);
 
-  const AppointmentConfirm(
-      {required this.clientUserInfo,
-      required this.establishmentUserInfo,
-      super.key});
+  @override
+  State<AppointmentConfirm> createState() => _AppointmentConfirmState();
+}
+
+class _AppointmentConfirmState extends State<AppointmentConfirm> {
+  late UserInfo? _userInfo;
+  bool _isLoading = true;
+
+  @override
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserInfo().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
+  }
+
+  Future<UserInfo?> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    var payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    print(tokenProvider.token!);
+
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      try {
+        UserInfo userInfo =
+            await UserInfoServices().getUserInfoByUserId(userId);
+        _userInfo = userInfo;
+      } catch (e) {
+        print("Error fetching user info: $e");
+        return null;
+      }
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -82,7 +128,7 @@ class AppointmentConfirm extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        establishmentUserInfo.userProfile!.commercialPhone ??
+                        _userInfo!.userProfile!.commercialPhone ??
                             'Telefone não disponível',
                         style: const TextStyle(
                           fontSize: 18,
@@ -102,7 +148,7 @@ class AppointmentConfirm extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        establishmentUserInfo.userProfile!.commercialEmail ??
+                        _userInfo!.userProfile!.commercialEmail ??
                             'Email não disponível',
                         style: const TextStyle(
                           fontSize: 18,
@@ -124,7 +170,7 @@ class AppointmentConfirm extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ClientMainPage(userInfo: clientUserInfo),
+                              ClientMainPage(userInfo: _userInfo!),
                         ),
                       );
                     },

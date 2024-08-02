@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/service.dart';
 
 class ServiceServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Service';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/Service';
   final storage = FlutterSecureStorage();
 
   Future<Service?> getById(int serviceId) async {

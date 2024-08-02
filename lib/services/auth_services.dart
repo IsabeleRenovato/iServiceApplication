@@ -12,7 +12,7 @@ import 'package:service_app/models/user_info.dart';
 import '../views/auth_pages/login_page.dart';
 
 class AuthServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Auth/';
+  final String _baseUrl = 'https://validacao.selida.com.br/core/iservice/Auth/';
   final storage = FlutterSecureStorage();
   late BuildContext _context;
 

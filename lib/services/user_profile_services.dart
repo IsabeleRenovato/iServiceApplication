@@ -4,7 +4,8 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
 
 class UserProfileServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/UserProfile';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/UserProfile';
 
   Future<List<UserProfile>> getByEstablishmentCategoryId(
       int establishmentCategoryId) async {

@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/special_schedule.dart';
 
 class SpecialScheduleServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/SpecialSchedule';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/SpecialSchedule';
   final storage = FlutterSecureStorage();
 
   Future<SpecialSchedule?> getById(int specialScheduleId) async {

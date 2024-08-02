@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/establishment_category.dart';
 
 class EstablishmentCategoryServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/EstablishmentCategory';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/EstablishmentCategory';
   final storage = FlutterSecureStorage();
 
   Future<List<EstablishmentCategory>> get() async {

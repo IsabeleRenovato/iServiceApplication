@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/feedback.dart';
 
 class FeedbackServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Feedback';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/Feedback';
   final storage = FlutterSecureStorage();
 
   Future<FeedbackModel> addFeeback(FeedbackModel request) async {

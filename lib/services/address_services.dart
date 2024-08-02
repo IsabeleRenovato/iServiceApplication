@@ -5,7 +5,8 @@ import 'package:service_app/models/address.dart';
 import 'package:service_app/models/user_info.dart';
 
 class AddressServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Address';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/Address';
   final storage = FlutterSecureStorage();
 
   Future<Address?> getById(int addressId) async {

@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/appointment.dart';
 
 class AppointmentServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Appointment';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/Appointment';
   final storage = FlutterSecureStorage();
 
   Future<List<Appointment>> get() async {

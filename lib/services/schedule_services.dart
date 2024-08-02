@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/schedule.dart';
 
 class ScheduleServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/Schedule';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/Schedule';
   final storage = FlutterSecureStorage();
 
   Future<Schedule?> getByUserProfileId(int userProfileId) async {

@@ -4,7 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/user_info.dart';
 
 class UserInfoServices {
-  final String _baseUrl = 'http://10.0.2.2:5120/UserInfo';
+  final String _baseUrl =
+      'https://validacao.selida.com.br/core/iservice/UserInfo';
   final storage = FlutterSecureStorage();
 
   Future<UserInfo> getUserInfoByUserId(int userId) async {
