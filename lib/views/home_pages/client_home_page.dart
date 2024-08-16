@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'dart:io';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 
@@ -12,15 +15,62 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
+  late UserInfo _userInfo;
+  Map<String, dynamic> payload = {};
+  Map<String, dynamic> initialData = {};
+  bool _isLoading = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserInfo().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future<void> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        setState(() {
+          _userInfo = userInfo;
+          initialData = {
+            'name': userInfo.user.name,
+            'cpf': userInfo.userProfile!.document,
+            'birth': DateFormat('dd/MM/yyyy')
+                .format(userInfo.userProfile!.dateOfBirth!),
+            'cel': userInfo.userProfile!.phone!
+          };
+        });
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var tokenProvider = Provider.of<TokenProvider>(context);
     print(tokenProvider.token);
     if (tokenProvider.token == null) {
-      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+      return CircularProgressIndicator();
     }
 
-    Map<String, dynamic> payload = Jwt.parseJwt(tokenProvider.token!);
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
 
     List<Map<String, dynamic>> categoria = [
       {"icon": "assets/cuidados-com-a-pele.png", "text": "salão de beleza"},
@@ -41,7 +91,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Olá, ",
+                    'Olá, ' + _userInfo.user.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -49,7 +99,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: AssetImage("assets/foto_perfil.png"),
+                    backgroundImage: _userInfo.userProfile?.profileImage != null
+                        ? FileImage(File(_userInfo.userProfile!.profileImage!))
+                        : AssetImage('assets/foto_perfil.png') as ImageProvider,
                   ),
                 ],
               ),
@@ -64,7 +116,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   child: Padding(
                     padding: const EdgeInsets.all(15),
                     child: Container(
-                      width: 380, // Defina a largura do Container
+                      width: MediaQuery.of(context).size.width * 0.93,
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
                         color: const Color(0xFF2864ff),
@@ -133,7 +185,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                   ),
                                 ],
                               ),
-                              SizedBox(width: 100),
+                              Spacer(),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
@@ -368,20 +420,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
             ),
             const SizedBox(
               height: 20,
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: (20)),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Serviços Populares",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ]),
             ),
           ],
         ),

@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/services/user_profile_services.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/client_pages/edit_client_profile_page.dart';
 import 'package:service_app/views/edit_address_page.dart';
-import 'package:service_app/views/home_pages/home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProfilePage extends StatefulWidget {
   final UserInfo userInfo;
@@ -16,10 +24,156 @@ class MyProfilePage extends StatefulWidget {
 }
 
 class _MyProfilePageState extends State<MyProfilePage> {
+  late UserInfo _userInfo;
+  Map<String, dynamic> initialData = {};
+  TextEditingController nameController = TextEditingController();
+  TextEditingController cpfController = TextEditingController();
+  TextEditingController birthController = TextEditingController();
+  TextEditingController celController = TextEditingController();
   final AuthServices _authService = AuthServices();
+  dynamic _image;
+  String? imagePath;
+  late String? bytes;
+  bool isEdited = false;
+  Map<String, dynamic> payload = {};
+  bool _isLoading = true;
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
+  }
+
+  Future<void> fetchData() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        setState(() {
+          _userInfo = userInfo;
+          initialData = {
+            'name': userInfo.user.name,
+            'cpf': userInfo.userProfile!.document,
+            'birth': DateFormat('dd/MM/yyyy')
+                .format(userInfo.userProfile!.dateOfBirth!),
+            'cel': userInfo.userProfile!.phone!
+          };
+
+          if (_isLoading) {
+            nameController.text = initialData['name'];
+            cpfController.text = initialData['cpf'];
+            birthController.text = initialData['birth'];
+            celController.text = initialData['cel'];
+            _isLoading = false;
+          }
+        });
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+    print(nameController);
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        isEdited = true;
+        imagePath = pickedImage.path;
+        _image = File(pickedImage.path);
+      });
+
+      List<int> imageBytes = await pickedImage.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      setState(() {
+        bytes = base64Image;
+      });
+
+      if (!_isLoading) {
+        _saveProfile();
+      } else {
+        // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
+        print('Erro: _userInfo não está pronto para salvar.');
+      }
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (_userInfo.userProfile == null) return;
+
+    _userInfo.user.name = nameController.text;
+    _userInfo.userProfile = UserProfile(
+      userProfileId: int.parse(payload['UserProfileId']),
+      userId: int.parse(payload['UserId']),
+      document: cpfController.text,
+      dateOfBirth: DateFormat("dd/MM/yyyy").parse(birthController.text),
+      phone: celController.text,
+      creationDate: DateTime.now(),
+      lastUpdateDate: DateTime.now(),
+      profileImage: imagePath,
+    );
+
+    try {
+      UserInfo updatedUserInfo = await UserProfileServices().save(_userInfo);
+
+      setState(() {
+        _userInfo = updatedUserInfo;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Dados editados com sucesso',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      print('Erro ao salvar perfil: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Erro ao salvar perfil',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -48,8 +202,13 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const CircleAvatar(
-                        backgroundImage: AssetImage('assets/foto_perfil.png'),
+                      CircleAvatar(
+                        backgroundImage:
+                            _userInfo.userProfile?.profileImage != null
+                                ? FileImage(
+                                    File(_userInfo.userProfile!.profileImage!))
+                                : AssetImage('assets/foto_perfil.png')
+                                    as ImageProvider,
                         radius: 57.5,
                       ),
                       Positioned(
@@ -62,7 +221,56 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             style: TextButton.styleFrom(
                               backgroundColor: const Color(0xFFF5F6F9),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    height: 200,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _getImage(ImageSource.gallery);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFF2864ff),
+                                          ),
+                                          child: const Text(
+                                            'Escolher imagem da galeria',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _getImage(ImageSource.camera);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFF2864ff),
+                                          ),
+                                          child: const Text(
+                                            'Tirar Foto',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                             child: const Icon(Icons.camera_alt_outlined,
                                 color: Color(0xFF27a4f2)),
                           ),
@@ -112,7 +320,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
@@ -164,7 +371,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
@@ -223,44 +429,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   ),
                 ),
               ),
-              /* Padding(
-                padding: const EdgeInsets.only(left: 6),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.all(20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/politica-de-privacidade.png',
-                        width: 29,
-                        height: 29,
-                      ),
-                      const SizedBox(width: 17),
-                      const Expanded(
-                        child: Text(
-                          "Política de privacidade",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.black,
-                        size: 20,
-                      )
-                    ],
-                  ),
-                ),
-              ),*/
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(

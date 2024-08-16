@@ -28,7 +28,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   String mensagemErro = '';
   bool filledFields = false;
   Map<String, dynamic> payload = {};
-  bool isDataLoaded = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -43,9 +43,12 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!isDataLoaded) {
-      fetchData();
-    }
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
   }
 
   void atualizarMensagemErro(String mensagem) {
@@ -73,12 +76,12 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
             'cel': userInfo.userProfile!.phone!
           };
 
-          if (!isDataLoaded) {
+          if (_isLoading) {
             nameController.text = initialData['name'];
             cpfController.text = initialData['cpf'];
             birthController.text = initialData['birth'];
             celController.text = initialData['cel'];
-            isDataLoaded = true;
+            _isLoading = false;
           }
         });
       }).catchError((e) {
@@ -127,6 +130,14 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     final tokenProvider = Provider.of<TokenProvider>(context);
     if (tokenProvider.token == null) {
       return CircularProgressIndicator();
+    }
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,
