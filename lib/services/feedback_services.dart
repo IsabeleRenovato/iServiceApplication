@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/feedback.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class FeedbackServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/Feedback';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/Feedback';
   final storage = FlutterSecureStorage();
 
   Future<FeedbackModel> addFeeback(FeedbackModel request) async {

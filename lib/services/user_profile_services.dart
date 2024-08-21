@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class UserProfileServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/UserProfile';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/UserProfile';
 
   Future<List<UserProfile>> getByEstablishmentCategoryId(
       int establishmentCategoryId) async {

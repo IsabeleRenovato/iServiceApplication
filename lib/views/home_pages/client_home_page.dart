@@ -9,6 +9,7 @@ import 'package:service_app/services/home_services.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:service_app/views/appointment_pages/search_page.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key});
@@ -93,11 +94,13 @@ class _ClientHomePageState extends State<ClientHomePage> {
       );
     }
 
-    final String formattedDate =
-        DateFormat('dd/MM/yyyy').format(_homeModel.nextAppointment!.start);
+    final String formattedDate = _homeModel.nextAppointment != null
+        ? DateFormat('dd/MM/yyyy').format(_homeModel.nextAppointment!.start)
+        : '';
 
-    final String formattedTime =
-        DateFormat('HH:mm').format(_homeModel.nextAppointment!.start);
+    final String formattedTime = _homeModel.nextAppointment != null
+        ? DateFormat('HH:mm').format(_homeModel.nextAppointment!.start)
+        : '';
 
     List<Map<String, dynamic>> categoria = [
       {"icon": "assets/cuidados-com-a-pele.png", "text": "salão de beleza"},
@@ -176,20 +179,22 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              const Column(
+                              Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  SizedBox(height: 9),
+                                  const SizedBox(height: 9),
                                   Text(
-                                    "Próximo Agendamento",
-                                    style: TextStyle(
+                                    _homeModel.nextAppointment?.start != null
+                                        ? "Próximo agendamento"
+                                        : "Não há agendamento",
+                                    style: const TextStyle(
                                       fontSize: 24,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                 ],
                               ),
                             ],
@@ -200,39 +205,49 @@ class _ClientHomePageState extends State<ClientHomePage> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.calendar_month,
-                                      color: Colors.white54),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    _homeModel.nextAppointment?.start != null
-                                        ? formattedDate.toString()
-                                        : '',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.white54,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                  _homeModel.nextAppointment?.start != null
+                                      ? Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.calendar_month,
+                                              color: Colors.white54,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              formattedDate, // ou o texto que você deseja exibir
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white54,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(), // Se for nulo, não exibe nada.
                                 ],
                               ),
                               const Spacer(),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
                                 children: [
-                                  const Icon(Icons.access_time_filled,
-                                      color: Colors.white54),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    _homeModel.nextAppointment?.start != null
-                                        ? formattedTime.toString()
-                                        : '',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.white54,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                                  _homeModel.nextAppointment?.start != null
+                                      ? Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.access_time_filled,
+                                              color: Colors.white54,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              formattedTime, // ou o texto que você deseja exibir
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white54,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Container(), // Se for nulo, não exibe nada.
                                 ],
                               ),
                             ],
@@ -332,7 +347,14 @@ class _ClientHomePageState extends State<ClientHomePage> {
                     ),
                   ),
                   GestureDetector(
-                    //onTap: press,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchPage(userInfo: _userInfo),
+                        ),
+                      );
+                    },
                     child: const Text("Veja mais"),
                   ),
                 ],

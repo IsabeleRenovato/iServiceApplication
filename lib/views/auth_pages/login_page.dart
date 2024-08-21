@@ -238,8 +238,9 @@ class _LoginPageState extends State<LoginPage> {
                       } else {
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  ClientMainPage(userInfo: userInfo)),
+                              builder: (context) => ClientMainPage(
+                                    userInfo: userInfo,
+                                  )),
                           (Route<dynamic> route) => false,
                         );
                       }

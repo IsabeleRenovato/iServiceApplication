@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class UserInfoServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/UserInfo';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/UserInfo';
   final storage = FlutterSecureStorage();
 
   Future<UserInfo> getUserInfoByUserId(int userId) async {

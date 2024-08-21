@@ -3,10 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/models/service.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class ServiceServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/Service';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/Service';
   final storage = FlutterSecureStorage();
 
   Future<Service?> getById(int serviceId) async {

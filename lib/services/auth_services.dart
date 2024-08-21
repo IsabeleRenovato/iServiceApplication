@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -12,7 +13,7 @@ import 'package:service_app/models/user_info.dart';
 import '../views/auth_pages/login_page.dart';
 
 class AuthServices {
-  final String _baseUrl = 'https://validacao.selida.com.br/core/iservice/Auth/';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/Auth/';
   final storage = FlutterSecureStorage();
   late BuildContext _context;
 

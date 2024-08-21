@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/special_schedule.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class SpecialScheduleServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/SpecialSchedule';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/SpecialSchedule';
   final storage = FlutterSecureStorage();
 
   Future<SpecialSchedule?> getById(int specialScheduleId) async {

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/service_category.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class ServiceCategoryServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/ServiceCategory';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/ServiceCategory';
   final storage = FlutterSecureStorage();
 
   Future<List<ServiceCategory>> getByUserProfileId(int userProfileId) async {

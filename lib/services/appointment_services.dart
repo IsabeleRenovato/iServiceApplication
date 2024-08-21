@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:service_app/models/appointment.dart';
+import 'package:service_app/utils/baseurlAPI.dart';
 
 class AppointmentServices {
-  final String _baseUrl =
-      'https://validacao.selida.com.br/core/iservice/Appointment';
+  final String _baseUrl = '${baseUrlAPI().APIUrl}/Appointment';
   final storage = FlutterSecureStorage();
 
   Future<List<Appointment>> get() async {
