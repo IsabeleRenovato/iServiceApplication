@@ -49,7 +49,7 @@ class _EditEstablishmentProfilePageState
     fetchEstablishmentCategories().then((_) {
       if (establishmentCategories.any((category) =>
           category.establishmentCategoryId ==
-          _userInfo!.userProfile!.establishmentCategoryId)) {
+          _userInfo.userProfile!.establishmentCategoryId)) {
         setState(() {
           selectedCategoryId = _userInfo.userProfile!.establishmentCategoryId;
           payload['UserId'];
@@ -308,13 +308,13 @@ class _EditEstablishmentProfilePageState
                   height: 60,
                   onPressed: () async {
                     if (filledFields) {
-                      _userInfo!.user.name = commercialNameController.text;
-                      _userInfo!.userProfile = UserProfile(
+                      _userInfo.user.name = commercialNameController.text;
+                      _userInfo.userProfile = UserProfile(
                           userProfileId: int.parse(payload['UserProfileId']),
                           userId: int.parse(payload['UserId']),
                           document: cnpjController.text,
                           establishmentCategoryId: selectedCategoryId,
-                          addressId: _userInfo!.address!.addressId,
+                          addressId: _userInfo.address!.addressId,
                           commercialName: establishmntNameController.text,
                           commercialEmail: commercialEmailController.text,
                           commercialPhone: commercialContactController.text,

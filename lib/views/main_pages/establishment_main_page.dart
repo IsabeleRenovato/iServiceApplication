@@ -21,7 +21,7 @@ class _EstablishmentMainPageState extends State<EstablishmentMainPage> {
     EstablishmentHomePage(userInfo: widget.userInfo),
     AppointmentHistoryPage(),
     EstablishmentCatalogPage(userInfo: widget.userInfo),
-    MyEstablishmentPage(userInfo: widget.userInfo)
+    MyEstablishmentPage()
   ];
 
   void _onItemTapped(int index) {

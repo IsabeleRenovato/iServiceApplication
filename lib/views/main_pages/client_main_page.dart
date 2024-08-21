@@ -21,7 +21,7 @@ class _ClientMainPage extends State<ClientMainPage> {
     ClientHomePage(),
     SearchPage(userInfo: widget.userInfo),
     AppointmentHistoryPage(),
-    MyProfilePage(userInfo: widget.userInfo)
+    MyProfilePage()
   ];
 
   void _onItemTapped(int index) {

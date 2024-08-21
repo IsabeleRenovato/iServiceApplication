@@ -117,8 +117,12 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF2864ff)));
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,

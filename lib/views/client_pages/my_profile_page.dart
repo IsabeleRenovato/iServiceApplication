@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:service_app/models/user_profile.dart';
-import 'package:service_app/services/user_info_services.dart';
-import 'package:service_app/services/user_profile_services.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:service_app/utils/token_provider.dart';
@@ -9,15 +6,16 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/client_pages/edit_client_profile_page.dart';
 import 'package:service_app/views/edit_address_page.dart';
 
 class MyProfilePage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  MyProfilePage({required this.userInfo, super.key});
+  MyProfilePage({super.key});
 
   @override
   State<MyProfilePage> createState() => _MyProfilePageState();
@@ -134,7 +132,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Dados editados com sucesso',
+            'Imagem de perfil alterada com sucesso',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -282,7 +280,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
               ),
               const SizedBox(height: 8),
               Text(
-                widget.userInfo.user.name,
+                _userInfo.user.name,
                 style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -328,8 +326,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     );
                     if (updatedUserInfo != null) {
                       setState(() {
-                        widget.userInfo.userProfile =
-                            updatedUserInfo.userProfile;
+                        _userInfo.userProfile = updatedUserInfo.userProfile;
                       });
                     }
                   },
@@ -379,7 +376,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     );
                     if (updatedUserInfo != null) {
                       setState(() {
-                        widget.userInfo.address = updatedUserInfo.address;
+                        _userInfo.address = updatedUserInfo.address;
                       });
                     }
                   },

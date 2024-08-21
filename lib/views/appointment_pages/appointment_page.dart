@@ -313,7 +313,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                         .then((Appointment appointment) {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                            builder: (context) => AppointmentConfirm()),
+                            builder: (context) => AppointmentConfirm(
+                                  clientUserInfo: widget.clientUserInfo,
+                                  establishmentUserInfo:
+                                      widget.establishmentUserInfo,
+                                )),
                         (Route<dynamic> route) => false,
                       );
                     }).catchError((e) {

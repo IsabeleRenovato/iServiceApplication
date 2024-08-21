@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:service_app/models/appointment.dart';
+import 'package:service_app/models/home.dart';
 import 'dart:io';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/home_services.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
@@ -16,6 +19,7 @@ class ClientHomePage extends StatefulWidget {
 
 class _ClientHomePageState extends State<ClientHomePage> {
   late UserInfo _userInfo;
+  late HomeModel _homeModel;
   Map<String, dynamic> payload = {};
   Map<String, dynamic> initialData = {};
   bool _isLoading = true;
@@ -25,7 +29,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
     super.didChangeDependencies();
     fetchUserInfo().then((_) {
       setState(() {
-        _isLoading = false;
+        fetchDataHome().then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        });
       });
     });
   }
@@ -55,22 +63,41 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
+  Future<void> fetchDataHome() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await HomeServices().getHomeByUserId(userId).then((HomeModel homeModel) {
+        _homeModel = homeModel;
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var tokenProvider = Provider.of<TokenProvider>(context);
     print(tokenProvider.token);
     if (tokenProvider.token == null) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
 
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: Colors.white, // Define o fundo da tela como branco
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
       );
     }
+
+    final String formattedDate =
+        DateFormat('dd/MM/yyyy').format(_homeModel.nextAppointment!.start);
+
+    final String formattedTime =
+        DateFormat('HH:mm').format(_homeModel.nextAppointment!.start);
 
     List<Map<String, dynamic>> categoria = [
       {"icon": "assets/cuidados-com-a-pele.png", "text": "salão de beleza"},
@@ -101,7 +128,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                     radius: 25,
                     backgroundImage: _userInfo.userProfile?.profileImage != null
                         ? FileImage(File(_userInfo.userProfile!.profileImage!))
-                        : AssetImage('assets/foto_perfil.png') as ImageProvider,
+                        : const AssetImage('assets/foto_perfil.png')
+                            as ImageProvider,
                   ),
                 ],
               ),
@@ -167,17 +195,19 @@ class _ClientHomePageState extends State<ClientHomePage> {
                             ],
                           ),
                           const SizedBox(height: 30),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.calendar_month,
+                                  const Icon(Icons.calendar_month,
                                       color: Colors.white54),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    "00/00/0000",
-                                    style: TextStyle(
+                                    _homeModel.nextAppointment?.start != null
+                                        ? formattedDate.toString()
+                                        : '',
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       color: Colors.white54,
                                       fontWeight: FontWeight.w500,
@@ -185,17 +215,19 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                   ),
                                 ],
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Icon(Icons.access_time_filled,
+                                  const Icon(Icons.access_time_filled,
                                       color: Colors.white54),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    "00:00",
-                                    style: TextStyle(
+                                    _homeModel.nextAppointment?.start != null
+                                        ? formattedTime.toString()
+                                        : '',
+                                    style: const TextStyle(
                                       fontSize: 18,
                                       color: Colors.white54,
                                       fontWeight: FontWeight.w500,

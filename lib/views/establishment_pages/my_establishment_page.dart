@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:service_app/models/establishment_category.dart';
+import 'package:service_app/models/user_profile.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/services/user_profile_services.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_list_page.dart';
@@ -9,22 +20,163 @@ import 'package:service_app/views/establishment_pages/edit_establishment_profile
 import 'package:service_app/views/establishment_pages/register_schedule_page.dart';
 import 'package:service_app/views/establishment_pages/service_category_page.dart';
 import 'package:service_app/views/establishment_pages/special_schedule_page.dart';
-import 'package:service_app/views/home_pages/home_page.dart';
 
 class MyEstablishmentPage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const MyEstablishmentPage({required this.userInfo, super.key});
+  const MyEstablishmentPage({super.key});
 
   @override
   State<MyEstablishmentPage> createState() => _MyEstablishmentPageState();
 }
 
 class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
+  late UserInfo _userInfo;
+  Map<String, dynamic> initialData = {};
+  TextEditingController commercialNameController = TextEditingController();
+  TextEditingController cnpjController = TextEditingController();
+  TextEditingController establishmntNameController = TextEditingController();
+  TextEditingController commercialContactController = TextEditingController();
+  TextEditingController commercialEmailController = TextEditingController();
+  TextEditingController categoryController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  List<EstablishmentCategory> establishmentCategories = [];
+  int? selectedCategoryId;
   final AuthServices _authService = AuthServices();
+  dynamic _image;
+  String? imagePath;
+  late String? bytes;
+  bool isEdited = false;
+  Map<String, dynamic> payload = {};
+  bool _isLoading = true;
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
+  }
+
+  Future<void> fetchData() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    print(tokenProvider.token!);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        _userInfo = userInfo;
+        commercialNameController.text = userInfo.user.name;
+        cnpjController.text = userInfo.userProfile!.document;
+        establishmntNameController.text = userInfo.userProfile!.commercialName!;
+        commercialContactController.text =
+            userInfo.userProfile!.commercialPhone!;
+        commercialEmailController.text = userInfo.userProfile!.commercialEmail!;
+        /*categoryController.text = userInfo.establishmentProfile!. ?? '';*/
+        descriptionController.text = userInfo.userProfile!.description!;
+      }).catchError((e) {});
+    }
+  }
+
+  Future<void> _getImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        isEdited = true;
+        imagePath = pickedImage.path;
+        _image = File(pickedImage.path);
+      });
+
+      List<int> imageBytes = await pickedImage.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      setState(() {
+        bytes = base64Image;
+      });
+
+      if (!_isLoading) {
+        _saveProfile();
+      } else {
+        // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
+        print('Erro: _userInfo não está pronto para salvar.');
+      }
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (_userInfo.userProfile == null) return;
+
+    _userInfo.user.name = commercialNameController.text;
+    _userInfo.userProfile = UserProfile(
+      userProfileId: int.parse(payload['UserProfileId']),
+      userId: int.parse(payload['UserId']),
+      document: cnpjController.text,
+      establishmentCategoryId: selectedCategoryId,
+      addressId: _userInfo.address!.addressId,
+      commercialName: establishmntNameController.text,
+      commercialEmail: commercialEmailController.text,
+      commercialPhone: commercialContactController.text,
+      description: descriptionController.text,
+      creationDate: DateTime.now(),
+      lastUpdateDate: DateTime.now(),
+      profileImage: imagePath,
+    );
+
+    try {
+      UserInfo updatedUserInfo = await UserProfileServices().save(_userInfo);
+
+      setState(() {
+        _userInfo = updatedUserInfo;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Imagem de perfil alterada com sucesso',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      print('Erro ao salvar perfil: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Erro ao salvar perfil',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     final tokenProvider = Provider.of<TokenProvider>(context);
     if (tokenProvider.token == null) {
       return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
@@ -57,8 +209,13 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const CircleAvatar(
-                        backgroundImage: AssetImage('assets/foto_perfil.png'),
+                      CircleAvatar(
+                        backgroundImage:
+                            _userInfo.userProfile?.profileImage != null
+                                ? FileImage(
+                                    File(_userInfo.userProfile!.profileImage!))
+                                : AssetImage('assets/foto_perfil.png')
+                                    as ImageProvider,
                         radius: 57.5,
                       ),
                       Positioned(
@@ -71,7 +228,56 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                             style: TextButton.styleFrom(
                               backgroundColor: const Color(0xFFF5F6F9),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    height: 200,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _getImage(ImageSource.gallery);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFF2864ff),
+                                          ),
+                                          child: const Text(
+                                            'Escolher imagem da galeria',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _getImage(ImageSource.camera);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                const Color(0xFF2864ff),
+                                          ),
+                                          child: const Text(
+                                            'Tirar Foto',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                             child: const Icon(Icons.camera_alt_outlined,
                                 color: Color(0xFF27a4f2)),
                           ),
@@ -83,7 +289,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                widget.userInfo.userProfile!.commercialName!,
+                _userInfo.userProfile!.commercialName!,
                 style: const TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -125,7 +331,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            RegisterSchedulePage(userInfo: widget.userInfo),
+                            RegisterSchedulePage(userInfo: _userInfo),
                       ),
                     );
                   },
@@ -171,7 +377,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              SpecialSchedulePage(userInfo: widget.userInfo)),
+                              SpecialSchedulePage(userInfo: _userInfo)),
                     );
                   },
                   child: Row(
@@ -217,12 +423,12 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            ServiceCategoryPage(userInfo: widget.userInfo),
+                            ServiceCategoryPage(userInfo: _userInfo),
                       ),
                     );
                     if (updatedUserInfo != null) {
                       setState(() {
-                        widget.userInfo.address = updatedUserInfo.address;
+                        _userInfo.address = updatedUserInfo.address;
                       });
                     }
                   },
@@ -273,7 +479,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     );
                     if (updatedUserInfo != null) {
                       setState(() {
-                        widget.userInfo.address = updatedUserInfo.address;
+                        _userInfo.address = updatedUserInfo.address;
                       });
                     }
                   },
@@ -338,7 +544,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ReviewListPage(
-                          userId: widget.userInfo.userProfile!.userId,
+                          userId: _userInfo.userProfile!.userId,
                         ),
                       ),
                     );
@@ -409,8 +615,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     );
                     if (updatedUserInfo != null) {
                       setState(() {
-                        widget.userInfo.userProfile =
-                            updatedUserInfo.userProfile;
+                        _userInfo.userProfile = updatedUserInfo.userProfile;
                       });
                     }
                   },

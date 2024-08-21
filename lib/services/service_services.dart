@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:service_app/models/service.dart';
 
 class ServiceServices {
@@ -67,7 +68,8 @@ class ServiceServices {
   Future<List<String>> _getAvailableTimesRequest(
       String path, int id, DateTime date) async {
     var token = await storage.read(key: 'token');
-    var formattedDate = date.toIso8601String();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
     var url = Uri.parse('$_baseUrl$path/$id/$formattedDate');
     var headers = {
       'Content-Type': 'application/json',
