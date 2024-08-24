@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:service_app/services/establishment_category_services.dart';
+import 'package:service_app/services/home_services.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:service_app/models/establishment_category.dart';
+import 'package:service_app/models/home.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/utils/barChart.dart';
 import 'package:service_app/views/appointment_history_pages/appointment_history_page.dart';
@@ -13,8 +22,96 @@ class EstablishmentHomePage extends StatefulWidget {
 }
 
 class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
+  late UserInfo _userInfo;
+  late HomeModel _homeModel;
+  late Future<List<EstablishmentCategory>> _categoryFuture = Future.value([]);
+  Map<String, dynamic> payload = {};
+  Map<String, dynamic> initialData = {};
+  bool _isLoading = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserInfo().then((_) {
+      setState(() {
+        fetchDataHome().then((_) {
+          setState(() {
+            _isLoading = false;
+          });
+        });
+      });
+    });
+  }
+
+  Future<void> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        setState(() {
+          _userInfo = userInfo;
+          initialData = {
+            'name': userInfo.user.name,
+            'cpf': userInfo.userProfile!.document,
+            'birth': DateFormat('dd/MM/yyyy')
+                .format(userInfo.userProfile!.dateOfBirth!),
+            'cel': userInfo.userProfile!.phone!
+          };
+        });
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+  }
+
+  Future<void> fetchData() async {
+    try {
+      var establishmentCategories = await EstablishmentCategoryServices().get();
+      if (establishmentCategories.isNotEmpty) {
+        if (mounted) {
+          setState(() {
+            _categoryFuture = Future.value(establishmentCategories);
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Erro ao buscar Special Schedules: $e');
+    }
+  }
+
+  Future<void> fetchDataHome() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await HomeServices().getHomeByUserId(userId).then((HomeModel homeModel) {
+        _homeModel = homeModel;
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    var tokenProvider = Provider.of<TokenProvider>(context);
+    print(tokenProvider.token);
+    if (tokenProvider.token == null) {
+      return const CircularProgressIndicator();
+    }
+
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 40),
@@ -35,7 +132,10 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: AssetImage("assets/foto_perfil.png"),
+                    backgroundImage: _userInfo.userProfile?.profileImage != null
+                        ? NetworkImage(_userInfo.userProfile!.profileImage!)
+                        : const AssetImage('assets/foto_perfil.png')
+                            as ImageProvider,
                   ),
                 ],
               ),
@@ -69,7 +169,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                           ),
                         ],
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
@@ -79,7 +179,9 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "0",
+                            _homeModel.totalAppointments != null
+                                ? _homeModel.totalAppointments.toString()
+                                : '0',
                             style: TextStyle(
                               fontSize: 30,
                               color: Colors.white,

@@ -43,7 +43,7 @@ class ServiceCardPage extends StatelessWidget {
               height: 155,
               alignment: Alignment.center,
               child: service.serviceImage == null
-                  ? Image.asset('assets/testeCorte.jpeg') // Imagem padrão
+                  ? Image.asset('assets/images.png') // Imagem padrão
                   : Image.network(service.serviceImage!),
             ),
           ),

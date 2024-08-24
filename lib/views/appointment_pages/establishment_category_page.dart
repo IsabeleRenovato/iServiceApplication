@@ -112,19 +112,16 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
                         ListTile(
                           leading: CircleAvatar(
                             radius: 30.0,
-                            backgroundImage: NetworkImage(
-                              establishmentProfile.profileImage ??
-                                  'URL_INVALIDA',
-                              scale: 1.0,
-                            ),
-                            onBackgroundImageError: (exception, stackTrace) {
-                              // Aqui você pode logar o erro se necessário
-                            },
-                            // Adicionando um filho ao CircleAvatar com a imagem de asset como fallback
-                            child: establishmentProfile.profileImage == null
-                                ? Image.asset('assets/testeCorte.jpeg',
-                                    fit: BoxFit.cover)
-                                : null,
+                            backgroundImage:
+                                establishmentProfile.profileImage != null
+                                    ? NetworkImage(
+                                        establishmentProfile.profileImage!)
+                                    : AssetImage('assets/images.png')
+                                        as ImageProvider,
+                            onBackgroundImageError:
+                                establishmentProfile.profileImage != null
+                                    ? (exception, stackTrace) {}
+                                    : null,
                           ),
                           title: Text(establishmentProfile.commercialName!),
                           subtitle: Column(

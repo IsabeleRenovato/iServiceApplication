@@ -16,10 +16,6 @@ class EstablishmentCatalogPage extends StatefulWidget {
 }
 
 class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
-  void refreshData() {
-    fetchData();
-  }
-
   Future<List<Service>> _servicesFuture = Future.value([]);
 
   @override
@@ -41,7 +37,6 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
       }
     } catch (e) {
       debugPrint('Erro ao buscar Special Schedules: $e');
-
       if (mounted) {
         setState(() {
           _servicesFuture = Future.value([]);
@@ -73,8 +68,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: InkWell(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => RegisterServicePage(
@@ -83,6 +78,10 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                         ),
                       ),
                     );
+
+                    if (result == true) {
+                      fetchData(); // Atualiza a lista de serviços ao retornar se um novo serviço foi adicionado
+                    }
                   },
                   child: Container(
                     width: 390,
@@ -113,8 +112,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                      child:
-                          CircularProgressIndicator(color: Color(0xFF2864ff)));
+                    child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+                  );
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Erro: ${snapshot.error}'));
                 } else if (snapshot.hasData) {
@@ -131,8 +130,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                         return ServiceCardPage(
                           userInfo: widget.userInfo,
                           service: service,
-                          onUpdated: refreshData,
-                          onDeleted: refreshData,
+                          onUpdated: fetchData,
+                          onDeleted: fetchData,
                         );
                       },
                     );

@@ -1,217 +1,157 @@
-import 'dart:math' as math;
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarChartSample7 extends StatefulWidget {
-  BarChartSample7({super.key});
-
-  final shadowColor = const Color(0xFFCCCCCC);
-  final dataList = [
-    const _BarData(Colors.blue, 0, 0),
-    const _BarData(Colors.blue, 0, 0),
-    const _BarData(Colors.blue, 0, 0),
-    const _BarData(Colors.blue, 0, 0),
-    const _BarData(Colors.blue, 0, 0),
-  ];
-
   @override
-  State<BarChartSample7> createState() => _BarChartSample7State();
+  State<StatefulWidget> createState() => BarChartSample7State();
 }
 
-class _BarChartSample7State extends State<BarChartSample7> {
-  BarChartGroupData generateBarGroup(
-    int x,
-    Color color,
-    double value,
-    double shadowValue,
-  ) {
+class BarChartSample7State extends State<BarChartSample7> {
+  final double barWidth = 22;
+  final int groupsPerSlide = 3;
+
+  List<List<BarChartGroupData>> generateQuarterlyGroups() {
+    final List<BarChartGroupData> allGroups = [
+      createGroupData(0, 5, 12),
+      createGroupData(1, 16, 12),
+      createGroupData(2, 18, 5),
+      createGroupData(3, 20, 16),
+      createGroupData(4, 17, 6),
+      createGroupData(5, 19, 1),
+      createGroupData(6, 10, 2),
+      createGroupData(7, 15, 18),
+      createGroupData(8, 12, 3),
+      createGroupData(9, 14, 8),
+      createGroupData(10, 5, 5),
+      createGroupData(11, 8, 14),
+    ];
+
+    List<List<BarChartGroupData>> quarterlyGroups = [];
+    for (int i = 0; i < allGroups.length; i += groupsPerSlide) {
+      int end = i + groupsPerSlide;
+      if (end > allGroups.length) end = allGroups.length;
+      quarterlyGroups.add(allGroups.sublist(i, end));
+    }
+    return quarterlyGroups;
+  }
+
+  BarChartGroupData createGroupData(int x, double y1, double y2) {
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
-          toY: value,
-          color: color,
-          width: 6,
+          toY: y1,
+          color: Colors.blue,
+          width: barWidth,
+          borderRadius: BorderRadius.circular(4),
         ),
         BarChartRodData(
-          toY: shadowValue,
-          color: widget.shadowColor,
-          width: 6,
+          toY: y2,
+          color: Colors.grey,
+          width: barWidth,
+          borderRadius: BorderRadius.circular(4),
         ),
       ],
-      showingTooltipIndicators: touchedGroupIndex == x ? [0] : [],
     );
   }
 
-  int touchedGroupIndex = -1;
+  int currentQuarter = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: AspectRatio(
-        aspectRatio: 1.4,
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceBetween,
-            borderData: FlBorderData(
-              show: true,
-              border: Border.symmetric(
-                horizontal: BorderSide(
-                  color: Colors.black.withOpacity(0.2),
-                ),
-              ),
-            ),
-            titlesData: FlTitlesData(
-              show: true,
-              leftTitles: AxisTitles(
-                drawBelowEverything: true,
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 30,
-                  getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toInt().toString(),
-                      textAlign: TextAlign.left,
-                    );
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 36,
-                  getTitlesWidget: (value, meta) {
-                    final index = value.toInt();
-                    return SideTitleWidget(
-                      axisSide: meta.axisSide,
-                      child: _IconWidget(
-                        color: widget.dataList[index].color,
-                        isSelected: touchedGroupIndex == index,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              rightTitles: const AxisTitles(),
-              topTitles: const AxisTitles(),
-            ),
-            gridData: FlGridData(
-              show: true,
-              drawVerticalLine: false,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: Colors.black.withOpacity(0.2),
-                strokeWidth: 1,
-              ),
-            ),
-            barGroups: widget.dataList.asMap().entries.map((e) {
-              final index = e.key;
-              final data = e.value;
-              return generateBarGroup(
-                index,
-                data.color,
-                data.value,
-                data.shadowValue,
-              );
-            }).toList(),
-            maxY: 20,
-            barTouchData: BarTouchData(
-              enabled: true,
-              handleBuiltInTouches: false,
-              touchTooltipData: BarTouchTooltipData(
-                getTooltipColor: (group) => Colors.transparent,
-                tooltipMargin: 0,
-                getTooltipItem: (
-                  BarChartGroupData group,
-                  int groupIndex,
-                  BarChartRodData rod,
-                  int rodIndex,
-                ) {
-                  return BarTooltipItem(
-                    rod.toY.toString(),
-                    TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: rod.color,
-                      fontSize: 18,
-                      shadows: const [
-                        Shadow(
-                          color: Colors.black26,
-                          blurRadius: 12,
-                        )
-                      ],
+    List<List<BarChartGroupData>> quarterlyGroups = generateQuarterlyGroups();
+
+    return Column(
+      children: [
+        SizedBox(
+          height:
+              350, // Aumenta a altura para evitar o corte da legenda inferior
+          child: Padding(
+            padding: const EdgeInsets.only(
+                bottom: 16.0), // Adiciona espaço extra na parte inferior
+            child: BarChart(
+              BarChartData(
+                barGroups: quarterlyGroups[currentQuarter],
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize:
+                          30, // Garante espaço suficiente para a legenda inferior
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        const months = [
+                          'Jan',
+                          'Fev',
+                          'Mar',
+                          'Abr',
+                          'Mai',
+                          'Jun',
+                          'Jul',
+                          'Ago',
+                          'Set',
+                          'Out',
+                          'Nov',
+                          'Dec'
+                        ];
+                        int monthIndex = value.toInt();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(months[monthIndex]),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize:
+                          40, // Garante espaço para os valores à direita
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(value.toString()),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                gridData: FlGridData(show: false),
+                borderData: FlBorderData(show: false),
+                barTouchData: BarTouchData(enabled: true),
               ),
-              touchCallback: (event, response) {
-                if (event.isInterestedForInteractions &&
-                    response != null &&
-                    response.spot != null) {
-                  setState(() {
-                    touchedGroupIndex = response.spot!.touchedBarGroupIndex;
-                  });
-                } else {
-                  setState(() {
-                    touchedGroupIndex = -1;
-                  });
-                }
-              },
             ),
           ),
         ),
-      ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                setState(() {
+                  currentQuarter =
+                      (currentQuarter - 1) % quarterlyGroups.length;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: () {
+                setState(() {
+                  currentQuarter =
+                      (currentQuarter + 1) % quarterlyGroups.length;
+                });
+              },
+            ),
+          ],
+        ),
+      ],
     );
-  }
-}
-
-class _BarData {
-  const _BarData(this.color, this.value, this.shadowValue);
-  final Color color;
-  final double value;
-  final double shadowValue;
-}
-
-class _IconWidget extends ImplicitlyAnimatedWidget {
-  const _IconWidget({
-    required this.color,
-    required this.isSelected,
-  }) : super(duration: const Duration(milliseconds: 300));
-  final Color color;
-  final bool isSelected;
-
-  @override
-  ImplicitlyAnimatedWidgetState<ImplicitlyAnimatedWidget> createState() =>
-      _IconWidgetState();
-}
-
-class _IconWidgetState extends AnimatedWidgetBaseState<_IconWidget> {
-  Tween<double>? _rotationTween;
-
-  @override
-  Widget build(BuildContext context) {
-    final rotation = math.pi * 4 * _rotationTween!.evaluate(animation);
-    final scale = 1 + _rotationTween!.evaluate(animation) * 0.5;
-    return Transform(
-      transform: Matrix4.rotationZ(rotation).scaled(scale, scale),
-      origin: const Offset(14, 14),
-      child: Icon(
-        widget.isSelected ? Icons.face_retouching_natural : Icons.face,
-        color: widget.color,
-        size: 28,
-      ),
-    );
-  }
-
-  @override
-  void forEachTween(TweenVisitor<dynamic> visitor) {
-    _rotationTween = visitor(
-      _rotationTween,
-      widget.isSelected ? 1.0 : 0.0,
-      (dynamic value) => Tween<double>(
-        begin: value as double,
-        end: widget.isSelected ? 1.0 : 0.0,
-      ),
-    ) as Tween<double>?;
   }
 }

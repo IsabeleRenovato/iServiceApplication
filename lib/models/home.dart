@@ -1,4 +1,5 @@
 import 'package:service_app/models/appointment.dart';
+import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
 
 class HomeModel {
@@ -6,12 +7,14 @@ class HomeModel {
   UserInfo? establishment;
   UserInfo? client;
   int? totalAppointments;
+  List<EstablishmentCategory>? categories;
 
   HomeModel({
     this.nextAppointment,
     this.establishment,
     this.client,
     this.totalAppointments,
+    this.categories,
   });
 
   // Factory method to create an instance of HomeModel from a JSON map
@@ -25,6 +28,10 @@ class HomeModel {
           : null,
       client: json['client'] != null ? UserInfo.fromJson(json['client']) : null,
       totalAppointments: json['totalAppointments'],
+      categories: json['categories'] != null
+          ? List<EstablishmentCategory>.from((json['categories'] as List)
+              .map((item) => EstablishmentCategory.fromJson(item)))
+          : null,
     );
   }
 
@@ -35,6 +42,7 @@ class HomeModel {
       'establishment': establishment?.toJson(),
       'client': client?.toJson(),
       'totalAppointments': totalAppointments,
+      'categories': categories?.map((item) => item.toJson()).toList(),
     };
   }
 }

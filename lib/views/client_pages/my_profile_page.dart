@@ -99,7 +99,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       });
 
       if (!_isLoading) {
-        _saveProfile();
+        fatchDataImage();
       } else {
         // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
         print('Erro: _userInfo não está pronto para salvar.');
@@ -107,28 +107,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
     }
   }
 
-  Future<void> _saveProfile() async {
-    if (_userInfo.userProfile == null) return;
-
-    _userInfo.user.name = nameController.text;
-    _userInfo.userProfile = UserProfile(
-      userProfileId: int.parse(payload['UserProfileId']),
-      userId: int.parse(payload['UserId']),
-      document: cpfController.text,
-      dateOfBirth: DateFormat("dd/MM/yyyy").parse(birthController.text),
-      phone: celController.text,
-      creationDate: DateTime.now(),
-      lastUpdateDate: DateTime.now(),
-      profileImage: imagePath,
-    );
-
-    try {
-      UserInfo updatedUserInfo = await UserProfileServices().save(_userInfo);
-
-      setState(() {
-        _userInfo = updatedUserInfo;
-      });
-
+  Future<void> fatchDataImage() async {
+    await UserProfileServices()
+        .UpdateProfileImage(_userInfo.userProfile!.userProfileId, imagePath)
+        .then((String Path) {
+      _userInfo.userProfile!.profileImage = Path;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -143,7 +126,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           backgroundColor: Colors.green,
         ),
       );
-    } catch (e) {
+    }).catchError((e) {
       print('Erro ao salvar perfil: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -159,7 +142,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           backgroundColor: Colors.red,
         ),
       );
-    }
+    });
   }
 
   @override
@@ -201,12 +184,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     clipBehavior: Clip.none,
                     children: [
                       CircleAvatar(
-                        backgroundImage:
-                            _userInfo.userProfile?.profileImage != null
-                                ? FileImage(
-                                    File(_userInfo.userProfile!.profileImage!))
-                                : AssetImage('assets/foto_perfil.png')
-                                    as ImageProvider,
+                        backgroundImage: _userInfo.userProfile?.profileImage !=
+                                null
+                            ? NetworkImage(_userInfo.userProfile!.profileImage!)
+                            : AssetImage('assets/foto_perfil.png')
+                                as ImageProvider,
                         radius: 57.5,
                       ),
                       Positioned(

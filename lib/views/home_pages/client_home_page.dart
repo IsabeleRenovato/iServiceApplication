@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/models/appointment.dart';
+import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/home.dart';
 import 'dart:io';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/services/home_services.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:service_app/views/appointment_pages/establishment_category_page.dart';
 import 'package:service_app/views/appointment_pages/search_page.dart';
 
 class ClientHomePage extends StatefulWidget {
@@ -102,12 +105,12 @@ class _ClientHomePageState extends State<ClientHomePage> {
         ? DateFormat('HH:mm').format(_homeModel.nextAppointment!.start)
         : '';
 
-    List<Map<String, dynamic>> categoria = [
+    /* List<Map<String, dynamic>> categoria = [
       {"icon": "assets/cuidados-com-a-pele.png", "text": "salão de beleza"},
       {"icon": "assets/ferramentas.png", "text": "mecânico"},
       {"icon": "assets/pincel.png", "text": "pintura"},
       {"icon": "assets/mais.png", "text": "mais"},
-    ];
+    ];*/
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -130,7 +133,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   CircleAvatar(
                     radius: 25,
                     backgroundImage: _userInfo.userProfile?.profileImage != null
-                        ? FileImage(File(_userInfo.userProfile!.profileImage!))
+                        ? NetworkImage(_userInfo.userProfile!.profileImage!)
                         : const AssetImage('assets/foto_perfil.png')
                             as ImageProvider,
                   ),
@@ -267,33 +270,96 @@ class _ClientHomePageState extends State<ClientHomePage> {
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: categoria.length,
+                itemCount: _homeModel.categories!.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 19),
-                    width: 65,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 6,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          categoria[index]["icon"],
-                          width: 45,
-                          height: 45,
-                        ),
-                      ],
+                  return GestureDetector(
+                    onTap: () {
+                      // Navegação para diferentes páginas com base no índice da categoria
+                      switch (index) {
+                        case 0:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EstablishmentCategoryPage(
+                                    clientUserInfo: _userInfo,
+                                    establishmentCategory:
+                                        _homeModel.categories![index])),
+                          );
+                          break;
+                        case 1:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EstablishmentCategoryPage(
+                                    clientUserInfo: _userInfo,
+                                    establishmentCategory:
+                                        _homeModel.categories![index])),
+                          );
+                          break;
+                        case 2:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EstablishmentCategoryPage(
+                                    clientUserInfo: _userInfo,
+                                    establishmentCategory:
+                                        _homeModel.categories![index])),
+                          );
+                          break;
+                        case 3:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EstablishmentCategoryPage(
+                                    clientUserInfo: _userInfo,
+                                    establishmentCategory:
+                                        _homeModel.categories![index])),
+                          );
+                          break;
+                        default:
+                          break;
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 19),
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 6,
+                            spreadRadius: 3,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _homeModel.categories != null &&
+                                  _homeModel.categories!.isNotEmpty &&
+                                  _homeModel.categories!.length > index
+                              ? (_homeModel.categories![index].icon != null
+                                  ? Image.network(
+                                      _homeModel.categories![index].icon!,
+                                      width: 45,
+                                      height: 45,
+                                    )
+                                  : Image.asset(
+                                      'assets/negocios-e-comercio.png',
+                                      width: 45,
+                                      height: 45,
+                                    ))
+                              : Image.asset(
+                                  'assets/negocios-e-comercio.png',
+                                  width: 45,
+                                  height: 45,
+                                ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -304,29 +370,70 @@ class _ClientHomePageState extends State<ClientHomePage> {
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: categoria.length,
+                itemCount: _homeModel.categories!.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 19),
-                    width: 65,
-                    height: 65,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          categoria[index]["text"],
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                  return GestureDetector(
+                    onTap: () {
+                      // Navegação para diferentes páginas com base no índice da categoria
+                      switch (index) {
+                        case 0:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchPage(userInfo: _userInfo)),
+                          );
+                          break;
+                        case 1:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchPage(userInfo: _userInfo)),
+                          );
+                          break;
+                        case 2:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchPage(userInfo: _userInfo)),
+                          );
+                          break;
+                        case 3:
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    SearchPage(userInfo: _userInfo)),
+                          );
+                          break;
+                        default:
+                          break;
+                      }
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 19),
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _homeModel.categories![index].name,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

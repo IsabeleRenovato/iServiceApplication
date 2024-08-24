@@ -50,6 +50,36 @@ class UserProfileServices {
     throw Exception('Não foi possível completar a requisição para $path.');
   }
 
+  Future<String> UpdateProfileImage(
+      int userProfileId, String? imagePath) async {
+    return _postUpdateProfileImageRequest(
+        '/UpdateProfileImage', userProfileId, imagePath);
+  }
+
+  Future<String> _postUpdateProfileImageRequest(
+      String path, int userProfileId, String? imagePath) async {
+    var url = Uri.parse('$_baseUrl$path');
+    var multipartRequest = http.MultipartRequest('POST', url);
+
+    multipartRequest.fields['Id'] = userProfileId.toString();
+
+    if (imagePath != null) {
+      multipartRequest.files
+          .add(await http.MultipartFile.fromPath('File', imagePath));
+    }
+
+    http.StreamedResponse streamedResponse = await multipartRequest.send();
+
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return response.body;
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
   Future<UserInfo> _postRequest(String path, UserInfo request) async {
     var url = Uri.parse('$_baseUrl$path');
     var response = await http.post(

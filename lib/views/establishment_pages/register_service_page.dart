@@ -419,6 +419,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         } else {
                           try {
                             if (widget.serviceId > 0) {
+                              print(imagePath);
                               var request = Service(
                                   serviceId: widget.serviceId,
                                   establishmentUserProfileId: widget

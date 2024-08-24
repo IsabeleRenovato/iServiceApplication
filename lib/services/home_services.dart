@@ -14,7 +14,6 @@ class HomeServices {
   }
 
   Future<HomeModel> _getRequest(String path, int id) async {
-    print('oiii');
     var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path$id');
     var response = await http.get(

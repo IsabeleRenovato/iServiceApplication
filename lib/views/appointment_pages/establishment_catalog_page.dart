@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'package:service_app/models/service.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:service_app/services/service_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_list_page.dart';
 import 'package:service_app/views/appointment_pages/card_catalog_page.dart';
@@ -24,6 +27,11 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   late Future<List<Service>> servicesFuture;
+  dynamic _image;
+  String? imagePath;
+  late String? bytes;
+  bool isEdited = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -70,21 +78,16 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                         CircleAvatar(
                           radius: 40,
                           backgroundColor: Colors.grey[300],
-                          backgroundImage: NetworkImage(
-                            widget.establishmentUserInfo.userProfile!
-                                    .profileImage ??
-                                'URL_INVALIDA',
-                            scale: 1.0,
-                          ),
-                          onBackgroundImageError: (exception, stackTrace) {
-                            // Aqui você pode logar o erro se necessário
-                          },
-                          child: widget.establishmentUserInfo.userProfile!
-                                      .profileImage ==
-                                  null
-                              ? Image.asset('assets/testeCorte.jpeg',
-                                  fit: BoxFit.cover)
-                              : null,
+                          backgroundImage:
+                              widget.establishmentUserInfo.userProfile != null
+                                  ? NetworkImage(
+                                      widget.establishmentUserInfo.userProfile!
+                                              .profileImage ??
+                                          'URL_INVALIDA',
+                                      scale: 1.0,
+                                    )
+                                  : AssetImage('assets/images.png')
+                                      as ImageProvider,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
