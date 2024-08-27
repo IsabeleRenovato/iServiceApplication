@@ -13,6 +13,11 @@ class ServiceServices {
     return _getRequest('', serviceId);
   }
 
+  Future<List<Service>> getServiceBySearch(
+      String service, int pageSize, int currentPage) async {
+    return _getSearchRequest('/Search', service, pageSize, currentPage);
+  }
+
   Future<List<Service>> getServiceByUserProfileId(int userProfileId) async {
     return _getListRequest('/GetServiceByUserProfileId', userProfileId);
   }
@@ -63,6 +68,26 @@ class ServiceServices {
       _handleError(response.body);
     }
     throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<List<Service>> _getSearchRequest(
+      String Path, String service, int pageSize, int currentPage) async {
+    var token = await storage.read(key: 'token');
+    var url = Uri.parse('$_baseUrl$Path/$service/$pageSize/$currentPage');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      List jsonResponse = jsonDecode(response.body) as List;
+      return jsonResponse
+          .map((categoryJson) => Service.fromJson(categoryJson))
+          .toList();
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $service.');
   }
 
   Future<List<String>> _getAvailableTimesRequest(

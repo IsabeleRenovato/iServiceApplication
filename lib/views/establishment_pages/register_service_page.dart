@@ -329,7 +329,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         ),
                         focusedBorder: const UnderlineInputBorder(
                           borderSide:
-                              BorderSide(color: Colors.blue, width: 2.5),
+                              BorderSide(color: Color(0xFF2864ff), width: 2.5),
                         ),
                       ),
                       onChanged: (value) {
@@ -349,6 +349,10 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                           enabledBorder: UnderlineInputBorder(
                             borderSide:
                                 BorderSide(color: Colors.grey, width: 1.5),
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFF2864ff), width: 2.5),
                           ),
                         ),
                         onChanged: (newValue) {
@@ -384,12 +388,24 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                             (ServiceCategory category) {
                               return DropdownMenuItem<int>(
                                 value: category.serviceCategoryId,
-                                child: Text(
-                                  category.name,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w100,
-                                    fontSize: 16,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 12),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.access_time_outlined,
+                                        color: Color(0xFF2864ff),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        category.name,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w100,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

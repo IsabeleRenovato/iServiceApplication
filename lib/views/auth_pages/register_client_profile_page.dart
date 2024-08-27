@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/auth_services.dart';
+import 'package:service_app/utils/validation_utils.dart';
 import 'package:service_app/views/home_pages/home_page.dart';
 
 class RegisterClientProfilePage extends StatefulWidget {
@@ -114,6 +116,7 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                 ),
                 TextFormField(
                   controller: cpfController,
+                  inputFormatters: [LengthLimitingTextInputFormatter(11)],
                   style: const TextStyle(
                     color: Colors.black,
                   ),
@@ -175,11 +178,16 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                       borderSide: BorderSide(color: Colors.blue, width: 2.5),
                     ),
                   ),
+                  validator: (birthController) {
+                    // Usando a validação de idade da classe ValidationUtils
+                    return ValidationUtils.validateAge(birthController);
+                  },
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 TextFormField(
+                  inputFormatters: [LengthLimitingTextInputFormatter(11)],
                   controller: celController,
                   style: const TextStyle(
                     color: Colors.black,

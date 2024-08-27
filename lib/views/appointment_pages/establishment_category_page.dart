@@ -103,7 +103,7 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
                     });
                   },
                   child: Card(
-                    color: Colors.white,
+                    color: Colors.transparent,
                     elevation: 0.0,
                     margin: const EdgeInsets.all(8.0),
                     child: Column(

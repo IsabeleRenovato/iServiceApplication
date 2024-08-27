@@ -320,7 +320,8 @@ class _EditEstablishmentProfilePageState
                           commercialPhone: commercialContactController.text,
                           description: descriptionController.text,
                           creationDate: DateTime.now(),
-                          lastUpdateDate: DateTime.now());
+                          lastUpdateDate: DateTime.now(),
+                          profileImage: _userInfo.userProfile!.profileImage);
 
                       UserProfileServices()
                           .save(_userInfo)

@@ -55,7 +55,7 @@ class MenuItemCard extends StatelessWidget {
         );
       },
       child: Card(
-        color: Colors.white,
+        color: Colors.transparent,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.all(25),
@@ -89,14 +89,17 @@ class MenuItemCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: service.serviceImage != null
-                        ? Image.network(service.serviceImage!,
-                            fit: BoxFit.cover)
-                        : Image.asset('assets/testeCorte.jpeg',
-                            fit: BoxFit.cover),
-                  ),
+                      width: 80,
+                      height: 80,
+                      child: service.serviceImage != null
+                          ? Image.network(service.serviceImage!,
+                              fit: BoxFit.cover)
+                          : Image.asset(
+                              'assets/images.png',
+                              fit: BoxFit.cover,
+                              width: 155,
+                              height: 155,
+                            )),
                 ],
               ),
               const SizedBox(height: 10),

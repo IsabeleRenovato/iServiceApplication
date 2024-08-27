@@ -14,6 +14,7 @@ class Service {
   DateTime creationDate;
   DateTime lastUpdateDate;
   ServiceCategory? serviceCategory;
+  //int totalPages;
 
   Service({
     required this.serviceId,
@@ -29,6 +30,7 @@ class Service {
     required this.creationDate,
     required this.lastUpdateDate,
     this.serviceCategory,
+    //required this.totalPages
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class Service {
           ? ServiceCategory.fromJson(
               json['serviceCategory'] as Map<String, dynamic>)
           : null,
+      //totalPages: json['serviceCategoryId'] as int,
     );
   }
 
@@ -62,6 +65,7 @@ class Service {
       'price': price,
       'estimatedDuration': estimatedDuration,
       'serviceImage': serviceImage,
+      //'totalPages': totalPages,
       'active': active,
       'deleted': deleted,
       'creationDate': creationDate.toIso8601String(),

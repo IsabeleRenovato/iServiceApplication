@@ -35,6 +35,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   bool isEdited = false;
   Map<String, dynamic> payload = {};
   bool _isLoading = true;
+  bool _isImageLoading = false;
 
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -86,6 +87,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
 
     if (pickedImage != null) {
       setState(() {
+        _isImageLoading = true;
         isEdited = true;
         imagePath = pickedImage.path;
         _image = File(pickedImage.path);
@@ -98,12 +100,18 @@ class _MyProfilePageState extends State<MyProfilePage> {
         bytes = base64Image;
       });
 
+      imageCache.clear();
+      imageCache.clearLiveImages();
+
       if (!_isLoading) {
-        fatchDataImage();
+        await fatchDataImage(); // Aguarde a atualização da imagem antes de prosseguir
       } else {
-        // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
         print('Erro: _userInfo não está pronto para salvar.');
       }
+
+      setState(() {
+        _isImageLoading = false; // Termina o carregamento da imagem
+      });
     }
   }
 
@@ -111,7 +119,12 @@ class _MyProfilePageState extends State<MyProfilePage> {
     await UserProfileServices()
         .UpdateProfileImage(_userInfo.userProfile!.userProfileId, imagePath)
         .then((String Path) {
-      _userInfo.userProfile!.profileImage = Path;
+      setState(() {
+        _userInfo.userProfile!.profileImage = Path;
+        print(_userInfo.userProfile!.profileImage);
+      });
+      imageCache.clear();
+      imageCache.clearLiveImages();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -149,15 +162,20 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor:
+            Colors.transparent, // Define o fundo da tela como branco
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
       );
     }
+    final tokenProvider = Provider.of<TokenProvider>(context);
+    if (tokenProvider.token == null) {
+      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+    }
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
@@ -184,13 +202,23 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     clipBehavior: Clip.none,
                     children: [
                       CircleAvatar(
-                        backgroundImage: _userInfo.userProfile?.profileImage !=
-                                null
-                            ? NetworkImage(_userInfo.userProfile!.profileImage!)
-                            : AssetImage('assets/foto_perfil.png')
-                                as ImageProvider,
+                        backgroundImage: _isImageLoading
+                            ? AssetImage(
+                                'assets/fundo cinza claro.png') // Imagem padrão durante o carregamento
+                            : _userInfo.userProfile?.profileImage != null
+                                ? NetworkImage(
+                                    _userInfo.userProfile!.profileImage!)
+                                : AssetImage('assets/foto_perfil.png')
+                                    as ImageProvider,
                         radius: 57.5,
                       ),
+                      if (_isImageLoading) // Exibe o indicador de carregamento
+                        Positioned.fill(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                                color: Color(0xFF2864ff)),
+                          ),
+                        ),
                       Positioned(
                         right: -12,
                         bottom: 0,
@@ -293,7 +321,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.transparent,
                     padding: const EdgeInsets.all(20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),
@@ -343,7 +371,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.transparent,
                     padding: const EdgeInsets.all(20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),
@@ -412,7 +440,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.transparent,
                     padding: const EdgeInsets.all(20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),

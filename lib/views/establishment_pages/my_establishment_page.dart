@@ -47,6 +47,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
   bool isEdited = false;
   Map<String, dynamic> payload = {};
   bool _isLoading = true;
+  bool _isImageLoading = false;
 
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -87,6 +88,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
 
     if (pickedImage != null) {
       setState(() {
+        _isImageLoading = true;
         isEdited = true;
         imagePath = pickedImage.path;
         _image = File(pickedImage.path);
@@ -99,12 +101,19 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
         bytes = base64Image;
       });
 
+      imageCache.clear();
+      imageCache.clearLiveImages();
+
       if (!_isLoading) {
-        fatchDataImage();
+        await fatchDataImage();
       } else {
         // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
         print('Erro: _userInfo não está pronto para salvar.');
       }
+
+      setState(() {
+        _isImageLoading = false; // Termina o carregamento da imagem
+      });
     }
   }
 
@@ -112,7 +121,12 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
     await UserProfileServices()
         .UpdateProfileImage(_userInfo.userProfile!.userProfileId, imagePath)
         .then((String Path) {
-      _userInfo.userProfile!.profileImage = Path;
+      setState(() {
+        _userInfo.userProfile!.profileImage = Path;
+        print(_userInfo.userProfile!.profileImage);
+      });
+      imageCache.clear();
+      imageCache.clearLiveImages();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -189,13 +203,23 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     clipBehavior: Clip.none,
                     children: [
                       CircleAvatar(
-                        backgroundImage: _userInfo.userProfile?.profileImage !=
-                                null
-                            ? NetworkImage(_userInfo.userProfile!.profileImage!)
-                            : AssetImage('assets/foto_perfil.png')
-                                as ImageProvider,
+                        backgroundImage: _isImageLoading
+                            ? AssetImage(
+                                'assets/fundo cinza claro.png') // Imagem padrão durante o carregamento
+                            : _userInfo.userProfile?.profileImage != null
+                                ? NetworkImage(
+                                    _userInfo.userProfile!.profileImage!)
+                                : AssetImage('assets/foto_perfil.png')
+                                    as ImageProvider,
                         radius: 57.5,
                       ),
+                      if (_isImageLoading) // Exibe o indicador de carregamento
+                        Positioned.fill(
+                          child: Center(
+                            child: CircularProgressIndicator(
+                                color: Color(0xFF2864ff)),
+                          ),
+                        ),
                       Positioned(
                         right: -12,
                         bottom: 0,

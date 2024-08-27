@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:service_app/models/establishment_category.dart';
+import 'package:service_app/models/service.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/establishment_category_services.dart';
+import 'package:service_app/services/service_services.dart';
 import 'package:service_app/views/appointment_pages/establishment_category_page.dart';
+import 'package:service_app/views/appointment_pages/search_results.dart';
 
 class SearchPage extends StatefulWidget {
   final UserInfo userInfo;
@@ -31,14 +34,40 @@ class _SearchPageState extends State<SearchPage> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchSelected = false;
   late Future<List<EstablishmentCategory>> _categoryFuture = Future.value([]);
+  int _currentPage = 1;
+  int _totalPages = 1;
+  int _pageSize = 1;
+  String _searchText = "";
+  bool _isLoading = true;
+  late List<Service> _servicesList = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future<void> fetchDataSearch() async {
+    try {
+      var services = await ServiceServices()
+          .getServiceBySearch(_searchText, _currentPage, _pageSize);
+      setState(() {
+        _servicesList = services;
+      });
+    } catch (e) {
+      debugPrint('Erro ao buscar serviços: $e');
+      setState(() {
+        _servicesList = [];
+      });
+    }
   }
 
   Future<void> fetchData() async {
+    print('oi');
     try {
       var establishmentCategories = await EstablishmentCategoryServices().get();
       if (establishmentCategories.isNotEmpty) {
@@ -60,8 +89,39 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
+  void _onSearch() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    fetchDataSearch().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchResultsPage(
+            userInfo: widget.userInfo,
+            searchText: _searchText,
+            servicesList: _servicesList, // Passar a lista para a próxima página
+          ),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Align(
@@ -99,6 +159,7 @@ class _SearchPageState extends State<SearchPage> {
                             _searchFocusNode.unfocus();
                             setState(() {
                               _isSearchSelected = false;
+                              _searchText = "";
                             });
                           },
                           icon: const Icon(Icons.cancel,
@@ -112,8 +173,14 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 onChanged: (value) {
                   setState(() {
+                    _searchText = value; // Atualiza a variável
                     _isSearchSelected = true;
                   });
+                  print(
+                      "Texto atual do campo: $_searchText"); // Verifique se o texto está sendo atualizado
+                },
+                onSubmitted: (value) {
+                  _onSearch();
                 },
                 onTap: () {
                   setState(() {
@@ -205,5 +272,32 @@ class _SearchPageState extends State<SearchPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildPagination() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed:
+              _currentPage > 1 ? () => _loadPage(_currentPage - 1) : null,
+          child: const Text('Anterior'),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: _currentPage < _totalPages
+              ? () => _loadPage(_currentPage + 1)
+              : null,
+          child: const Text('Próximo'),
+        ),
+      ],
+    );
+  }
+
+  void _loadPage(int page) {
+    setState(() {
+      _currentPage = page;
+      //fetchData(page: page);
+    });
   }
 }

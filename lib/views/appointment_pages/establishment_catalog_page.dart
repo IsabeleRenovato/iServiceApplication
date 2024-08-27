@@ -62,11 +62,12 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
       appBar: AppBar(
         backgroundColor: Colors.white,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(180),
+          preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
+              0.22), // Ajusta a altura dinamicamente
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(25),
+                padding: EdgeInsets.all(20), // Ajusta o padding
                 decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
@@ -76,7 +77,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: 40,
+                          radius: MediaQuery.of(context).size.width *
+                              0.1, // Ajusta o tamanho do CircleAvatar
                           backgroundColor: Colors.grey[300],
                           backgroundImage:
                               widget.establishmentUserInfo.userProfile != null
@@ -89,7 +91,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                   : AssetImage('assets/images.png')
                                       as ImageProvider,
                         ),
-                        const SizedBox(width: 10),
+                        SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,21 +99,25 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                               Text(
                                 widget.establishmentUserInfo.userProfile!
                                     .commercialName!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      0.05, // Ajusta o tamanho da fonte
                                 ),
                               ),
                               Text(
                                 '${widget.establishmentUserInfo.address!.street} - ${widget.establishmentUserInfo.address!.number}\n${widget.establishmentUserInfo.address!.neighborhood} - ${widget.establishmentUserInfo.address!.city}\nCEP: ${widget.establishmentUserInfo.address!.postalCode}',
-                                style: const TextStyle(fontSize: 14),
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            0.04), // Ajusta o tamanho da fonte
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -119,7 +125,6 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                           children: <Widget>[
                             ElevatedButton(
                               onPressed: () {
-                                // Supondo que 'widget.establishmentUserInfo.userProfile?.schedule!.days' seja algo como "1,3,5"
                                 String numericDays = widget
                                         .establishmentUserInfo
                                         .userProfile
@@ -164,7 +169,10 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                   context: context,
                                   builder: (BuildContext context) {
                                     return SizedBox(
-                                      height: 200,
+                                      height: MediaQuery.of(context)
+                                              .size
+                                              .height *
+                                          0.25, // Ajusta a altura dinamicamente
                                       width: MediaQuery.of(context).size.width,
                                       child: Center(
                                         child: Column(
@@ -175,24 +183,34 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                           children: [
                                             Center(
                                               child: Text(
-                                                  'Horário de funcionamento',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      color: const Color(
-                                                          0xFF2864ff),
-                                                      fontWeight:
-                                                          FontWeight.bold)),
+                                                'Horário de funcionamento',
+                                                style: TextStyle(
+                                                  fontSize: MediaQuery.of(
+                                                              context)
+                                                          .size
+                                                          .width *
+                                                      0.05, // Ajusta o tamanho da fonte
+                                                  color:
+                                                      const Color(0xFF2864ff),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                             ),
                                             SizedBox(height: 15),
                                             ...daysWithSchedule
                                                 .map((day) => Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 30),
+                                                      padding: const EdgeInsets
+                                                          .only(
+                                                          left:
+                                                              20), // Ajusta o padding
                                                       child: Text(
                                                         day,
                                                         style: TextStyle(
-                                                            fontSize: 16),
+                                                            fontSize: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                0.04), // Ajusta o tamanho da fonte
                                                       ),
                                                     ))
                                                 .toList(),
@@ -206,23 +224,28 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF2864ff),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Horário de funcionamento',
                                 style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      0.04, // Ajusta o tamanho da fonte
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 25),
+                            SizedBox(width: 20), // Ajusta o espaçamento
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ReviewListPage(
-                                            userId: widget.establishmentUserInfo
-                                                .userProfile!.userId)));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReviewListPage(
+                                      userId: widget.establishmentUserInfo
+                                          .userProfile!.userId,
+                                    ),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
@@ -233,13 +256,14 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                 ),
                               ),
                               child: Text(
-                                widget.establishmentUserInfo.userProfile!
-                                            .rating !=
+                                widget.establishmentUserInfo.userProfile
+                                            ?.rating !=
                                         null
                                     ? '★ ${widget.establishmentUserInfo.userProfile!.rating!.value.toStringAsFixed(1)}'
                                     : '★ 0',
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width *
+                                      0.04, // Ajusta o tamanho da fonte
                                   color: Colors.black,
                                 ),
                               ),

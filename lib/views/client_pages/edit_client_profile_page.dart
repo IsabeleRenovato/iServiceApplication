@@ -73,7 +73,8 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
             'cpf': userInfo.userProfile!.document,
             'birth': DateFormat('dd/MM/yyyy')
                 .format(userInfo.userProfile!.dateOfBirth!),
-            'cel': userInfo.userProfile!.phone!
+            'cel': userInfo.userProfile!.phone!,
+            'profileImage': userInfo.userProfile!.profileImage
           };
 
           if (_isLoading) {
@@ -133,7 +134,8 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     }
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor:
+            Colors.transparent, // Define o fundo da tela como branco
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -303,14 +305,16 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
                     if (filledFields) {
                       _userInfo.user.name = nameController.text;
                       _userInfo.userProfile = UserProfile(
-                          userProfileId: int.parse(payload['UserProfileId']),
-                          userId: int.parse(payload['UserId']),
-                          document: cpfController.text,
-                          dateOfBirth: DateFormat("dd/MM/yyyy")
-                              .parse(birthController.text),
-                          phone: celController.text,
-                          creationDate: DateTime.now(),
-                          lastUpdateDate: DateTime.now());
+                        userProfileId: int.parse(payload['UserProfileId']),
+                        userId: int.parse(payload['UserId']),
+                        document: cpfController.text,
+                        dateOfBirth: DateFormat("dd/MM/yyyy")
+                            .parse(birthController.text),
+                        phone: celController.text,
+                        creationDate: DateTime.now(),
+                        lastUpdateDate: DateTime.now(),
+                        profileImage: _userInfo.userProfile!.profileImage,
+                      );
 
                       UserProfileServices()
                           .save(_userInfo)

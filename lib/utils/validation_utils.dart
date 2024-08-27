@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class ValidationUtils {
   // Expressões regulares para validação
   static final RegExp _emailRegExp = RegExp(
@@ -38,6 +40,30 @@ class ValidationUtils {
       ),
     ];
     return validations;
+  }
+
+  static String? validateAge(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor, selecione sua data de nascimento';
+    }
+
+    try {
+      DateTime birthDate = DateFormat('dd/MM/yyyy').parse(value);
+      DateTime today = DateTime.now();
+      int age = today.year - birthDate.year;
+
+      if (birthDate.isAfter(DateTime(today.year, today.month, today.day))) {
+        age--;
+      }
+
+      if (age < 18) {
+        return 'Você deve ter pelo menos 18 anos';
+      }
+
+      return null;
+    } catch (e) {
+      return 'Data inválida';
+    }
   }
 }
 

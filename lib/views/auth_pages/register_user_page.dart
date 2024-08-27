@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:service_app/Services/auth_services.dart';
 import 'package:service_app/models/auth/pre_register.dart';
 import 'package:service_app/models/user_info.dart';
@@ -107,6 +108,10 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                 controller: nameController,
                 hintText: 'Nome',
                 prefixIcon: Icons.account_circle_rounded,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(40),
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]'))
+                ],
               ),
               const SizedBox(
                 height: 20,
@@ -167,11 +172,19 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: passwordValidations.map((validation) {
-                  return Text(
-                    '${validation.message}: ${validation.isValid ? 'OK' : 'Falta'}',
-                    style: TextStyle(
-                      color: validation.isValid ? Colors.green : Colors.red,
-                    ),
+                  return Row(
+                    children: [
+                      Text(
+                        '${validation.message}: ',
+                        style: TextStyle(
+                          color: validation.isValid ? Colors.green : Colors.red,
+                        ),
+                      ),
+                      Icon(
+                        validation.isValid ? Icons.check : Icons.close,
+                        color: validation.isValid ? Colors.green : Colors.red,
+                      ),
+                    ],
                   );
                 }).toList(),
               ),
@@ -180,6 +193,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
               ),
               TextFormField(
                 controller: confirmPasswordController,
+                inputFormatters: [LengthLimitingTextInputFormatter(15)],
                 style: const TextStyle(
                   color: Colors.black,
                 ),
