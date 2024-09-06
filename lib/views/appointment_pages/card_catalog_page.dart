@@ -51,11 +51,13 @@ class MenuItemCard extends StatelessWidget {
               establishmentUserInfo: establishmentUserInfo,
               service: service,
             ),
+            settings: RouteSettings(name: 'ServicePage'),
+            fullscreenDialog: true,
           ),
         );
       },
       child: Card(
-        color: Colors.transparent,
+        color: Colors.white,
         elevation: 0.0,
         child: Padding(
           padding: const EdgeInsets.all(25),

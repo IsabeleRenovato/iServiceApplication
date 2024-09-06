@@ -17,6 +17,8 @@ import 'package:service_app/views/appointment_history_pages/review_list_page.dar
 import 'package:service_app/views/edit_address_page.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:service_app/views/establishment_pages/edit_establishment_profile_page.dart';
+import 'package:service_app/views/establishment_pages/employees_list.dart';
+import 'package:service_app/views/establishment_pages/register_employees.dart';
 import 'package:service_app/views/establishment_pages/register_schedule_page.dart';
 import 'package:service_app/views/establishment_pages/service_category_page.dart';
 import 'package:service_app/views/establishment_pages/special_schedule_page.dart';
@@ -496,6 +498,57 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                       const Expanded(
                         child: Text(
                           "Endereço",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.black,
+                        size: 20,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.all(20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    // Mudança aqui para capturar o resultado
+                    final updatedUserInfo = await Navigator.push<UserInfo>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmployeesListPage(),
+                      ),
+                    );
+                    if (updatedUserInfo != null) {
+                      setState(() {
+                        _userInfo.userProfile = updatedUserInfo.userProfile;
+                      });
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/usuario.png',
+                        width: 25,
+                        height: 25,
+                      ),
+                      const SizedBox(width: 18),
+                      const Expanded(
+                        child: Text(
+                          "Funcionários",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 18,

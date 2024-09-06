@@ -22,10 +22,6 @@ class AppointmentServices {
     return _postRequest('', request);
   }
 
-  Future<bool> cancelAppointment(int userRoleId, int appointmentId) async {
-    return _deleteRequest('/CancelAppointment', userRoleId, appointmentId);
-  }
-
   Future<List<Appointment>> _getListRequest(String path) async {
     var token = await storage.read(key: 'token');
     var url = Uri.parse('$_baseUrl$path');
@@ -58,9 +54,10 @@ class AppointmentServices {
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
-      return jsonResponse
+      var sla = jsonResponse
           .map((appointmentJson) => Appointment.fromJson(appointmentJson))
           .toList();
+      return sla;
     } else {
       _handleError(response.body);
     }
@@ -88,16 +85,21 @@ class AppointmentServices {
     throw Exception('Não foi possível completar a requisição para $path.');
   }
 
-  Future<bool> _deleteRequest(
-      String path, int userRoleId, int appointmentId) async {
+  Future<bool> updateAppointmentStatus(
+      int appointmentId, int appointmentStatusId) async {
+    return _updateStatusRequest('/', appointmentStatusId, appointmentId);
+  }
+
+  Future<bool> _updateStatusRequest(
+      String path, int appointmentId, int appointmentStatusId) async {
     var token = await storage.read(key: 'token');
-    var url = Uri.parse('$_baseUrl$path/$userRoleId/$appointmentId');
+    var url = Uri.parse('$_baseUrl$path/$appointmentId/$appointmentStatusId');
     var headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
     print('Headers appointment 4: $headers');
-    var response = await http.delete(
+    var response = await http.put(
       url,
       headers: headers,
     );

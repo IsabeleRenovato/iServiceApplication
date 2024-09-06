@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:service_app/utils/navigationbar.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:service_app/utils/token_provider.dart';
@@ -162,8 +163,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor:
-            Colors.transparent, // Define o fundo da tela como branco
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -175,7 +175,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
@@ -321,7 +321,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Colors.white,
                     padding: const EdgeInsets.all(20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),
@@ -371,7 +371,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 padding: const EdgeInsets.only(left: 8),
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: Colors.white,
                     padding: const EdgeInsets.all(20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(0),

@@ -97,17 +97,38 @@ class _ReviewPageState extends State<ReviewPage> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 80,
-                      backgroundImage:
-                          NetworkImage('https://via.placeholder.com/150'),
+                      backgroundImage: widget.appointment.establishmentUserInfo!
+                                  .userProfile!.profileImage !=
+                              null
+                          ? NetworkImage(widget
+                                  .appointment
+                                  .establishmentUserInfo!
+                                  .userProfile!
+                                  .profileImage ??
+                              '')
+                          : AssetImage('assets/images.png') as ImageProvider,
+                      onBackgroundImageError: widget
+                                  .appointment
+                                  .establishmentUserInfo!
+                                  .userProfile!
+                                  .profileImage !=
+                              null
+                          ? (exception, stackTrace) {}
+                          : null,
                     ),
                     const SizedBox(height: 10),
-                    const Text('Estabelecimento',
+                    Text(
+                        widget.appointment.establishmentUserInfo?.userProfile
+                                ?.commercialName ??
+                            'Nome não disponível',
                         style: TextStyle(color: Colors.black, fontSize: 24)),
                     const SizedBox(height: 5),
-                    const Text('Serviço',
-                        style: TextStyle(color: Colors.black54, fontSize: 18)),
+                    Text(
+                      widget.appointment.service!.name,
+                      style: TextStyle(color: Colors.black54, fontSize: 18),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
@@ -116,21 +137,22 @@ class _ReviewPageState extends State<ReviewPage> {
                           const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Text('Duração',
+                              Text('Duração   ',
                                   style: TextStyle(
                                       color: Colors.black54, fontSize: 16)),
-                              Text('Valor',
+                              Text('Valor  ',
                                   style: TextStyle(
                                       color: Colors.black54, fontSize: 16)),
                             ],
                           ),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Text('Duração',
+                              Text(
+                                  '${widget.appointment.service!.estimatedDuration ~/ 60} h ${widget.appointment.service!.estimatedDuration % 60} min',
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 18)),
-                              Text('Valor',
+                              Text('R\$ ${widget.appointment.service!.price}',
                                   style: TextStyle(
                                       color: Colors.black, fontSize: 18)),
                             ],

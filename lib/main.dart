@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:service_app/views/appointment_history_pages/appointment_history_page.dart';
+import 'package:service_app/views/appointment_pages/search_page.dart';
+import 'package:service_app/views/client_pages/my_profile_page.dart';
+import 'package:service_app/views/home_pages/client_home_page.dart';
 import 'package:service_app/views/home_pages/home_page.dart';
 import 'package:service_app/utils/token_provider.dart';
 
@@ -41,6 +45,10 @@ class ServiceApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/login': (context) => HomePage(),
+        '/home': (context) => ClientHomePage(),
+        '/search': (context) => SearchPage(),
+        '/appointments': (context) => AppointmentHistoryPage(),
+        '/profile': (context) => MyProfilePage(),
       },
     );
   }

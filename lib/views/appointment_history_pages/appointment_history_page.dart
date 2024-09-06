@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:service_app/utils/navigationbar.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +20,10 @@ class AppointmentHistoryPage extends StatefulWidget {
 class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
     with TickerProviderStateMixin {
   TabController? _tabController;
+  TabController? _nestedTabController;
   late UserInfo? _userInfo;
   bool _isLoading = true;
-
+  int _currentIndex = 2;
   late Future<List<Appointment>> appointmentsFuture;
   Map<String, dynamic> payload = {};
 
@@ -30,6 +32,8 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
     super.initState();
 
     _tabController = TabController(vsync: this, length: 3);
+    _nestedTabController = TabController(vsync: this, length: 2);
+    appointmentsFuture = fetchAppointments();
   }
 
   void didChangeDependencies() {
@@ -45,6 +49,7 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
   @override
   void dispose() {
     _tabController?.dispose();
+    _nestedTabController?.dispose();
     super.dispose();
   }
 
@@ -94,80 +99,143 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Align(
-          alignment: Alignment.center,
-          child: Text(
-            "Agendamentos",
-            style: TextStyle(
-              color: Colors.grey[700],
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Agendamentos",
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
+          bottom: TabBar(
+            controller: _tabController,
+            labelColor: Color(0xFF2864ff),
+            indicatorColor: Color(0xFF2864ff),
+            tabs: const [
+              Tab(text: 'Agendado'),
+              Tab(text: 'Finalizado'),
+              Tab(text: 'Cancelado'),
+            ],
+          ),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Color(0xFF2864ff),
-          indicatorColor: Color(0xFF2864ff),
-          tabs: const [
-            Tab(text: 'Agendado'),
-            Tab(text: 'Finalizado'),
-            Tab(text: 'Cancelado'),
-          ],
-        ),
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                  color: Color(0xFF2864ff))) // Indicador de carregamento
-          : FutureBuilder<List<Appointment>>(
-              future: appointmentsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                      child: CircularProgressIndicator(
-                          color: Color(
-                              0xFF2864ff))); // Indicador de carregamento enquanto espera
-                } else if (snapshot.hasError) {
-                  return const Center(child: Text("Erro ao carregar os dados"));
-                } else if (snapshot.hasData) {
-                  var scheduled = snapshot.data!
-                      .where((a) => a.appointmentStatusId == 1)
-                      .toList();
-                  var finished = snapshot.data!
-                      .where((a) => a.appointmentStatusId == 2)
-                      .toList();
-                  var canceled = snapshot.data!
-                      .where((a) => a.appointmentStatusId == 3)
-                      .toList();
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                    color: Color(0xFF2864ff))) // Indicador de carregamento
+            : FutureBuilder<List<Appointment>>(
+                future: appointmentsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: CircularProgressIndicator(
+                            color: Color(
+                                0xFF2864ff))); // Indicador de carregamento enquanto espera
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                        child: Text("Erro ao carregar os dados"));
+                  } else if (snapshot.hasData) {
+                    var scheduled = snapshot.data!
+                        .where((a) => a.appointmentStatusId == 1)
+                        .toList()
+                      ..sort((a, b) => a.start.compareTo(b.start));
 
-                  return TabBarView(
-                    controller: _tabController,
-                    children: [
-                      AppointmentListView(
-                          userInfo: _userInfo!,
-                          appointments: scheduled,
-                          showCancelarButton: true,
-                          onUpdated: refreshData),
-                      AppointmentListView(
-                          userInfo: _userInfo!,
-                          appointments: finished,
-                          showAvaliarButton: true,
-                          onUpdated: refreshData),
-                      AppointmentListView(
-                          userInfo: _userInfo!,
-                          appointments: canceled,
-                          onUpdated: refreshData),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                      child: Text("Nenhum agendamento disponível"));
-                }
-              },
-            ),
+                    var inProgress = snapshot.data!
+                        .where((a) => a.appointmentStatusId == 3)
+                        .toList()
+                      ..sort((a, b) => a.start.compareTo(b.start));
+
+                    var finished = snapshot.data!
+                        .where((a) => a.appointmentStatusId == 4)
+                        .toList()
+                      ..sort((a, b) => a.start.compareTo(b.start));
+
+                    var canceled = snapshot.data!
+                        .where((a) => a.appointmentStatusId == 5)
+                        .toList()
+                      ..sort((a, b) => a.start.compareTo(b.start));
+
+                    return TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _userInfo!.userRole.userRoleId ==
+                                2 // Condição para mostrar o nested TabController
+                            ? DefaultTabController(
+                                length: 2, // Número de abas secundárias
+                                child: Column(
+                                  children: [
+                                    TabBar(
+                                      controller: _nestedTabController,
+                                      labelColor: Color(0xFF2864ff),
+                                      indicatorColor: Color(0xFF2864ff),
+                                      tabs: const [
+                                        Tab(text: 'Novo'),
+                                        Tab(text: 'Em Andamento'),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: TabBarView(
+                                        controller: _nestedTabController,
+                                        children: [
+                                          AppointmentListView(
+                                              userInfo: _userInfo!,
+                                              appointments: scheduled,
+                                              showIniciarButton: true,
+                                              showCancelarButton: true,
+                                              onUpdated: refreshData),
+                                          AppointmentListView(
+                                              userInfo: _userInfo!,
+                                              appointments: inProgress,
+                                              showEmAndamentoText: true,
+                                              showFinalizarButton: true,
+                                              onUpdated: refreshData),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : AppointmentListView(
+                                userInfo: _userInfo!,
+                                appointments: scheduled,
+                                showIniciarButton: true,
+                                showCancelarButton: true,
+                                onUpdated: refreshData,
+                              ),
+                        AppointmentListView(
+                            userInfo: _userInfo!,
+                            appointments: finished,
+                            showAvaliarButton: true,
+                            onUpdated: refreshData),
+                        AppointmentListView(
+                            userInfo: _userInfo!,
+                            appointments: canceled,
+                            onUpdated: refreshData),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                        child: Text("Nenhum agendamento disponível"));
+                  }
+                },
+              ),
+      ),
     );
   }
 }
@@ -175,6 +243,9 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
 class AppointmentListView extends StatelessWidget {
   final UserInfo userInfo;
   final List<Appointment> appointments;
+  final bool showIniciarButton;
+  final bool showEmAndamentoText;
+  final bool showFinalizarButton;
   final bool showCancelarButton;
   final bool showAvaliarButton;
   final VoidCallback onUpdated;
@@ -182,6 +253,9 @@ class AppointmentListView extends StatelessWidget {
   const AppointmentListView(
       {required this.userInfo,
       required this.appointments,
+      this.showIniciarButton = false,
+      this.showEmAndamentoText = false,
+      this.showFinalizarButton = false,
       this.showCancelarButton = false,
       this.showAvaliarButton = false,
       required this.onUpdated, // Default é false
@@ -193,8 +267,15 @@ class AppointmentListView extends StatelessWidget {
       itemCount: appointments.length,
       itemBuilder: (context, index) {
         var appointment = appointments[index];
-        var showAvaliar = appointment.appointmentStatusId == 2 &&
+        var showAvaliar = appointment.appointmentStatusId == 4 &&
             appointment.feedback == null;
+
+        var showIniciar =
+            appointment.appointmentStatusId == 1 && showIniciarButton;
+        var showEmAndamento =
+            appointment.appointmentStatusId == 3 && showEmAndamentoText;
+        var showFinalizar =
+            appointment.appointmentStatusId == 3 && showFinalizarButton;
         var showCancelar =
             appointment.appointmentStatusId == 1 && showCancelarButton;
 
@@ -283,17 +364,23 @@ class AppointmentListView extends StatelessWidget {
                             showAvaliarButton) // Verifica se showAvaliar é true
                           InkWell(
                             onTap: () async {
-                              await UserInfoServices()
-                                  .getUserInfoByUserId(
-                                      appointment.establishmentUserProfileId)
-                                  .then((UserInfo establishmentUserInfo) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ReviewPage(appointment: appointment)),
-                                );
-                              });
+                              try {
+                                await UserInfoServices()
+                                    .getUserInfoByUserId(
+                                        appointment.establishmentUserProfileId)
+                                    .then((UserInfo establishmentUserInfo) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ReviewPage(
+                                            appointment: appointment)),
+                                  );
+                                });
+                              } catch (e) {
+                                // Você pode mostrar um alerta ou logar o erro
+                                print(
+                                    'Erro ao obter informações do usuário: $e');
+                              }
                             },
                             child: Container(
                               width: 340,
@@ -319,6 +406,81 @@ class AppointmentListView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        if (showIniciar &&
+                            userInfo.userRole.userRoleId == 2 &&
+                            showIniciarButton)
+                          InkWell(
+                            onTap: () async {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Iniciar agendamento"),
+                                    content: const Text(
+                                        "Tem certeza de que deseja iniciar o agendamento?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () async {
+                                          await AppointmentServices()
+                                              .updateAppointmentStatus(
+                                                  3, appointment.appointmentId)
+                                              .then((bool appointment) {
+                                            if (appointment) {
+                                              Navigator.of(context).pop();
+                                              onUpdated();
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Serviço iniciado',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            }
+                                          });
+                                        },
+                                        child: const Text("Sim"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("Não"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: 165,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2864ff),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Iniciar",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         if (showCancelar)
                           InkWell(
                             onTap: () {
@@ -333,11 +495,10 @@ class AppointmentListView extends StatelessWidget {
                                       TextButton(
                                         onPressed: () async {
                                           await AppointmentServices()
-                                              .cancelAppointment(
-                                                  userInfo.userRole.userRoleId,
-                                                  appointment.appointmentId)
-                                              .then((bool status) {
-                                            if (status) {
+                                              .updateAppointmentStatus(
+                                                  5, appointment.appointmentId)
+                                              .then((bool appointment) {
+                                            if (appointment) {
                                               Navigator.of(context).pop();
                                               onUpdated();
 
@@ -375,7 +536,8 @@ class AppointmentListView extends StatelessWidget {
                               );
                             },
                             child: Container(
-                              width: 340,
+                              width:
+                                  userInfo.userRole.userRoleId == 2 ? 165 : 340,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: const Color.fromARGB(100, 216, 218, 221),
@@ -395,6 +557,94 @@ class AppointmentListView extends StatelessWidget {
                           )
                       ],
                     ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        if (showEmAndamento)
+                          Text(
+                            "Em Andamento",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.green,
+                            ),
+                          ),
+                        SizedBox(height: 10),
+                        if (showFinalizar)
+                          InkWell(
+                            onTap: () async {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text("Finalizar agendamento"),
+                                    content: const Text(
+                                        "Tem certeza de que deseja finalizar o agendamento?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () async {
+                                          await AppointmentServices()
+                                              .updateAppointmentStatus(
+                                                  4, appointment.appointmentId)
+                                              .then((bool appointment) {
+                                            if (appointment) {
+                                              Navigator.of(context).pop();
+                                              onUpdated();
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Serviço finalizado',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            }
+                                          });
+                                        },
+                                        child: const Text("Sim"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text("Não"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: 360,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2864ff),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Finalizar",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                     const SizedBox(height: 15),
                   ],
                 ),
@@ -405,4 +655,12 @@ class AppointmentListView extends StatelessWidget {
       },
     );
   }
+}
+
+enum AppointmentStatusEnum {
+  novo,
+  confirmado,
+  iniciado,
+  finalizado,
+  cancelado,
 }

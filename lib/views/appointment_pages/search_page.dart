@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
 import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/service.dart';
+import 'package:service_app/services/user_info_services.dart';
+import 'package:service_app/utils/token_provider.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/services/service_services.dart';
+import 'package:service_app/utils/navigationbar.dart';
 import 'package:service_app/views/appointment_pages/establishment_category_page.dart';
 import 'package:service_app/views/appointment_pages/search_results.dart';
 
 class SearchPage extends StatefulWidget {
-  final UserInfo userInfo;
-
-  const SearchPage({required this.userInfo, super.key});
+  const SearchPage({super.key});
 
   static final List<Color> colors = [
     Colors.pink,
@@ -34,19 +38,25 @@ class _SearchPageState extends State<SearchPage> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchSelected = false;
   late Future<List<EstablishmentCategory>> _categoryFuture = Future.value([]);
-  int _currentPage = 1;
+  int _currentPage = 2;
   int _totalPages = 1;
   int _pageSize = 1;
   String _searchText = "";
   bool _isLoading = true;
   late List<Service> _servicesList = [];
+  int _currentIndex = 1;
+  late UserInfo _userInfo;
+  Map<String, dynamic> payload = {};
+  Map<String, dynamic> initialData = {};
 
   @override
   void initState() {
     super.initState();
     fetchData().then((_) {
-      setState(() {
-        _isLoading = false;
+      fetchUserInfo().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
       });
     });
   }
@@ -67,7 +77,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> fetchData() async {
-    print('oi');
     try {
       var establishmentCategories = await EstablishmentCategoryServices().get();
       if (establishmentCategories.isNotEmpty) {
@@ -79,6 +88,24 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (e) {
       debugPrint('Erro ao buscar Special Schedules: $e');
+    }
+  }
+
+  Future<void> fetchUserInfo() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    print(payload);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await UserInfoServices()
+          .getUserInfoByUserId(userId)
+          .then((UserInfo userInfo) {
+        setState(() {
+          _userInfo = userInfo;
+        });
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
     }
   }
 
@@ -103,7 +130,7 @@ class _SearchPageState extends State<SearchPage> {
         context,
         MaterialPageRoute(
           builder: (context) => SearchResultsPage(
-            userInfo: widget.userInfo,
+            userInfo: _userInfo,
             searchText: _searchText,
             servicesList: _servicesList, // Passar a lista para a próxima página
           ),
@@ -216,7 +243,7 @@ class _SearchPageState extends State<SearchPage> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       EstablishmentCategoryPage(
-                                          clientUserInfo: widget.userInfo,
+                                          clientUserInfo: _userInfo,
                                           establishmentCategory:
                                               categories[index])),
                             );

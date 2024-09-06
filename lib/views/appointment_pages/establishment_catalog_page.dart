@@ -59,11 +59,12 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
-              0.22), // Ajusta a altura dinamicamente
+              0.25), // Ajusta a altura dinamicamente
           child: Column(
             children: [
               Container(

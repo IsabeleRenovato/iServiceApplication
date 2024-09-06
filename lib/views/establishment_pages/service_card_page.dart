@@ -19,6 +19,12 @@ class ServiceCardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtendo a largura da tela
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Definindo a largura responsiva com base na largura da tela
+    final imageWidth = screenWidth * 0.4; // 40% da largura da tela
+    final buttonWidth = screenWidth * 0.4; // 40% da largura da tela
+
     return Container(
       padding: const EdgeInsets.all(15),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -39,21 +45,21 @@ class ServiceCardPage extends StatelessWidget {
           InkWell(
             onTap: () {},
             child: Container(
-              width: 155,
-              height: 155,
+              width: imageWidth,
+              height: imageWidth, // Tornando a imagem quadrada
               alignment: Alignment.center,
               child: service.serviceImage == null
                   ? Image.asset(
                       'assets/images.png',
                       fit: BoxFit.cover,
-                      width: 155,
-                      height: 155,
+                      width: imageWidth,
+                      height: imageWidth,
                     ) // Imagem padrão
                   : Image.network(
                       service.serviceImage!,
                       fit: BoxFit.cover,
-                      width: 155,
-                      height: 155,
+                      width: imageWidth,
+                      height: imageWidth,
                     ),
             ),
           ),
@@ -66,7 +72,7 @@ class ServiceCardPage extends StatelessWidget {
             ),
           ),
           Text(
-            '${service.estimatedDuration} minutos',
+            '${service.estimatedDuration} Minutos',
             style: const TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 14,
@@ -98,7 +104,7 @@ class ServiceCardPage extends StatelessWidget {
                   }
                 },
                 child: Container(
-                  width: 155,
+                  width: buttonWidth,
                   padding: const EdgeInsets.symmetric(vertical: 7),
                   decoration: BoxDecoration(
                     color: const Color(0xFF2864ff),
@@ -126,7 +132,7 @@ class ServiceCardPage extends StatelessWidget {
                   }
                 },
                 child: Container(
-                  width: 155,
+                  width: buttonWidth,
                   padding: const EdgeInsets.symmetric(vertical: 7),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(100, 216, 218, 221),

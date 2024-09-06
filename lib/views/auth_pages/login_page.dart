@@ -5,6 +5,7 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/views/auth_pages/register_address_page.dart';
 import 'package:service_app/views/auth_pages/register_client_profile_page.dart';
 import 'package:service_app/views/auth_pages/register_establishment_profile_page.dart';
+import 'package:service_app/views/home_pages/client_home_page.dart';
 import 'package:service_app/views/main_pages/establishment_main_page.dart';
 import 'package:service_app/views/main_pages/client_main_page.dart';
 

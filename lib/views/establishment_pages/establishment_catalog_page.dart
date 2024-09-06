@@ -122,7 +122,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: 0.56,
+                        childAspectRatio: 0.52,
                       ),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {

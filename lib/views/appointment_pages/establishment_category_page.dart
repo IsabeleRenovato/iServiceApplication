@@ -4,6 +4,7 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
+import 'package:service_app/utils/navigationbar.dart';
 import 'package:service_app/views/appointment_pages/establishment_catalog_page.dart';
 
 class EstablishmentCategoryPage extends StatefulWidget {
