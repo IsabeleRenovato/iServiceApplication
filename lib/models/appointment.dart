@@ -8,6 +8,7 @@ class Appointment {
   int clientUserProfileId;
   int establishmentUserProfileId;
   int appointmentStatusId;
+  int establishmentEmployeeId;
   DateTime start;
   DateTime end;
   bool active;
@@ -25,6 +26,7 @@ class Appointment {
     required this.clientUserProfileId,
     required this.establishmentUserProfileId,
     required this.appointmentStatusId,
+    required this.establishmentEmployeeId,
     required this.start,
     required this.end,
     required this.active,
@@ -44,6 +46,7 @@ class Appointment {
       clientUserProfileId: json['clientUserProfileId'] as int,
       establishmentUserProfileId: json['establishmentUserProfileId'] as int,
       appointmentStatusId: json['appointmentStatusId'] as int,
+      establishmentEmployeeId: json['establishmentEmployeeId'] as int,
       start: DateTime.parse(json['start']),
       end: DateTime.parse(json['end']),
       active: json['active'] as bool,
@@ -73,6 +76,7 @@ class Appointment {
       'clientUserProfileId': clientUserProfileId,
       'establishmentUserProfileId': establishmentUserProfileId,
       'appointmentStatusId': appointmentStatusId,
+      'establishmentEmployeeId': establishmentEmployeeId,
       'start': start.toIso8601String(),
       'end': end.toIso8601String(),
       'active': active,

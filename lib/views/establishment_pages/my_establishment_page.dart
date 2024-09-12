@@ -14,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_list_page.dart';
+import 'package:service_app/views/appointment_pages/choose_employee.dart';
 import 'package:service_app/views/edit_address_page.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:service_app/views/establishment_pages/edit_establishment_profile_page.dart';
@@ -180,6 +181,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.center,
           child: Text(

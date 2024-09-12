@@ -57,12 +57,12 @@ class _ServicePageState extends State<ServicePage> {
                 ),
               ),
             ),
-            expandedHeight: MediaQuery.of(context).size.height * 0.6,
+            expandedHeight: MediaQuery.of(context).size.height * 0.5,
             flexibleSpace: FlexibleSpaceBar(
                 background: widget.service.serviceImage != null
                     ? Image.network(widget.service.serviceImage!,
                         fit: BoxFit.cover)
-                    : Image.asset('assets/testeCorte.jpeg', fit: BoxFit.cover)),
+                    : Image.asset('assets/images.png', fit: BoxFit.cover)),
           ),
           SliverToBoxAdapter(
             child: ClipRRect(

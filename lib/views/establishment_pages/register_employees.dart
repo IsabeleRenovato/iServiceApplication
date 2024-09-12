@@ -16,6 +16,7 @@ import 'package:service_app/services/service_category_services.dart';
 import 'package:service_app/services/service_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 import 'package:service_app/utils/validation_utils.dart';
+import 'package:service_app/views/establishment_pages/employees_list.dart';
 import 'package:service_app/views/establishment_pages/establishment_catalog_page.dart';
 
 class RegisterEmployeesPage extends StatefulWidget {
@@ -402,8 +403,9 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                                   .updateEstablishmentEmployee(
                                       request, isEdited)
                                   .then((EstablishmentEmployee
-                                      establishmentEmployee) {})
-                                  .catchError((e) {
+                                      establishmentEmployee) {
+                                Navigator.pop(context, true);
+                              }).catchError((e) {
                                 print('Erro ao registrar servidor: $e');
                                 atualizarMensagemErro(
                                     'Erro ao registrar servidor: $e');
@@ -424,8 +426,9 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                               await EstablishmentEmployeeServices()
                                   .addEstablishmentEmployee(request)
                                   .then((EstablishmentEmployee
-                                      establishmentEmployee) {})
-                                  .catchError((e) {
+                                      establishmentEmployee) {
+                                Navigator.pop(context, true);
+                              }).catchError((e) {
                                 print('Erro ao registrar servidor: $e');
                                 atualizarMensagemErro(
                                     'Erro ao registrar servidor: $e');

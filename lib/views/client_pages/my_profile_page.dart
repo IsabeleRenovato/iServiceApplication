@@ -12,6 +12,7 @@ import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/auth_services.dart';
+import 'package:service_app/views/appointment_pages/choose_employee.dart';
 import 'package:service_app/views/client_pages/edit_client_profile_page.dart';
 import 'package:service_app/views/edit_address_page.dart';
 
@@ -177,6 +178,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.center,
           child: Text(

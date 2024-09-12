@@ -11,6 +11,7 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_page.dart';
+import 'package:service_app/views/establishment_pages/register_employees.dart';
 
 class EmployeesListPage extends StatefulWidget {
   const EmployeesListPage({Key? key}) : super(key: key);
@@ -23,42 +24,53 @@ class _EmployeesListPageState extends State<EmployeesListPage>
     with TickerProviderStateMixin {
   Future<List<EstablishmentEmployee?>> _establishmentEmployeeFuture =
       Future.value([]);
-  TabController? _tabController;
-  TabController? _nestedTabController;
+
   late UserInfo? _userInfo;
   bool _isLoading = true;
   int _currentIndex = 2;
-  late Future<List<Appointment>> appointmentsFuture;
+
   Map<String, dynamic> payload = {};
 
   @override
   void initState() {
     super.initState();
-
-    _tabController = TabController(vsync: this, length: 3);
-    _nestedTabController = TabController(vsync: this, length: 2);
-    appointmentsFuture = fetchAppointments();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    fetchData();
+
     fetchUserInfo().then((_) {
       setState(() {
-        appointmentsFuture = fetchAppointments();
+        fetchData();
         _isLoading = false;
       });
     });
   }
 
+  void _navigateAndAddEmployee() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RegisterEmployeesPage(establishmentEmployeeId: 0),
+      ),
+    );
+
+    if (result == true) {
+      fetchData(); // Atualiza a lista de funcionários ao retornar se um novo funcionário foi adicionado
+    }
+  }
+
   Future<void> fetchData() async {
     try {
-      var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
+      print("Starting fetchData");
+      var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
       payload = Jwt.parseJwt(tokenProvider.token!);
       List<EstablishmentEmployee?> serviceEmployees =
           await EstablishmentEmployeeServices().getEmployeeByUserProfileId();
 
+      serviceEmployees.sort((a, b) =>
+          (a?.name.toLowerCase() ?? '').compareTo(b?.name.toLowerCase() ?? ''));
       if (mounted) {
         setState(() {
           _establishmentEmployeeFuture = Future.value(serviceEmployees);
@@ -72,13 +84,6 @@ class _EmployeesListPageState extends State<EmployeesListPage>
         });
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _tabController?.dispose();
-    _nestedTabController?.dispose();
-    super.dispose();
   }
 
   Future<UserInfo?> fetchUserInfo() async {
@@ -121,7 +126,7 @@ class _EmployeesListPageState extends State<EmployeesListPage>
 
   void refreshData() {
     setState(() {
-      appointmentsFuture = fetchAppointments();
+      fetchData();
     });
   }
 
@@ -169,25 +174,26 @@ class _EmployeesListPageState extends State<EmployeesListPage>
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navegue para a página de cadastro de funcionários
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CadastroFuncionarioPage(),
+                        padding: const EdgeInsets.all(15),
+                        child: InkWell(
+                          onTap: _navigateAndAddEmployee,
+                          child: Container(
+                            width: 390,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2864ff),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "Cadastrar funcionário",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
-                            );
-                          },
-                          child: const Text('Cadastrar um funcionário'),
-                          style: ElevatedButton.styleFrom(
-                            // Cor do botão
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            textStyle: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -196,15 +202,14 @@ class _EmployeesListPageState extends State<EmployeesListPage>
                         child: EmployeeListView(
                           userInfo: _userInfo!,
                           employees: snapshot.data!,
-                          onUpdated:
-                              refreshData, // Chama refreshData para atualizar
+                          onUpdated: refreshData,
                         ),
                       ),
                     ],
                   );
                 } else {
                   return const Center(
-                    child: Text('Nenhuma categoria de serviço cadastrada.'),
+                    child: Text('Nenhum funcionário cadastrado.'),
                   );
                 }
               },
@@ -238,9 +243,9 @@ class EmployeeListView extends StatelessWidget {
           elevation: 0,
           margin: const EdgeInsets.only(top: 10),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(11),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -276,7 +281,7 @@ class EmployeeListView extends StatelessWidget {
                           child: ListTile(
                             title: Text(employee!.name,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
+                                    fontWeight: FontWeight.bold, fontSize: 24)),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -308,7 +313,11 @@ class EmployeeListView extends StatelessWidget {
                             child: const Center(
                               child: Text(
                                 'Editar',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
@@ -319,13 +328,17 @@ class EmployeeListView extends StatelessWidget {
                             width: 165,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
-                              color: Colors.red,
+                              color: Color.fromARGB(100, 216, 218, 221),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Center(
                               child: Text(
                                 'Excluir',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
@@ -339,22 +352,6 @@ class EmployeeListView extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-// Exemplo de página de cadastro de funcionários
-class CadastroFuncionarioPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Cadastrar Funcionário"),
-      ),
-      body: Center(
-        child: Text(
-            "Aqui você pode adicionar o formulário de cadastro de funcionários."),
-      ),
     );
   }
 }

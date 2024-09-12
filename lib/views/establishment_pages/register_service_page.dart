@@ -39,6 +39,12 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
   ServiceServices serviceServices = ServiceServices();
   List<ServiceCategory> serviceCategories = [];
   bool isEdited = false;
+  List<Employee> employees = [
+    Employee(id: 1, name: 'João Silva'),
+    Employee(id: 2, name: 'Maria Oliveira'),
+    Employee(id: 3, name: 'Carlos Pereira'),
+    Employee(id: 4, name: 'Ana Souza'),
+  ];
 
   Future<void> _getImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -134,7 +140,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFF5F6F9),
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(
@@ -345,8 +351,8 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                       width: double.infinity,
                       child: DropdownButtonFormField<int>(
                         value: selectedCategory,
-                        decoration: const InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
+                        decoration: InputDecoration(
+                          enabledBorder: const UnderlineInputBorder(
                             borderSide:
                                 BorderSide(color: Colors.grey, width: 1.5),
                           ),
@@ -354,6 +360,32 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                             borderSide: BorderSide(
                                 color: Color(0xFF2864ff), width: 2.5),
                           ),
+                          prefixIcon: selectedCategory == null
+                              ? const Padding(
+                                  padding: EdgeInsets.only(left: 12),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.category,
+                                        color: Color(0xFF2864ff),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          'Selecione uma categoria',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w100,
+                                            fontSize: 16,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : null,
                         ),
                         onChanged: (newValue) {
                           setState(() {
@@ -420,7 +452,48 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 30),
+                    RichText(
+                      text: const TextSpan(
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.black,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Selecione os',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' funcionários responsáveis: ',
+                            style: TextStyle(
+                              color: Color(0xFF2864ff),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 10),
+                    ...employees
+                        .map((employee) => CheckboxListTile(
+                              title: Text(employee.name),
+                              value: employee.isSelected,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  employee.isSelected = value ?? false;
+                                });
+                              },
+                              activeColor: Color(
+                                  0xFF2864ff), // Cor do checkbox selecionado
+                              checkColor: Colors.white,
+                            ))
+                        .toList(),
+                    const SizedBox(height: 10),
+
                     Text(
                       mensagemErro,
                       style: const TextStyle(color: Colors.red),
@@ -454,15 +527,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                               await ServiceServices()
                                   .updateService(request, isEdited)
                                   .then((Service service) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EstablishmentCatalogPage(
-                                      userInfo: widget.userInfo,
-                                    ),
-                                  ),
-                                );
+                                Navigator.pop(context, true);
                               }).catchError((e) {
                                 print('Erro ao registrar servidor: $e');
                                 atualizarMensagemErro(
@@ -487,15 +552,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                               await ServiceServices()
                                   .addService(request)
                                   .then((Service service) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EstablishmentCatalogPage(
-                                      userInfo: widget.userInfo,
-                                    ),
-                                  ),
-                                );
+                                Navigator.pop(context, true);
                               }).catchError((e) {
                                 print('Erro ao registrar servidor: $e');
                                 atualizarMensagemErro(
@@ -534,4 +591,12 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
       ),
     );
   }
+}
+
+class Employee {
+  final int id;
+  final String name;
+  bool isSelected;
+
+  Employee({required this.id, required this.name, this.isSelected = false});
 }

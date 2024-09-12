@@ -6,6 +6,7 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/services/appointment_services.dart';
 import 'package:service_app/services/service_services.dart';
 import 'package:service_app/views/appointment_pages/appointment_confirm.dart';
+import 'package:service_app/views/appointment_pages/choose_employee.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 import 'package:dots_indicator/dots_indicator.dart';
@@ -43,9 +44,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   Future<List<String>> fetchAvailableTimes() async {
     try {
-      var availableTimes = await ServiceServices().getAvailableTimes(
-          widget.establishmentUserInfo.userProfile!.userProfileId,
-          _selectedDay);
+      var availableTimes = await ServiceServices()
+          .getAvailableTimes(widget.service.serviceId, _selectedDay);
       return availableTimes;
     } catch (e) {
       debugPrint('Erro ao buscar serviços: $e');
@@ -306,23 +306,17 @@ class _AppointmentPageState extends State<AppointmentPage> {
                         active: true,
                         deleted: false,
                         creationDate: DateTime.now(),
-                        lastUpdateDate: DateTime.now());
-
-                    await AppointmentServices()
-                        .addAppointment(request)
-                        .then((Appointment appointment) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                            builder: (context) => AppointmentConfirm(
-                                  clientUserInfo: widget.clientUserInfo,
-                                  establishmentUserInfo:
-                                      widget.establishmentUserInfo,
-                                )),
-                        (Route<dynamic> route) => false,
-                      );
-                    }).catchError((e) {
-                      atualizarMensagemErro('Erro ao registrar servidor: $e');
-                    });
+                        lastUpdateDate: DateTime.now(),
+                        establishmentEmployeeId: 0);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => ChooseEmployeePage(
+                                appointment: request,
+                                clientUserInfo: widget.clientUserInfo,
+                                establishmentUserInfo:
+                                    widget.establishmentUserInfo,
+                              )),
+                    );
                   } catch (error) {
                     atualizarMensagemErro('Erro ao registrar servidor: $error');
                   }
@@ -332,7 +326,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: const Text(
-                  "Finalizar",
+                  "Avançar",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

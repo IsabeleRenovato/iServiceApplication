@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
 import 'package:service_app/models/establishment_category.dart';
@@ -26,6 +27,8 @@ class SearchPage extends StatefulWidget {
   static final List<IconData> icons = [
     Icons.spa,
     Icons.content_cut,
+    FontAwesomeIcons.wrench,
+    FontAwesomeIcons.paw,
     Icons.local_hospital,
   ];
 
@@ -151,6 +154,7 @@ class _SearchPageState extends State<SearchPage> {
     }
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.center,
           child: Text(
