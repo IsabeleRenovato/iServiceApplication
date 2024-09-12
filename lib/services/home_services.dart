@@ -23,7 +23,7 @@ class HomeServices {
         'Authorization': 'Bearer $token',
       },
     );
-    print(response.body);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       return HomeModel.fromJson(jsonDecode(response.body));
     } else {

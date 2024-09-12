@@ -112,6 +112,7 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           title: Align(
             alignment: Alignment.center,
@@ -561,7 +562,7 @@ class AppointmentListView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         if (showEmAndamento)
-                          Text(
+                          const Text(
                             "Em Andamento",
                             style: TextStyle(
                               fontSize: 16,

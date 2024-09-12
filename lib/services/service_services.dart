@@ -118,6 +118,8 @@ class ServiceServices {
     var url = Uri.parse(_baseUrl);
     var multipartRequest = http.MultipartRequest('POST', url);
 
+    String employeesIdsString = request.establishmentEmployeeIds!.join(',');
+    multipartRequest.fields['EstablishmentEmployeeIds'] = employeesIdsString;
     multipartRequest.fields['ServiceId'] = request.serviceId.toString();
     multipartRequest.fields['EstablishmentUserProfileId'] =
         request.establishmentUserProfileId.toString();
@@ -156,6 +158,8 @@ class ServiceServices {
       String path, Service request, bool isEdited) async {
     var url = Uri.parse(_baseUrl);
     var multipartRequest = http.MultipartRequest('PUT', url);
+    String employeesIdsString = request.establishmentEmployeeIds!.join(',');
+    multipartRequest.fields['EstablishmentEmployeeIds'] = employeesIdsString;
 
     multipartRequest.fields['ServiceId'] = request.serviceId.toString();
     multipartRequest.fields['EstablishmentUserProfileId'] =

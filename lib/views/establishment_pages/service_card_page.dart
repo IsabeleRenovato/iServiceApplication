@@ -48,7 +48,8 @@ class ServiceCardPage extends StatelessWidget {
               width: imageWidth,
               height: imageWidth, // Tornando a imagem quadrada
               alignment: Alignment.center,
-              child: service.serviceImage == null
+              child: (service.serviceImage == null ||
+                      service.serviceImage!.isEmpty)
                   ? Image.asset(
                       'assets/images.png',
                       fit: BoxFit.cover,

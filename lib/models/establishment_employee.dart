@@ -7,6 +7,7 @@ class EstablishmentEmployee {
   String? employeeImage;
   bool active;
   bool deleted;
+  bool? isAvailable;
 
   EstablishmentEmployee({
     required this.establishmentEmployeeId,
@@ -17,6 +18,7 @@ class EstablishmentEmployee {
     this.employeeImage,
     required this.active,
     required this.deleted,
+    this.isAvailable,
   });
 
   // Método fromJson para criar uma instância da classe a partir de um mapa JSON
@@ -32,6 +34,8 @@ class EstablishmentEmployee {
       employeeImage: json['employeeImage'],
       active: json['active'],
       deleted: json['deleted'],
+      isAvailable:
+          json['isAvailable'] != null ? json['isAvailable'] as bool : false,
     );
   }
 
@@ -46,6 +50,7 @@ class EstablishmentEmployee {
       'employeeImage': employeeImage,
       'active': active,
       'deleted': deleted,
+      'isAvailable': isAvailable,
     };
   }
 

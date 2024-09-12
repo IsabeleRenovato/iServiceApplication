@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import 'package:service_app/models/establishment_employee.dart';
 import 'package:service_app/models/service.dart';
 import 'package:service_app/models/service_category.dart';
 import 'package:service_app/models/user_info.dart';
+import 'package:service_app/services/establishment_employee_services.dart';
 import 'package:service_app/services/service_category_services.dart';
 import 'package:service_app/services/service_services.dart';
 import 'package:service_app/utils/duration_selector_utils.dart';
@@ -39,12 +41,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
   ServiceServices serviceServices = ServiceServices();
   List<ServiceCategory> serviceCategories = [];
   bool isEdited = false;
-  List<Employee> employees = [
-    Employee(id: 1, name: 'João Silva'),
-    Employee(id: 2, name: 'Maria Oliveira'),
-    Employee(id: 3, name: 'Carlos Pereira'),
-    Employee(id: 4, name: 'Ana Souza'),
-  ];
+  List<EstablishmentEmployee?> employees = [];
 
   Future<void> _getImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -76,6 +73,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
     descriptionController.addListener(atualizarEstadoCampos);
 
     fetchServiceCategories();
+    fetchServiceEmployees();
   }
 
   Future<void> fetchData() async {
@@ -110,6 +108,18 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
           .getByUserProfileId(widget.userInfo.userProfile!.userProfileId);
       setState(() {
         serviceCategories = fetchedCategories;
+      });
+    } catch (e) {
+      print('Erro ao buscar as categorias de serviço: $e');
+    }
+  }
+
+  Future fetchServiceEmployees() async {
+    try {
+      var fetchedEstablishmentEmployees = await EstablishmentEmployeeServices()
+          .getByServiceId(widget.serviceId);
+      setState(() {
+        employees = fetchedEstablishmentEmployees;
       });
     } catch (e) {
       print('Erro ao buscar as categorias de serviço: $e');
@@ -480,11 +490,11 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                     const SizedBox(height: 10),
                     ...employees
                         .map((employee) => CheckboxListTile(
-                              title: Text(employee.name),
-                              value: employee.isSelected,
+                              title: Text(employee!.name),
+                              value: employee.isAvailable,
                               onChanged: (bool? value) {
                                 setState(() {
-                                  employee.isSelected = value ?? false;
+                                  employee.isAvailable = value ?? false;
                                 });
                               },
                               activeColor: Color(
@@ -507,8 +517,15 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                               'Por favor, preencha todos os campos.');
                         } else {
                           try {
+                            var selectedEmployeesIds = employees
+                                .where((employee) =>
+                                    employee?.isAvailable !=
+                                    false) // Filtra apenas os que têm isAvailable verdadeiro ou nulo
+                                .map((employee) => employee!
+                                    .establishmentEmployeeId) // Seleciona o campo EstablishmentEmployeeId
+                                .toList();
+
                             if (widget.serviceId > 0) {
-                              print(imagePath);
                               var request = Service(
                                   serviceId: widget.serviceId,
                                   establishmentUserProfileId: widget
@@ -519,6 +536,8 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   price: doubleValue,
                                   estimatedDuration: selectedDuration!,
                                   serviceImage: imagePath,
+                                  establishmentEmployeeIds:
+                                      selectedEmployeesIds,
                                   active: true,
                                   deleted: false,
                                   creationDate: DateTime.now(),
@@ -544,6 +563,8 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   price: doubleValue,
                                   estimatedDuration: selectedDuration!,
                                   serviceImage: imagePath,
+                                  establishmentEmployeeIds:
+                                      selectedEmployeesIds,
                                   active: true,
                                   deleted: false,
                                   creationDate: DateTime.now(),
@@ -591,12 +612,4 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
       ),
     );
   }
-}
-
-class Employee {
-  final int id;
-  final String name;
-  bool isSelected;
-
-  Employee({required this.id, required this.name, this.isSelected = false});
 }

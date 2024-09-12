@@ -18,6 +18,16 @@ class EstablishmentEmployeeServices {
     return _getListRequest('/');
   }
 
+  Future<List<EstablishmentEmployee>> getListAvailableRequest(
+      int serviceId, DateTime start) async {
+    return _getListAvailableRequest(
+        '/GetEmployeeAvailability', serviceId, start);
+  }
+
+  Future<List<EstablishmentEmployee?>> getByServiceId(int serviceId) async {
+    return _getListByServiceIdRequest('/GetEmployeeByService', serviceId);
+  }
+
   Future<EstablishmentEmployee> addEstablishmentEmployee(
       EstablishmentEmployee request) async {
     return _postRequest('', request);
@@ -42,6 +52,49 @@ class EstablishmentEmployeeServices {
       _handleError(response.body);
     }
     throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<List<EstablishmentEmployee?>> _getListByServiceIdRequest(
+      String path, int serviceId) async {
+    var token = await storage.read(key: 'token');
+    var url = Uri.parse('$_baseUrl$path/$serviceId');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.get(url, headers: headers);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      List jsonResponse = jsonDecode(response.body) as List;
+      return jsonResponse
+          .map((categoryJson) => EstablishmentEmployee.fromJson(categoryJson))
+          .toList();
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<List<EstablishmentEmployee>> _getListAvailableRequest(
+      String path, int serviceId, DateTime start) async {
+    var token = await storage.read(key: 'token');
+    var url = Uri.parse('$_baseUrl$path');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var body = {"serviceId": serviceId, "start": start.toIso8601String()};
+    var response =
+        await http.post(url, headers: headers, body: jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      List jsonResponse = jsonDecode(response.body) as List;
+      return jsonResponse
+          .map((categoryJson) => EstablishmentEmployee.fromJson(categoryJson))
+          .toList();
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
   }
 
   Future<List<EstablishmentEmployee>> _getListRequest(String path) async {

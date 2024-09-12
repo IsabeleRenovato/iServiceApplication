@@ -14,6 +14,7 @@ class Service {
   DateTime creationDate;
   DateTime lastUpdateDate;
   ServiceCategory? serviceCategory;
+  List<int>? establishmentEmployeeIds;
   //int totalPages;
 
   Service({
@@ -30,11 +31,15 @@ class Service {
     required this.creationDate,
     required this.lastUpdateDate,
     this.serviceCategory,
+    this.establishmentEmployeeIds,
     //required this.totalPages
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
+      establishmentEmployeeIds: json['establishmentEmployeeIds'] != null
+          ? List<int>.from(json['establishmentEmployeeIds'])
+          : null,
       serviceId: json['serviceId'] as int,
       establishmentUserProfileId: json['establishmentUserProfileId'] as int,
       serviceCategoryId: json['serviceCategoryId'] as int,
@@ -57,6 +62,8 @@ class Service {
 
   Map<String, dynamic> toJson() {
     return {
+      'establishmentEmployeeIds':
+          establishmentEmployeeIds != null ? establishmentEmployeeIds : null,
       'serviceId': serviceId,
       'establishmentUserProfileId': establishmentUserProfileId,
       'serviceCategoryId': serviceCategoryId,

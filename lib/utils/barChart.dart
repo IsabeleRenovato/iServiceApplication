@@ -1,5 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decode/jwt_decode.dart';
+import 'package:provider/provider.dart';
+import 'package:service_app/models/home.dart';
+import 'package:service_app/models/monthly_report.dart';
+import 'package:service_app/services/home_services.dart';
+import 'package:service_app/utils/token_provider.dart';
 
 class BarChartSample7 extends StatefulWidget {
   @override
@@ -9,22 +15,39 @@ class BarChartSample7 extends StatefulWidget {
 class BarChartSample7State extends State<BarChartSample7> {
   final double barWidth = 22;
   final int groupsPerSlide = 3;
+  late HomeModel _homeModel;
+  Map<String, dynamic> payload = {};
+  List<MonthlyReport>? monthlyReports = [];
+  bool isLoading = true;
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    fetchDataHome();
+  }
+
+  Future<void> fetchDataHome() async {
+    var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
+    payload = Jwt.parseJwt(tokenProvider.token!);
+    if (payload['UserId'] != null) {
+      int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
+      await HomeServices().getHomeByUserId(userId).then((HomeModel homeModel) {
+        monthlyReports = homeModel.monthlyReports;
+      }).catchError((e) {
+        print('Erro ao buscar UserInfo: $e ');
+      });
+    }
+  }
 
   List<List<BarChartGroupData>> generateQuarterlyGroups() {
-    final List<BarChartGroupData> allGroups = [
-      createGroupData(0, 5, 12),
-      createGroupData(1, 16, 12),
-      createGroupData(2, 18, 5),
-      createGroupData(3, 20, 16),
-      createGroupData(4, 17, 6),
-      createGroupData(5, 19, 1),
-      createGroupData(6, 10, 2),
-      createGroupData(7, 15, 18),
-      createGroupData(8, 12, 3),
-      createGroupData(9, 14, 8),
-      createGroupData(10, 5, 5),
-      createGroupData(11, 8, 14),
-    ];
+    List<BarChartGroupData> allGroups = [];
+
+    // Gerando os grupos com base nos dados da API
+    for (var i = 0; i < monthlyReports!.length; i++) {
+      final report = monthlyReports![i];
+      allGroups.add(createGroupData(
+          i, report.totalAppointments.toDouble(), report.averageRating));
+    }
 
     List<List<BarChartGroupData>> quarterlyGroups = [];
     for (int i = 0; i < allGroups.length; i += groupsPerSlide) {
@@ -45,12 +68,12 @@ class BarChartSample7State extends State<BarChartSample7> {
           width: barWidth,
           borderRadius: BorderRadius.circular(4),
         ),
-        BarChartRodData(
+        /* BarChartRodData(
           toY: y2,
           color: Colors.grey,
           width: barWidth,
           borderRadius: BorderRadius.circular(4),
-        ),
+        ),*/
       ],
     );
   }
@@ -67,11 +90,12 @@ class BarChartSample7State extends State<BarChartSample7> {
           height:
               350, // Aumenta a altura para evitar o corte da legenda inferior
           child: Padding(
-            padding: const EdgeInsets.only(
-                bottom: 16.0), // Adiciona espaço extra na parte inferior
+            padding: const EdgeInsets.only(bottom: 16.0),
             child: BarChart(
               BarChartData(
-                barGroups: quarterlyGroups[currentQuarter],
+                barGroups: quarterlyGroups.isNotEmpty
+                    ? quarterlyGroups[currentQuarter]
+                    : [],
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
@@ -79,8 +103,7 @@ class BarChartSample7State extends State<BarChartSample7> {
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize:
-                          30, // Garante espaço suficiente para a legenda inferior
+                      reservedSize: 30,
                       getTitlesWidget: (double value, TitleMeta meta) {
                         const months = [
                           'Jan',
@@ -94,9 +117,11 @@ class BarChartSample7State extends State<BarChartSample7> {
                           'Set',
                           'Out',
                           'Nov',
-                          'Dec'
+                          'Dez'
                         ];
-                        int monthIndex = value.toInt();
+                        int monthIndex = monthlyReports!.isNotEmpty
+                            ? monthlyReports![value.toInt()].month - 1
+                            : 0;
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(months[monthIndex]),
@@ -110,8 +135,8 @@ class BarChartSample7State extends State<BarChartSample7> {
                   rightTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      reservedSize:
-                          40, // Garante espaço para os valores à direita
+                      interval: 5,
+                      reservedSize: 40,
                       getTitlesWidget: (double value, TitleMeta meta) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 8.0),
