@@ -48,7 +48,9 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Text(

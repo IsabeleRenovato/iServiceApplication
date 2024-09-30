@@ -111,6 +111,7 @@ class _RegisterSpecialSchedulePageState
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(

@@ -113,7 +113,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -136,6 +136,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
     ];*/
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 40),
         child: Column(
@@ -293,7 +294,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               child: ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                itemCount: _homeModel.categories!.length,
+                itemCount: _homeModel.categories!.take(4).length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
@@ -333,7 +334,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                       _homeModel.categories!.length > index
                                   ? (_homeModel.categories![index].icon != null
                                       ? Image.network(
-                                          _homeModel.categories![index].icon!,
+                                          '${_homeModel.categories![index].icon!}?${DateTime.now().millisecondsSinceEpoch}',
                                           width: 45,
                                           height: 45,
                                         )

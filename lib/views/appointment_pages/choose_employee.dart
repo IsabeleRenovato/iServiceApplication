@@ -80,7 +80,7 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFFF5F6F9),
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(
@@ -222,33 +222,29 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
                     ),
                     TextButton(
                       onPressed: () async {
-                        if (selectedEmployee == null) {
-                          setState(() {
-                            mensagemErro =
-                                'Por favor, selecione um funcionário.';
-                          });
-                        } else {
-                          setState(() {
-                            mensagemErro = '';
-                          });
-
-                          await AppointmentServices()
-                              .addAppointment(widget.appointment)
-                              .then((Appointment appointment) {
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (context) => AppointmentConfirm(
-                                        clientUserInfo: widget.clientUserInfo,
-                                        establishmentUserInfo:
-                                            widget.establishmentUserInfo,
-                                      )),
-                              (Route<dynamic> route) => false,
-                            );
-                          }).catchError((e) {
-                            atualizarMensagemErro(
-                                'Erro ao registrar servidor: $e');
-                          });
-                        }
+                        setState(() {
+                          mensagemErro = '';
+                        });
+                        widget.appointment.establishmentEmployeeId = 0;
+                        debugPrint("Botão Pular clicado");
+                        await AppointmentServices()
+                            .addAppointment(widget.appointment)
+                            .then((Appointment appointment) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => AppointmentConfirm(
+                                clientUserInfo: widget.clientUserInfo,
+                                establishmentUserInfo:
+                                    widget.establishmentUserInfo,
+                              ),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                          debugPrint("Navegação bem-sucedida");
+                        }).catchError((e) {
+                          atualizarMensagemErro(
+                              'Erro ao registrar servidor: $e');
+                        });
                       },
                       child: const Text(
                         "Pular",

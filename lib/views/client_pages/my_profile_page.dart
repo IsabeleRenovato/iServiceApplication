@@ -178,6 +178,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.center,

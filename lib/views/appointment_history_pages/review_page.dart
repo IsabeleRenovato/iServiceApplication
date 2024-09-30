@@ -23,10 +23,18 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   late UserInfo? _userInfo;
   double _rating = 0;
+  bool _isLoading = true;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchUserInfo().then((_) {
+      setState(() {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    });
   }
 
   Future<UserInfo?> fetchUserInfo() async {
@@ -51,6 +59,14 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
       body: SingleChildScrollView(
         child: Stack(

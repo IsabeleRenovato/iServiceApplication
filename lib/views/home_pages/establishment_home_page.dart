@@ -12,6 +12,8 @@ import 'package:service_app/models/user_info.dart';
 import 'package:service_app/utils/barChart.dart';
 import 'package:service_app/views/appointment_history_pages/appointment_history_page.dart';
 
+import '../establishment_pages/establishment_catalog_page.dart';
+
 class EstablishmentHomePage extends StatefulWidget {
   final UserInfo userInfo;
 
@@ -113,6 +115,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
       );
     }
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(top: 40),
         child: Column(
@@ -183,16 +186,16 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                                 ? _homeModel.totalAppointments.toString()
                                 : '0',
                             style: TextStyle(
-                              fontSize: 30,
+                              fontSize: 25,
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
-                            "Agendamentos",
+                            "Agendamentos do Dia",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colors.white,
                             ),
                           ),
@@ -205,6 +208,15 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                   width: 175,
                   height: 175,
                   child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EstablishmentCatalogPage(userInfo: _userInfo),
+                        ),
+                      );
+                    },
                     child: Container(
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
@@ -218,28 +230,30 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
                           ),
                         ],
                       ),
-                      child: const Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.add_chart_rounded,
                             color: Colors.white,
                             size: 35,
                           ),
                           SizedBox(height: 10),
                           Text(
-                            "0",
-                            style: TextStyle(
-                              fontSize: 30,
+                            _homeModel.totalServicesActives != null
+                                ? _homeModel.totalServicesActives.toString()
+                                : '0',
+                            style: const TextStyle(
+                              fontSize: 25,
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           SizedBox(height: 5),
-                          Text(
-                            "Serviços",
+                          const Text(
+                            "Total de Serviços Ativos",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               color: Colors.white,
                             ),
                           ),
@@ -253,12 +267,36 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
             const SizedBox(
               height: 20,
             ),
-            Text('   Relatório',
+            Text('   Relatório de agendamento mensal',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(
               height: 20,
             ),
-            BarChartSample7()
+            BarChartSample7(),
+            /*Center(
+              child: InkWell(
+                onTap: () async {},
+                child: Container(
+                  width: 360,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2864ff),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Relatórios",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )*/
           ],
         ),
       ),

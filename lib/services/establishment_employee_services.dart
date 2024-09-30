@@ -34,8 +34,12 @@ class EstablishmentEmployeeServices {
   }
 
   Future<EstablishmentEmployee> updateEstablishmentEmployee(
-      EstablishmentEmployee request, bool isEdited) async {
-    return _putRequest('', request, isEdited);
+      EstablishmentEmployee request, bool isEdited, int id) async {
+    return _putRequest('', request, isEdited, id);
+  }
+
+  Future<bool> delete(int employeeId) async {
+    return _deleteRequest('/SetDeleted', employeeId);
   }
 
   Future<EstablishmentEmployee?> _getRequest(String path, int id) async {
@@ -158,9 +162,14 @@ class EstablishmentEmployeeServices {
   }
 
   Future<EstablishmentEmployee> _putRequest(
-      String path, EstablishmentEmployee request, bool isEdited) async {
-    var url = Uri.parse(_baseUrl);
+      String path, EstablishmentEmployee request, bool isEdited, int id) async {
+    var token = await storage.read(key: 'token');
+    var url = Uri.parse('$_baseUrl/$id');
     var multipartRequest = http.MultipartRequest('PUT', url);
+    multipartRequest.headers.addAll({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
     multipartRequest.fields['EstablishmentEmployeeId'] =
         request.establishmentEmployeeId.toString();
@@ -175,9 +184,12 @@ class EstablishmentEmployeeServices {
     multipartRequest.fields['LastUpdateDate'] =
         request.lastUpdateDate.toString();*/
 
-    if (request.employeeImage != null) {
+    if (request.employeeImage != null && isEdited) {
       multipartRequest.files.add(
           await http.MultipartFile.fromPath('File', request.employeeImage!));
+    } else {
+      multipartRequest.fields['EmployeeImage'] =
+          request.employeeImage.toString();
     }
 
     http.StreamedResponse streamedResponse = await multipartRequest.send();
@@ -187,6 +199,26 @@ class EstablishmentEmployeeServices {
     if (response.statusCode == 200 || response.statusCode == 201) {
       var jsonResponse = jsonDecode(response.body);
       return EstablishmentEmployee.fromJson(jsonResponse);
+    } else {
+      _handleError(response.body);
+    }
+    throw Exception('Não foi possível completar a requisição para $path.');
+  }
+
+  Future<bool> _deleteRequest(String path, int id) async {
+    var token = await storage.read(key: 'token');
+    var url = Uri.parse('$_baseUrl/$id$path');
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.delete(
+      url,
+      headers: headers,
+      body: jsonEncode(true),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
     } else {
       _handleError(response.body);
     }

@@ -23,7 +23,11 @@ class BarChartSample7State extends State<BarChartSample7> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    fetchDataHome();
+    fetchDataHome().then((_) {
+      setState(() {
+        isLoading = false;
+      });
+    });
   }
 
   Future<void> fetchDataHome() async {
@@ -42,7 +46,6 @@ class BarChartSample7State extends State<BarChartSample7> {
   List<List<BarChartGroupData>> generateQuarterlyGroups() {
     List<BarChartGroupData> allGroups = [];
 
-    // Gerando os grupos com base nos dados da API
     for (var i = 0; i < monthlyReports!.length; i++) {
       final report = monthlyReports![i];
       allGroups.add(createGroupData(
@@ -64,7 +67,7 @@ class BarChartSample7State extends State<BarChartSample7> {
       barRods: [
         BarChartRodData(
           toY: y1,
-          color: Colors.blue,
+          color: Color(0xFF2864ff),
           width: barWidth,
           borderRadius: BorderRadius.circular(4),
         ),
@@ -84,99 +87,104 @@ class BarChartSample7State extends State<BarChartSample7> {
   Widget build(BuildContext context) {
     List<List<BarChartGroupData>> quarterlyGroups = generateQuarterlyGroups();
 
-    return Column(
-      children: [
-        SizedBox(
-          height:
-              350, // Aumenta a altura para evitar o corte da legenda inferior
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: BarChart(
-              BarChartData(
-                barGroups: quarterlyGroups.isNotEmpty
-                    ? quarterlyGroups[currentQuarter]
-                    : [],
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (double value, TitleMeta meta) {
-                        const months = [
-                          'Jan',
-                          'Fev',
-                          'Mar',
-                          'Abr',
-                          'Mai',
-                          'Jun',
-                          'Jul',
-                          'Ago',
-                          'Set',
-                          'Out',
-                          'Nov',
-                          'Dez'
-                        ];
-                        int monthIndex = monthlyReports!.isNotEmpty
-                            ? monthlyReports![value.toInt()].month - 1
-                            : 0;
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(months[monthIndex]),
-                        );
-                      },
-                    ),
-                  ),
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 5,
-                      reservedSize: 40,
-                      getTitlesWidget: (double value, TitleMeta meta) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(value.toString()),
-                        );
-                      },
+    return isLoading
+        ? Center(
+            child: CircularProgressIndicator(
+                color: Color(
+                    0xFF2864ff))) // Exibe o loading enquanto está carregando
+        : Column(
+            children: [
+              SizedBox(
+                height:
+                    350, // Aumenta a altura para evitar o corte da legenda inferior
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: BarChart(
+                    BarChartData(
+                      barGroups: quarterlyGroups.isNotEmpty
+                          ? quarterlyGroups[currentQuarter]
+                          : [],
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 30,
+                            getTitlesWidget: (double value, TitleMeta meta) {
+                              const months = [
+                                'Jan',
+                                'Fev',
+                                'Mar',
+                                'Abr',
+                                'Mai',
+                                'Jun',
+                                'Jul',
+                                'Ago',
+                                'Set',
+                                'Out',
+                                'Nov',
+                                'Dez'
+                              ];
+                              int monthIndex = monthlyReports!.isNotEmpty
+                                  ? monthlyReports![value.toInt()].month - 1
+                                  : 0;
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(months[monthIndex]),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 5,
+                            reservedSize: 40,
+                            getTitlesWidget: (double value, TitleMeta meta) {
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Text(value.toString()),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      gridData: FlGridData(show: false),
+                      borderData: FlBorderData(show: false),
+                      barTouchData: BarTouchData(enabled: true),
                     ),
                   ),
                 ),
-                gridData: FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                barTouchData: BarTouchData(enabled: true),
               ),
-            ),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                setState(() {
-                  currentQuarter =
-                      (currentQuarter - 1) % quarterlyGroups.length;
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.arrow_forward),
-              onPressed: () {
-                setState(() {
-                  currentQuarter =
-                      (currentQuarter + 1) % quarterlyGroups.length;
-                });
-              },
-            ),
-          ],
-        ),
-      ],
-    );
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      setState(() {
+                        currentQuarter =
+                            (currentQuarter - 1) % quarterlyGroups.length;
+                      });
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      setState(() {
+                        currentQuarter =
+                            (currentQuarter + 1) % quarterlyGroups.length;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          );
   }
 }

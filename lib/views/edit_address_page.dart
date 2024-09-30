@@ -120,12 +120,13 @@ class _EditAddressPageState extends State<EditAddressPage> {
 
   Future<void> fetchDataCep() async {
     ViaCepServices().getAddress(cepController.text).then((ViaCep viaCep) {
-      print(viaCep.logradouro);
       stateController.text = viaCep.uf ?? '';
       cityController.text = viaCep.localidade ?? '';
       hoodController.text = viaCep.bairro ?? '';
       streetController.text = viaCep.logradouro ?? '';
-    }).catchError((e) {});
+    }).catchError((e) {
+      print(e);
+    });
   }
 
   @override
@@ -209,7 +210,6 @@ class _EditAddressPageState extends State<EditAddressPage> {
               ),
             ),
             onEditingComplete: () {
-              print('oi1');
               fetchDataCep();
             },
           ),

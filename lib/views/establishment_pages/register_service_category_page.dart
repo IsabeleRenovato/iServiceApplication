@@ -50,6 +50,7 @@ class _RegisterServiceCategoryPageState
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(
@@ -114,14 +115,7 @@ class _RegisterServiceCategoryPageState
                     await ServiceCategoryServices()
                         .addServiceCategory(request)
                         .then((ServiceCategory serviceCategory) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ServiceCategoryPage(
-                            userInfo: widget.userInfo,
-                          ),
-                        ),
-                      );
+                      Navigator.pop(context, true);
                     });
                   },
                   color: filledFields ? const Color(0xFF2864ff) : Colors.grey,

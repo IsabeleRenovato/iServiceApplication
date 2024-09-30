@@ -57,7 +57,7 @@ class _EmployeesListPageState extends State<EmployeesListPage>
     );
 
     if (result == true) {
-      fetchData(); // Atualiza a lista de funcionários ao retornar se um novo funcionário foi adicionado
+      fetchData();
     }
   }
 
@@ -134,7 +134,7 @@ class _EmployeesListPageState extends State<EmployeesListPage>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -157,63 +157,65 @@ class _EmployeesListPageState extends State<EmployeesListPage>
           ),
         ),
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                  color: Color(0xFF2864ff))) // Indicador de carregamento
-          : FutureBuilder<List<EstablishmentEmployee?>>(
-              future: _establishmentEmployeeFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF2864ff)),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Erro: ${snapshot.error}'));
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: InkWell(
-                          onTap: _navigateAndAddEmployee,
-                          child: Container(
-                            width: 390,
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2864ff),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Cadastrar funcionário",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: EmployeeListView(
+      body: Column(
+        children: [
+          // Botão "Cadastrar Funcionário" sempre visível
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: InkWell(
+              onTap: _navigateAndAddEmployee,
+              child: Container(
+                width: 370,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2864ff),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Cadastrar funcionário",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF2864ff)))
+                : FutureBuilder<List<EstablishmentEmployee?>>(
+                    future: _establishmentEmployeeFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                              color: Color(0xFF2864ff)),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Erro: ${snapshot.error}'));
+                      } else if (snapshot.hasData &&
+                          snapshot.data!.isNotEmpty) {
+                        return EmployeeListView(
                           userInfo: _userInfo!,
                           employees: snapshot.data!,
                           onUpdated: refreshData,
-                        ),
-                      ),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                    child: Text('Nenhum funcionário cadastrado.'),
-                  );
-                }
-              },
-            ),
+                        );
+                      } else {
+                        return const Center(
+                          child: Text('Nenhum funcionário cadastrado.'),
+                        );
+                      }
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -221,14 +223,14 @@ class _EmployeesListPageState extends State<EmployeesListPage>
 class EmployeeListView extends StatelessWidget {
   final UserInfo userInfo;
   final List<EstablishmentEmployee?> employees;
-
   final VoidCallback onUpdated;
 
-  const EmployeeListView(
-      {required this.userInfo,
-      required this.employees,
-      required this.onUpdated, // Default é false
-      super.key});
+  const EmployeeListView({
+    required this.userInfo,
+    required this.employees,
+    required this.onUpdated,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -264,19 +266,15 @@ class EmployeeListView extends StatelessWidget {
                     Row(
                       children: [
                         const SizedBox(width: 25),
-                        // Adicione o CircularAvatar aqui
                         CircleAvatar(
-                          radius: 40, // Ajuste o tamanho conforme necessário
+                          radius: 40,
                           backgroundImage: employee!.employeeImage != null
                               ? NetworkImage(
-                                  employee!.employeeImage ?? 'URL_INVALIDA',
-                                  scale: 1.0,
-                                )
+                                  employee!.employeeImage ?? 'URL_INVALIDA')
                               : AssetImage('assets/images.png')
-                                  as ImageProvider, // Ou use uma imagem local
+                                  as ImageProvider,
                         ),
-                        const SizedBox(
-                            width: 10), // Espaçamento entre o avatar e o texto
+                        const SizedBox(width: 10),
                         Expanded(
                           child: ListTile(
                             title: Text(employee!.name,
@@ -302,7 +300,20 @@ class EmployeeListView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         InkWell(
-                          onTap: () async {},
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RegisterEmployeesPage(
+                                    establishmentEmployeeId:
+                                        employee.establishmentEmployeeId),
+                              ),
+                            );
+
+                            if (result == true) {
+                              onUpdated();
+                            }
+                          },
                           child: Container(
                             width: 165,
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -316,14 +327,19 @@ class EmployeeListView extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16,
                                 ),
                               ),
                             ),
                           ),
                         ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () async {
+                            var result = await EstablishmentEmployeeServices()
+                                .delete(employee.establishmentEmployeeId);
+                            if (result) {
+                              onUpdated(); // Chama o callback após retornar com sucesso
+                            }
+                          },
                           child: Container(
                             width: 165,
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -333,11 +349,10 @@ class EmployeeListView extends StatelessWidget {
                             ),
                             child: const Center(
                               child: Text(
-                                'Excluir',
+                                'Remover',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16,
                                 ),
                               ),
                             ),

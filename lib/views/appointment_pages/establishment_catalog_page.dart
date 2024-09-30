@@ -140,25 +140,25 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                   String dayName;
                                   switch (day) {
                                     case '0':
-                                      dayName = 'Segunda-feira';
+                                      dayName = 'Domingo';
                                       break;
                                     case '1':
-                                      dayName = 'Terça-feira';
+                                      dayName = 'Segunda-feira';
                                       break;
                                     case '2':
-                                      dayName = 'Quarta-feira';
+                                      dayName = 'Terça-feira';
                                       break;
                                     case '3':
-                                      dayName = 'Quinta-feira';
+                                      dayName = 'Quarta-feira';
                                       break;
                                     case '4':
-                                      dayName = 'Sexta-feira';
+                                      dayName = 'Quinta-feira';
                                       break;
                                     case '5':
-                                      dayName = 'Sábado';
+                                      dayName = 'Sexta-feira';
                                       break;
                                     case '6':
-                                      dayName = 'Domingo';
+                                      dayName = 'Sábado';
                                       break;
                                     default:
                                       dayName = 'Dia desconhecido';

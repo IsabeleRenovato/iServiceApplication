@@ -388,7 +388,8 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                           try {
                             if (widget.establishmentEmployeeId > 0) {
                               var request = EstablishmentEmployee(
-                                establishmentEmployeeId: 0,
+                                establishmentEmployeeId:
+                                    widget.establishmentEmployeeId,
                                 name: nameController.text,
                                 document: cpfController.text,
                                 dateOfBirth: DateFormat("dd/MM/yyyy")
@@ -400,8 +401,8 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                               );
 
                               await EstablishmentEmployeeServices()
-                                  .updateEstablishmentEmployee(
-                                      request, isEdited)
+                                  .updateEstablishmentEmployee(request,
+                                      isEdited, widget.establishmentEmployeeId)
                                   .then((EstablishmentEmployee
                                       establishmentEmployee) {
                                 Navigator.pop(context, true);

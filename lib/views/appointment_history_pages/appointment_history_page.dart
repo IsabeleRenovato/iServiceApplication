@@ -325,6 +325,9 @@ class AppointmentListView extends StatelessWidget {
                                   fontWeight: FontWeight.bold, fontSize: 16)),
                           Text("Duração: $duration",
                               style: const TextStyle(fontSize: 16)),
+                          Text(
+                              "Responsável: ${appointment.establishmentEmployeeId}",
+                              style: const TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),

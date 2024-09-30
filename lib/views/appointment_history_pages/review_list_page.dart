@@ -15,6 +15,7 @@ class ReviewListPage extends StatefulWidget {
 class _ReviewListPageState extends State<ReviewListPage> {
   List<Map<String, dynamic>> ratings = [];
   UserInfo? establishmentUserInfo;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -22,6 +23,7 @@ class _ReviewListPageState extends State<ReviewListPage> {
     fetchFeedbacks().then((result) {
       setState(() {
         ratings = result;
+        _isLoading = false;
       });
     });
   }
@@ -50,8 +52,18 @@ class _ReviewListPageState extends State<ReviewListPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(

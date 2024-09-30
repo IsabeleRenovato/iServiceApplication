@@ -27,7 +27,7 @@ class AppointmentPage extends StatefulWidget {
 }
 
 class _AppointmentPageState extends State<AppointmentPage> {
-  DateTime _selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now().toLocal();
   Future<List<String>> availableTimes = Future.value([]);
   String? _selectedTime;
   final PageController _pageController = PageController();
@@ -71,7 +71,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Align(
           alignment: Alignment.center,
           child: Padding(
@@ -134,6 +136,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TableCalendar(
+                  locale: 'pt_BR',
                   firstDay: DateTime.now(),
                   lastDay: DateTime.now().add(const Duration(days: 30 * 6)),
                   focusedDay: _selectedDay,

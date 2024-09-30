@@ -15,11 +15,16 @@ class ServiceCategoryPage extends StatefulWidget {
 
 class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
   Future<List<ServiceCategory>> _serviceCategoriesFuture = Future.value([]);
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
   }
 
   void refreshData() {
@@ -49,8 +54,18 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(
@@ -81,13 +96,16 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
           Padding(
             padding: const EdgeInsets.all(15),
             child: InkWell(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => RegisterServiceCategoryPage(
                           userInfo: widget.userInfo)),
                 );
+                if (result == true) {
+                  fetchData();
+                }
               },
               child: Container(
                 width: 390,
@@ -204,7 +222,7 @@ class SchedulesCard extends StatelessWidget {
                             .deleteServiceCategory(
                                 serviceCategory.serviceCategoryId);
                         if (result) {
-                          onDeleted(); // Chama o callback após retornar com sucesso
+                          onDeleted();
                         }
                       },
                     ),

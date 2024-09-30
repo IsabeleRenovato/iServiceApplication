@@ -108,10 +108,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
                 controller: nameController,
                 hintText: 'Nome',
                 prefixIcon: Icons.account_circle_rounded,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(40),
-                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]'))
-                ],
+                inputFormatters: [LengthLimitingTextInputFormatter(40)],
               ),
               const SizedBox(
                 height: 20,
@@ -193,7 +190,7 @@ class _RegisterUserPageState extends State<RegisterUserPage> {
               ),
               TextFormField(
                 controller: confirmPasswordController,
-                inputFormatters: [LengthLimitingTextInputFormatter(15)],
+                inputFormatters: [LengthLimitingTextInputFormatter(20)],
                 style: const TextStyle(
                   color: Colors.black,
                 ),

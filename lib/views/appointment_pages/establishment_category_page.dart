@@ -23,11 +23,17 @@ class EstablishmentCategoryPage extends StatefulWidget {
 
 class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
   late Future<List<UserProfile>> listaEstabelecimentos = Future.value([]);
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchData().then((_) {
+      setState(() {
+        _isLoading =
+            false; // Atualiza o estado para refletir que o loading está completo
+      });
+    });
   }
 
   Future<void> fetchData() async {
@@ -48,8 +54,18 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF2864ff)),
+        ),
+      );
+    }
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(

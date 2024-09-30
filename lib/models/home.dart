@@ -10,6 +10,7 @@ class HomeModel {
   int? totalAppointments;
   List<EstablishmentCategory>? categories;
   List<MonthlyReport>? monthlyReports;
+  int? totalServicesActives;
 
   HomeModel({
     this.nextAppointment,
@@ -18,6 +19,7 @@ class HomeModel {
     this.totalAppointments,
     this.categories,
     this.monthlyReports,
+    this.totalServicesActives,
   });
 
   // Factory method to create an instance of HomeModel from a JSON map
@@ -39,6 +41,7 @@ class HomeModel {
           ? List<MonthlyReport>.from((json['monthlyReports'] as List)
               .map((item) => MonthlyReport.fromJson(item)))
           : null,
+      totalServicesActives: json['totalServicesActives'],
     );
   }
 
@@ -51,6 +54,7 @@ class HomeModel {
       'totalAppointments': totalAppointments,
       'categories': categories?.map((item) => item.toJson()).toList(),
       'monthlyReports': monthlyReports?.map((item) => item.toJson()).toList(),
+      'totalServicesActives': totalServicesActives,
     };
   }
 }

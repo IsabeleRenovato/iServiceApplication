@@ -65,13 +65,13 @@ class ServiceCardPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          Text(
-            service.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16, // Reduzindo o tamanho do texto
-            ),
-          ),
+          Text(service.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis),
           Text(
             '${service.estimatedDuration} Minutos',
             style: const TextStyle(

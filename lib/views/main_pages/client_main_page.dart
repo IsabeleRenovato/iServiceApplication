@@ -33,6 +33,7 @@ class _ClientMainPage extends State<ClientMainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -44,6 +45,8 @@ class _ClientMainPage extends State<ClientMainPage> {
           ),
         ),
         child: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -66,6 +69,7 @@ class _ClientMainPage extends State<ClientMainPage> {
           selectedItemColor: Color(0xFF2864ff),
           unselectedItemColor: Colors.black,
           onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
         ),
       ),
     );

@@ -128,6 +128,7 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Align(
           alignment: Alignment.center,
           child: Padding(
@@ -356,7 +357,7 @@ class _DiasDaSemanaState extends State<DiasDaSemana> {
               widget.onUpdateSelectedDays(_diasSelecionados);
             },
             child: Container(
-              padding: const EdgeInsets.all(11),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: _diasSelecionados[i]
                     ? const Color(0xFF2864ff)
@@ -382,19 +383,19 @@ class _DiasDaSemanaState extends State<DiasDaSemana> {
   String _nomeDiaSemana(int index) {
     switch (index) {
       case 0:
-        return 'Seg';
-      case 1:
-        return 'Ter';
-      case 2:
-        return 'Qua';
-      case 3:
-        return 'Qui';
-      case 4:
-        return 'Sex';
-      case 5:
-        return 'Sáb';
-      case 6:
         return 'Dom';
+      case 1:
+        return 'Seg';
+      case 2:
+        return 'Ter';
+      case 3:
+        return 'Qua';
+      case 4:
+        return 'Qui';
+      case 5:
+        return 'Sex';
+      case 6:
+        return 'Sáb';
       default:
         return '';
     }

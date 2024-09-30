@@ -5,8 +5,7 @@ import 'package:service_app/utils/baseurlAPI.dart';
 
 class ViaCepServices {
   Future<ViaCep> getAddress(String cep) async {
-    print('oi');
-    var url = Uri.parse('http://srv452480.hstgr.cloud/iService/Search/$cep');
+    var url = Uri.parse('${baseUrlAPI().APIUrl}/ViaCep/Search/$cep');
     var response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},

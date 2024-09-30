@@ -181,6 +181,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Align(
           alignment: Alignment.center,
@@ -297,7 +298,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
               Text(
                 _userInfo.userProfile!.commercialName!,
                 style: const TextStyle(
-                  fontSize: 36,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
