@@ -206,7 +206,6 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
-                                  // Retornar um widget para exibir em caso de erro
                                   return Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
@@ -283,8 +282,6 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    //Duração
                     DurationSelector(
                       onDurationSelected: (duration) {
                         setState(() {
@@ -292,7 +289,6 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         });
                       },
                     ),
-
                     const SizedBox(height: 10),
                     Utils.buildTextField(
                       controller: serviceNameController,
@@ -308,8 +304,10 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         prefixIcon: Icons.price_change_outlined,
                         onChanged: (value) {
                           setState(() {
+                            String formattedValue =
+                                priceController.text.replaceAll(',', '.');
                             doubleValue =
-                                double.tryParse(priceController.text) ?? 999999;
+                                double.tryParse(formattedValue) ?? 999999;
                           });
                         }),
                     const SizedBox(height: 10),
@@ -399,14 +397,12 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                         ),
                         onChanged: (newValue) {
                           setState(() {
-                            selectedCategory =
-                                newValue; // Aqui você já não permite nulos
+                            selectedCategory = newValue;
                           });
                         },
                         items: [
                           const DropdownMenuItem<int>(
-                            value:
-                                0, // Considere mudar o valor de null para 0 ou outro valor adequado
+                            value: 0,
                             child: Padding(
                               padding: EdgeInsets.only(left: 12),
                               child: Row(
@@ -497,13 +493,11 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   employee.isAvailable = value ?? false;
                                 });
                               },
-                              activeColor: Color(
-                                  0xFF2864ff), // Cor do checkbox selecionado
+                              activeColor: Color(0xFF2864ff),
                               checkColor: Colors.white,
                             ))
                         .toList(),
                     const SizedBox(height: 10),
-
                     Text(
                       mensagemErro,
                       style: const TextStyle(color: Colors.red),
@@ -519,10 +513,9 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                           try {
                             var selectedEmployeesIds = employees
                                 .where((employee) =>
-                                    employee?.isAvailable !=
-                                    false) // Filtra apenas os que têm isAvailable verdadeiro ou nulo
-                                .map((employee) => employee!
-                                    .establishmentEmployeeId) // Seleciona o campo EstablishmentEmployeeId
+                                    employee?.isAvailable != false)
+                                .map((employee) =>
+                                    employee!.establishmentEmployeeId)
                                 .toList();
 
                             if (widget.serviceId > 0) {
@@ -534,6 +527,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   name: serviceNameController.text,
                                   description: descriptionController.text,
                                   price: doubleValue,
+                                  priceNet: doubleValue.toStringAsFixed(2),
                                   estimatedDuration: selectedDuration!,
                                   serviceImage: imagePath,
                                   establishmentEmployeeIds:
@@ -561,6 +555,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   name: serviceNameController.text,
                                   description: descriptionController.text,
                                   price: doubleValue,
+                                  priceNet: doubleValue.toStringAsFixed(2),
                                   estimatedDuration: selectedDuration!,
                                   serviceImage: imagePath,
                                   establishmentEmployeeIds:
@@ -569,7 +564,7 @@ class _RegisterServicePageState extends State<RegisterServicePage> {
                                   deleted: false,
                                   creationDate: DateTime.now(),
                                   lastUpdateDate: DateTime.now());
-
+                              print(request.price);
                               await ServiceServices()
                                   .addService(request)
                                   .then((Service service) {

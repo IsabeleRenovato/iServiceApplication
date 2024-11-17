@@ -63,8 +63,7 @@ class _EditEstablishmentProfilePageState
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -89,8 +88,7 @@ class _EditEstablishmentProfilePageState
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
-    print(tokenProvider.token!);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -127,7 +125,7 @@ class _EditEstablishmentProfilePageState
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),

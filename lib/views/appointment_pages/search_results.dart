@@ -39,8 +39,7 @@ class SearchResultsPage extends StatelessWidget {
                   final service = servicesList[index];
                   return MenuItemCard(
                     clientUserInfo: userInfo,
-                    establishmentUserInfo:
-                        userInfo, // Ajuste conforme necessário
+                    establishmentUserInfo: userInfo,
                     service: service,
                   );
                 },

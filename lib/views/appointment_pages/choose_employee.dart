@@ -56,7 +56,6 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
         });
       }
     } catch (e) {
-      debugPrint('Erro ao buscar funcionários: $e');
       if (mounted) {
         setState(() {
           employees = [];
@@ -145,7 +144,6 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
                         children: employees.map((employee) {
                           return RadioListTile<EstablishmentEmployee>(
                             title: Text(employee.name),
-
                             value: employee,
                             groupValue: selectedEmployee,
                             onChanged: employee.isAvailable == true
@@ -154,11 +152,10 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
                                       selectedEmployee = value;
                                     });
                                   }
-                                : null, // Desabilita o RadioListTile se não estiver disponível
+                                : null,
                             activeColor: employee.isAvailable == true
                                 ? Color(0xFF2864ff)
-                                : Colors
-                                    .grey, // Muda a cor se disponível ou não
+                                : Colors.grey,
                           );
                         }).toList(),
                       ),
@@ -226,7 +223,7 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
                           mensagemErro = '';
                         });
                         widget.appointment.establishmentEmployeeId = 0;
-                        debugPrint("Botão Pular clicado");
+
                         await AppointmentServices()
                             .addAppointment(widget.appointment)
                             .then((Appointment appointment) {
@@ -240,7 +237,6 @@ class _ChooseEmployeePageState extends State<ChooseEmployeePage> {
                             ),
                             (Route<dynamic> route) => false,
                           );
-                          debugPrint("Navegação bem-sucedida");
                         }).catchError((e) {
                           atualizarMensagemErro(
                               'Erro ao registrar servidor: $e');

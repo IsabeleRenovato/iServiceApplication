@@ -24,7 +24,6 @@ class AddressServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers: $headers');
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       return Address?.fromJson(jsonDecode(response.body));
@@ -41,7 +40,7 @@ class AddressServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers: $headers');
+
     var response = await http.post(
       url,
       headers: headers,

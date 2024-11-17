@@ -63,12 +63,12 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
       appBar: AppBar(
         backgroundColor: Colors.white,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
-              0.25), // Ajusta a altura dinamicamente
+          preferredSize:
+              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
           child: Column(
             children: [
               Container(
-                padding: EdgeInsets.all(20), // Ajusta o padding
+                padding: EdgeInsets.all(20),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
@@ -78,8 +78,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: MediaQuery.of(context).size.width *
-                              0.1, // Ajusta o tamanho do CircleAvatar
+                          radius: MediaQuery.of(context).size.width * 0.1,
                           backgroundColor: Colors.grey[300],
                           backgroundImage:
                               widget.establishmentUserInfo.userProfile != null
@@ -102,8 +101,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                     .commercialName!,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: MediaQuery.of(context).size.width *
-                                      0.05, // Ajusta o tamanho da fonte
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.05,
                                 ),
                               ),
                               Text(
@@ -111,7 +110,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                 style: TextStyle(
                                     fontSize:
                                         MediaQuery.of(context).size.width *
-                                            0.04), // Ajusta o tamanho da fonte
+                                            0.04),
                               ),
                             ],
                           ),
@@ -170,10 +169,9 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                   context: context,
                                   builder: (BuildContext context) {
                                     return SizedBox(
-                                      height: MediaQuery.of(context)
-                                              .size
-                                              .height *
-                                          0.25, // Ajusta a altura dinamicamente
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.25,
                                       width: MediaQuery.of(context).size.width,
                                       child: Center(
                                         child: Column(
@@ -186,11 +184,11 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                               child: Text(
                                                 'Horário de funcionamento',
                                                 style: TextStyle(
-                                                  fontSize: MediaQuery.of(
-                                                              context)
-                                                          .size
-                                                          .width *
-                                                      0.05, // Ajusta o tamanho da fonte
+                                                  fontSize:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.05,
                                                   color:
                                                       const Color(0xFF2864ff),
                                                   fontWeight: FontWeight.bold,
@@ -200,10 +198,9 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                             SizedBox(height: 15),
                                             ...daysWithSchedule
                                                 .map((day) => Padding(
-                                                      padding: const EdgeInsets
-                                                          .only(
-                                                          left:
-                                                              20), // Ajusta o padding
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 20),
                                                       child: Text(
                                                         day,
                                                         style: TextStyle(
@@ -211,7 +208,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                                                         context)
                                                                     .size
                                                                     .width *
-                                                                0.04), // Ajusta o tamanho da fonte
+                                                                0.04),
                                                       ),
                                                     ))
                                                 .toList(),
@@ -230,12 +227,12 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: MediaQuery.of(context).size.width *
-                                      0.04, // Ajusta o tamanho da fonte
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04,
                                 ),
                               ),
                             ),
-                            SizedBox(width: 20), // Ajusta o espaçamento
+                            SizedBox(width: 20),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
@@ -263,8 +260,8 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                                     ? '★ ${widget.establishmentUserInfo.userProfile!.rating!.value.toStringAsFixed(1)}'
                                     : '★ 0',
                                 style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.width *
-                                      0.04, // Ajusta o tamanho da fonte
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.04,
                                   color: Colors.black,
                                 ),
                               ),
@@ -299,7 +296,6 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
           } else if (snapshot.hasError) {
             return const Center(child: Text("Erro ao carregar os dados"));
           } else if (snapshot.hasData) {
-            // Criar um mapa de categorias para os serviços
             Map<String, List<Service>> servicesByCategory = {};
             for (Service service in snapshot.data!) {
               String categoryName = service.serviceCategory!.name;
@@ -308,7 +304,6 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                   .add(service);
             }
 
-            // Adicionar a guia "Todos" e a vista correspondente
             List<Tab> tabs = [const Tab(text: 'Todos')];
             List<Widget> tabViews = [
               CardCatalogPage(
@@ -317,7 +312,6 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                   services: snapshot.data!),
             ];
 
-            // Adicionar guias de categorias específicas
             tabs.addAll(servicesByCategory.keys
                 .map((categoryName) => Tab(text: categoryName))
                 .toList());
@@ -327,7 +321,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage>
                   establishmentUserInfo: widget.establishmentUserInfo,
                   services: entry.value);
             }).toList());
-            // Configuração do TabController se necessário
+
             if (_tabController == null ||
                 _tabController!.length != tabs.length) {
               _tabController?.dispose();

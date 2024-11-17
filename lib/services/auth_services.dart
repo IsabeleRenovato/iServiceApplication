@@ -38,16 +38,10 @@ class AuthServices {
     if (userInfo.token != null) {
       await storage.delete(key: 'token');
 
-      // Salve o novo token
-
       await storage.write(key: 'token', value: userInfo.token);
-
-      // Atualize o TokenProvider
 
       Provider.of<TokenProvider>(context, listen: false)
           .saveToken(userInfo.token!);
-
-      // Leia o token do armazenamento seguro para verificação
     } else {
       print('Token do usuário é nulo.');
     }
@@ -71,8 +65,8 @@ class AuthServices {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return UserInfo.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 401 || response.statusCode == 403) {
-      // Tratar erro de autenticação
-      await storage.delete(key: 'token'); // Limpar o token inválido ou expirado
+      // Tratamento de erro de autenticação
+      await storage.delete(key: 'token'); // Limpa o token inválido ou expirado
       Navigator.push(
         _context,
         MaterialPageRoute(
@@ -95,17 +89,17 @@ class AuthServices {
 
   Future<void> logout(BuildContext context) async {
     try {
-      // Remova o token do armazenamento seguro
+      // Remove o token do armazenamento seguro
       await storage.delete(key: 'token');
 
       Provider.of<TokenProvider>(context, listen: false).deleteToken();
 
-      // Remova outros dados de sessão do shared_preferences
+      // Remove outros dados de sessão do shared_preferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
 
-      // Redefina o estado da aplicação, se necessário
-      // Navegue para a tela de login
+      // Redefine o estado da aplicação, se necessário
+
       Navigator.of(context)
           .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
     } catch (e) {

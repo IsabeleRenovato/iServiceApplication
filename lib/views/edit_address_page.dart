@@ -50,8 +50,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
     fetchUserInfo();
@@ -82,8 +81,6 @@ class _EditAddressPageState extends State<EditAddressPage> {
   Future<UserInfo?> fetchUserInfo() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     var payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
-    print(tokenProvider.token!);
 
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
@@ -102,7 +99,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload['AddressId']);
+
     if (payload['AddressId'] != null) {
       int AddressId = int.tryParse(payload['AddressId'].toString()) ?? 0;
       await AddressServices().getById(AddressId).then((Address? address) {
@@ -140,7 +137,7 @@ class _EditAddressPageState extends State<EditAddressPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),

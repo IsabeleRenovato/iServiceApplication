@@ -82,7 +82,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                     );
 
                     if (result == true) {
-                      fetchData(); // Atualiza a lista de serviços ao retornar se um novo serviço foi adicionado
+                      fetchData();
                     }
                   },
                   child: Container(
@@ -139,9 +139,7 @@ class _EstablishmentCatalogPageState extends State<EstablishmentCatalogPage> {
                     );
                   }
                 }
-                return const Center(
-                    child: Text(
-                        'Nenhum serviço cadastrado.')); // Exibe mensagem se não houver dados
+                return const Center(child: Text('Nenhum serviço cadastrado.'));
               },
             ),
           ),

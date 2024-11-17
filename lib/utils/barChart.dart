@@ -88,15 +88,11 @@ class BarChartSample7State extends State<BarChartSample7> {
     List<List<BarChartGroupData>> quarterlyGroups = generateQuarterlyGroups();
 
     return isLoading
-        ? Center(
-            child: CircularProgressIndicator(
-                color: Color(
-                    0xFF2864ff))) // Exibe o loading enquanto está carregando
+        ? Center(child: CircularProgressIndicator(color: Color(0xFF2864ff)))
         : Column(
             children: [
               SizedBox(
-                height:
-                    350, // Aumenta a altura para evitar o corte da legenda inferior
+                height: 350,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: BarChart(

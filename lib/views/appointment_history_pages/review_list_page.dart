@@ -54,7 +54,7 @@ class _ReviewListPageState extends State<ReviewListPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -90,7 +90,7 @@ class _ReviewListPageState extends State<ReviewListPage> {
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchFeedbacks(), // Chamada do método fetchFeedbacks
+        future: fetchFeedbacks(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

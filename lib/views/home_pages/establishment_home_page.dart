@@ -48,7 +48,7 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
   Future<void> fetchUserInfo() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -101,14 +101,14 @@ class _EstablishmentHomePageState extends State<EstablishmentHomePage> {
   @override
   Widget build(BuildContext context) {
     var tokenProvider = Provider.of<TokenProvider>(context);
-    print(tokenProvider.token);
+
     if (tokenProvider.token == null) {
       return const CircularProgressIndicator();
     }
 
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),

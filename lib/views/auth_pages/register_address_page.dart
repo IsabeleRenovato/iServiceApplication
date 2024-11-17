@@ -63,7 +63,6 @@ class _RegisterAddressPageState extends State<RegisterAddressPage> {
 
   Future<void> fetchData() async {
     ViaCepServices().getAddress(cepController.text).then((ViaCep viaCep) {
-      print(viaCep.logradouro);
       stateController.text = viaCep.uf ?? '';
       cityController.text = viaCep.localidade ?? '';
       hoodController.text = viaCep.bairro ?? '';

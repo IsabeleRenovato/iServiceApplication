@@ -19,11 +19,10 @@ class ServiceCardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtendo a largura da tela
     final screenWidth = MediaQuery.of(context).size.width;
-    // Definindo a largura responsiva com base na largura da tela
-    final imageWidth = screenWidth * 0.4; // 40% da largura da tela
-    final buttonWidth = screenWidth * 0.4; // 40% da largura da tela
+
+    final imageWidth = screenWidth * 0.4;
+    final buttonWidth = screenWidth * 0.4;
 
     return Container(
       padding: const EdgeInsets.all(15),
@@ -46,7 +45,7 @@ class ServiceCardPage extends StatelessWidget {
             onTap: () {},
             child: Container(
               width: imageWidth,
-              height: imageWidth, // Tornando a imagem quadrada
+              height: imageWidth,
               alignment: Alignment.center,
               child: (service.serviceImage == null ||
                       service.serviceImage!.isEmpty)
@@ -55,7 +54,7 @@ class ServiceCardPage extends StatelessWidget {
                       fit: BoxFit.cover,
                       width: imageWidth,
                       height: imageWidth,
-                    ) // Imagem padrão
+                    )
                   : Image.network(
                       service.serviceImage!,
                       fit: BoxFit.cover,
@@ -101,7 +100,7 @@ class ServiceCardPage extends StatelessWidget {
                     ),
                   );
                   if (result != null && result) {
-                    onUpdated(); // Chama o callback após retornar com sucesso
+                    onUpdated();
                   }
                 },
                 child: Container(
@@ -129,7 +128,7 @@ class ServiceCardPage extends StatelessWidget {
                   var result =
                       await ServiceServices().delete(service.serviceId);
                   if (result) {
-                    onUpdated(); // Chama o callback após retornar com sucesso
+                    onUpdated();
                   }
                 },
                 child: Container(

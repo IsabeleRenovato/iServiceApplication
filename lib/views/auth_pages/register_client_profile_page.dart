@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:scroll_date_picker/scroll_date_picker.dart';
 import 'package:service_app/models/user_info.dart';
 import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/auth_services.dart';
@@ -25,19 +26,55 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
   String mensagemErro = '';
   bool filledFields = false;
 
-  Future<void> _selecionarData(BuildContext context) async {
-    final DateTime? dataEscolhida = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
+  Future<void> _showScrollDatePicker(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
 
-    if (dataEscolhida != null) {
-      setState(() {
-        birthController.text = DateFormat('dd/MM/yyyy').format(dataEscolhida);
-      });
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 200,
+                  child: ScrollDatePicker(
+                    selectedDate: selectedDate,
+                    locale: Locale('pt', 'BR'),
+                    onDateTimeChanged: (DateTime value) {
+                      selectedDate = value;
+                    },
+                    minimumDate: DateTime(1900),
+                    maximumDate: DateTime.now(),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      birthController.text =
+                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2864ff),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
+                  child: Text(
+                    'Selecionar',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -150,7 +187,10 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                 ),
                 TextFormField(
                   controller: birthController,
-                  onTap: () => _selecionarData(context),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    _showScrollDatePicker(context);
+                  },
                   style: const TextStyle(
                     color: Colors.black,
                   ),
@@ -179,7 +219,6 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                     ),
                   ),
                   validator: (birthController) {
-                    // Usando a validação de idade da classe ValidationUtils
                     return ValidationUtils.validateAge(birthController);
                   },
                 ),

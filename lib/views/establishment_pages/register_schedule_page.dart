@@ -25,14 +25,12 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
   _DiasDaSemanaState diasDaSemana = _DiasDaSemanaState();
   List<bool> _selectedDays = [false, false, false, false, false, false, false];
 
-// Use isso para atualizar _selectedDays sempre que eles mudarem:
   void _updateSelectedDays(List<bool> selectedDays) {
     setState(() {
       _selectedDays = selectedDays;
     });
   }
 
-// Método para obter os dias selecionados como string:
   String _getSelectedDaysAsString() {
     List<int> diasSelecionadosIndices = [];
     for (int i = 0; i < _selectedDays.length; i++) {
@@ -48,8 +46,7 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
     super.initState();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
     timeStartController.addListener(atualizarEstadoCampos);
@@ -89,8 +86,8 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
             scheduleId = schedule.scheduleId;
             _updateSelectedDays(List.generate(
                 7,
-                (index) => schedule.days.split(',').contains(index
-                    .toString()))); // Convertendo dias em formato de string para List<bool>
+                (index) =>
+                    schedule.days.split(',').contains(index.toString())));
           });
         }
       } catch (e) {
@@ -100,10 +97,8 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
   }
 
   void initSelectedDays(String? selectedDays) {
-    // Primeiro, reinicie todos os valores para false
     _selectedDays.fillRange(0, _selectedDays.length, false);
 
-    // Verifique se a string não é nula e não está vazia
     if (selectedDays != null && selectedDays.isNotEmpty) {
       var indices = selectedDays.split(',').map(int.parse);
       for (var index in indices) {
@@ -118,7 +113,7 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -320,12 +315,11 @@ class _RegisterSchedulePageState extends State<RegisterSchedulePage> {
 
 class DiasDaSemana extends StatefulWidget {
   final Function(List<bool>) onUpdateSelectedDays;
-  final List<bool>
-      initialSelectedDays; // Aceita uma lista de booleanos diretamente
+  final List<bool> initialSelectedDays;
 
   const DiasDaSemana({
     required this.onUpdateSelectedDays,
-    required this.initialSelectedDays, // Agora é um parâmetro obrigatório
+    required this.initialSelectedDays,
     super.key,
   });
 
@@ -334,9 +328,7 @@ class DiasDaSemana extends StatefulWidget {
 }
 
 class _DiasDaSemanaState extends State<DiasDaSemana> {
-  List<bool> _diasSelecionados =
-      List.filled(7, false); // Inicialização direta com valores padrão.
-
+  List<bool> _diasSelecionados = List.filled(7, false);
   @override
   void initState() {
     super.initState();

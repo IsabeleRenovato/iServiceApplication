@@ -47,7 +47,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Future<void> fetchUserInfo() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -106,7 +106,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
     var tokenProvider = Provider.of<TokenProvider>(context);
-    print(tokenProvider.token);
+
     if (tokenProvider.token == null) {
       return const CircularProgressIndicator();
     }
@@ -158,7 +158,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                     radius: 25,
                     backgroundImage: _userInfo.userProfile?.profileImage != null
                         ? NetworkImage(_userInfo.userProfile!.profileImage!)
-                        : const AssetImage('assets/foto_perfil.png')
+                        : const AssetImage('assets/images.png')
                             as ImageProvider,
                   ),
                 ],
@@ -241,7 +241,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             ),
                                             const SizedBox(width: 5),
                                             Text(
-                                              formattedDate, // ou o texto que você deseja exibir
+                                              formattedDate,
                                               style: const TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white54,
@@ -250,7 +250,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             ),
                                           ],
                                         )
-                                      : Container(), // Se for nulo, não exibe nada.
+                                      : Container(),
                                 ],
                               ),
                               const Spacer(),
@@ -265,7 +265,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             ),
                                             const SizedBox(width: 5),
                                             Text(
-                                              formattedTime, // ou o texto que você deseja exibir
+                                              formattedTime,
                                               style: const TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.white54,
@@ -274,7 +274,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             ),
                                           ],
                                         )
-                                      : Container(), // Se for nulo, não exibe nada.
+                                      : Container(),
                                 ],
                               ),
                             ],

@@ -56,8 +56,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -65,8 +64,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
-    print(tokenProvider.token!);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -110,12 +108,11 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
       if (!_isLoading) {
         await fatchDataImage();
       } else {
-        // Adicionar um mecanismo para tentar salvar o perfil quando _userInfo estiver pronto
         print('Erro: _userInfo não está pronto para salvar.');
       }
 
       setState(() {
-        _isImageLoading = false; // Termina o carregamento da imagem
+        _isImageLoading = false;
       });
     }
   }
@@ -167,7 +164,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -175,7 +172,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
     }
     final tokenProvider = Provider.of<TokenProvider>(context);
     if (tokenProvider.token == null) {
-      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+      return CircularProgressIndicator();
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -209,8 +206,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     children: [
                       CircleAvatar(
                         backgroundImage: _isImageLoading
-                            ? AssetImage(
-                                'assets/fundo cinza claro.png') // Imagem padrão durante o carregamento
+                            ? AssetImage('assets/fundo cinza claro.png')
                             : _userInfo.userProfile?.profileImage != null
                                 ? NetworkImage(
                                     _userInfo.userProfile!.profileImage!)
@@ -218,7 +214,7 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                                     as ImageProvider,
                         radius: 57.5,
                       ),
-                      if (_isImageLoading) // Exibe o indicador de carregamento
+                      if (_isImageLoading)
                         Positioned.fill(
                           child: Center(
                             child: CircularProgressIndicator(
@@ -425,7 +421,6 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
@@ -477,7 +472,6 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
@@ -528,7 +522,6 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(
@@ -664,7 +657,6 @@ class _MyEstablishmentPageState extends State<MyEstablishmentPage> {
                     ),
                   ),
                   onPressed: () async {
-                    // Mudança aqui para capturar o resultado
                     final updatedUserInfo = await Navigator.push<UserInfo>(
                       context,
                       MaterialPageRoute(

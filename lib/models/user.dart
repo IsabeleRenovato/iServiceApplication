@@ -19,7 +19,6 @@ class User {
     required this.lastUpdateDate,
   });
 
-  // Converte um objeto JSON em um objeto User
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       userId: json['userId'] as int,
@@ -34,7 +33,6 @@ class User {
     );
   }
 
-  // Converte um objeto User em um objeto JSON
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,

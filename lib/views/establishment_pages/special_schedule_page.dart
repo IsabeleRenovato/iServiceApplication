@@ -120,23 +120,18 @@ class _SpecialSchedulePageState extends State<SpecialSchedulePage> {
           ),
           Expanded(
             child: FutureBuilder<List<SpecialSchedule>>(
-              future: _specialScheduleFuture, // Passa o futuro aqui
+              future: _specialScheduleFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Exibe um indicador de carregamento enquanto os dados estão sendo carregados
                   return const Center(
                       child:
                           CircularProgressIndicator(color: Color(0xFF2864ff)));
                 } else if (snapshot.hasError) {
-                  // Se houver um erro ao carregar os dados, exibe uma mensagem de erro
                   return const Center(child: Text("Erro ao carregar os dados"));
                 } else if (snapshot.hasData) {
-                  // Uma vez que os dados estão disponíveis, constrói a lista
                   return ListView.builder(
-                    itemCount: snapshot.data!
-                        .length, // Usa a contagem de itens do snapshot.data
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      // Usa o dado de snapshot.data[index] para passar ao SchedulesCard
                       return SchedulesCard(
                         userInfo: widget.userInfo,
                         specialDay: snapshot.data![index],

@@ -43,8 +43,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -52,7 +51,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -80,7 +79,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
         print('Erro ao buscar UserInfo: $e ');
       });
     }
-    print(nameController);
   }
 
   Future<void> _getImage(ImageSource source) async {
@@ -106,13 +104,13 @@ class _MyProfilePageState extends State<MyProfilePage> {
       imageCache.clearLiveImages();
 
       if (!_isLoading) {
-        await fatchDataImage(); // Aguarde a atualização da imagem antes de prosseguir
+        await fatchDataImage();
       } else {
         print('Erro: _userInfo não está pronto para salvar.');
       }
 
       setState(() {
-        _isImageLoading = false; // Termina o carregamento da imagem
+        _isImageLoading = false;
       });
     }
   }
@@ -123,7 +121,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
         .then((String Path) {
       setState(() {
         _userInfo.userProfile!.profileImage = Path;
-        print(_userInfo.userProfile!.profileImage);
       });
       imageCache.clear();
       imageCache.clearLiveImages();
@@ -164,7 +161,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -172,7 +169,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     }
     final tokenProvider = Provider.of<TokenProvider>(context);
     if (tokenProvider.token == null) {
-      return CircularProgressIndicator(); // ou qualquer outro widget de carregamento
+      return CircularProgressIndicator();
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -206,16 +203,15 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     children: [
                       CircleAvatar(
                         backgroundImage: _isImageLoading
-                            ? AssetImage(
-                                'assets/fundo cinza claro.png') // Imagem padrão durante o carregamento
+                            ? AssetImage('assets/images.png')
                             : _userInfo.userProfile?.profileImage != null
                                 ? NetworkImage(
                                     _userInfo.userProfile!.profileImage!)
-                                : AssetImage('assets/foto_perfil.png')
+                                : AssetImage('assets/images.png')
                                     as ImageProvider,
                         radius: 57.5,
                       ),
-                      if (_isImageLoading) // Exibe o indicador de carregamento
+                      if (_isImageLoading)
                         Positioned.fill(
                           child: Center(
                             child: CircularProgressIndicator(

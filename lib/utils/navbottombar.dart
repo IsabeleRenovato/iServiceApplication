@@ -40,7 +40,6 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     final GoRouterState goRouterState = GoRouterState.of(context);
     final String currentLocation = goRouterState.location;
 
-    // Condicional para exibir o BottomNavigationBar
     final showBottomNavigationBar =
         !currentLocation.startsWith('/service_page');
 

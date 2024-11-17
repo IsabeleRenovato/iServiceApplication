@@ -13,7 +13,7 @@ class ViaCepServices {
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
+
       return ViaCep.fromJson(jsonResponse);
     } else {
       var jsonResponse = jsonDecode(response.body);

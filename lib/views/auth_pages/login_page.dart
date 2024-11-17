@@ -69,7 +69,6 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-
               TextFormField(
                 controller: emailController,
                 style: const TextStyle(
@@ -100,11 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
               const SizedBox(
                 height: 20,
               ),
-
               TextFormField(
                 controller: passwordController,
                 style: const TextStyle(
@@ -147,33 +144,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
-              // Esqueceu a senha?
-              /*const SizedBox(
-                height: 20,
-              ),
-
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RedefinirSenhaPage(),
-                    ),
-                  );
-                },
-                child: const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    'Esqueceu a senha?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-              ),*/
               SizedBox(
                 height: 20,
               ),
@@ -188,11 +158,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-
               const SizedBox(
                 height: 40,
               ),
-
               MaterialButton(
                 minWidth: double.infinity,
                 height: 60,
@@ -263,7 +231,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-
               const SizedBox(
                 height: 260,
               ),

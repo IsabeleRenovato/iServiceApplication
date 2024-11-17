@@ -128,6 +128,7 @@ class ServiceServices {
     multipartRequest.fields['Name'] = request.name;
     multipartRequest.fields['Description'] = request.description;
     multipartRequest.fields['Price'] = request.price.toString();
+    multipartRequest.fields['PriceNet'] = request.priceNet!;
     multipartRequest.fields['EstimatedDuration'] =
         request.estimatedDuration.toString();
     multipartRequest.fields['Active'] = request.active.toString();
@@ -169,6 +170,7 @@ class ServiceServices {
     multipartRequest.fields['Name'] = request.name;
     multipartRequest.fields['Description'] = request.description;
     multipartRequest.fields['Price'] = request.price.toString();
+    multipartRequest.fields['PriceNet'] = request.priceNet!;
     multipartRequest.fields['EstimatedDuration'] =
         request.estimatedDuration.toString();
     multipartRequest.fields['Active'] = request.active.toString();

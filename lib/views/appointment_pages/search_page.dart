@@ -41,9 +41,9 @@ class _SearchPageState extends State<SearchPage> {
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchSelected = false;
   late Future<List<EstablishmentCategory>> _categoryFuture = Future.value([]);
-  int _currentPage = 2;
+  int _currentPage = 1;
   int _totalPages = 1;
-  int _pageSize = 1;
+  int _pageSize = 25;
   String _searchText = "";
   bool _isLoading = true;
   late List<Service> _servicesList = [];
@@ -67,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> fetchDataSearch() async {
     try {
       var services = await ServiceServices()
-          .getServiceBySearch(_searchText, _currentPage, _pageSize);
+          .getServiceBySearch(_searchText, _pageSize, _currentPage);
       setState(() {
         _servicesList = services;
       });
@@ -97,7 +97,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> fetchUserInfo() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -135,7 +135,7 @@ class _SearchPageState extends State<SearchPage> {
           builder: (context) => SearchResultsPage(
             userInfo: _userInfo,
             searchText: _searchText,
-            servicesList: _servicesList, // Passar a lista para a próxima página
+            servicesList: _servicesList,
           ),
         ),
       );
@@ -146,7 +146,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -206,11 +206,9 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _searchText = value; // Atualiza a variável
+                    _searchText = value;
                     _isSearchSelected = true;
                   });
-                  print(
-                      "Texto atual do campo: $_searchText"); // Verifique se o texto está sendo atualizado
                 },
                 onSubmitted: (value) {
                   _onSearch();
@@ -330,7 +328,6 @@ class _SearchPageState extends State<SearchPage> {
   void _loadPage(int page) {
     setState(() {
       _currentPage = page;
-      //fetchData(page: page);
     });
   }
 }

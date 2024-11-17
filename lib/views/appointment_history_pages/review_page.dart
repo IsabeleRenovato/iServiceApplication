@@ -40,8 +40,6 @@ class _ReviewPageState extends State<ReviewPage> {
   Future<UserInfo?> fetchUserInfo() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     var payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
-    print(tokenProvider.token!);
 
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
@@ -204,7 +202,7 @@ class _ReviewPageState extends State<ReviewPage> {
                           const SizedBox(height: 20),
                           const TextField(
                             decoration: InputDecoration(
-                              border: OutlineInputBorder(), // Borda padrão
+                              border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                     color: Color(0xFF2864ff), width: 2.0),

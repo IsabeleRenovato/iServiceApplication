@@ -45,8 +45,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -133,7 +132,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     }
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),

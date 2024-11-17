@@ -34,8 +34,7 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
   Future<void> fetchData() async {
     try {
       List<ServiceCategory> serviceCategories = await ServiceCategoryServices()
-          .getByUserProfileId(widget.userInfo.userProfile!
-              .userProfileId); // Suponha que este método busque as categorias do serviço
+          .getByUserProfileId(widget.userInfo.userProfile!.userProfileId);
 
       if (mounted) {
         setState(() {
@@ -56,7 +55,7 @@ class _ServiceCategoryPageState extends State<ServiceCategoryPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -210,13 +209,12 @@ class SchedulesCard extends StatelessWidget {
                 InkWell(
                   child: Container(
                     decoration: const BoxDecoration(
-                      color: Color.fromARGB(
-                          100, 216, 218, 221), // Cor de fundo do botão
-                      shape: BoxShape.circle, // Forma circular
+                      color: Color.fromARGB(100, 216, 218, 221),
+                      shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.delete), // Ícone de lixeira
-                      color: Colors.black, // Cor do ícone
+                      icon: const Icon(Icons.delete),
+                      color: Colors.black,
                       onPressed: () async {
                         var result = await ServiceCategoryServices()
                             .deleteServiceCategory(

@@ -75,9 +75,7 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
 
   Future<List<Appointment>> fetchAppointments() async {
     Stopwatch stopwatch = Stopwatch()..start();
-    if (_userInfo == null) {
-      print("nulo");
-    }
+    if (_userInfo == null) {}
     try {
       var services = await AppointmentServices().getAllAppointments(
           _userInfo!.userRole.userRoleId,
@@ -101,7 +99,7 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -114,6 +112,15 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
+          leading:
+              ModalRoute.of(context) != null && ModalRoute.of(context)!.canPop
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.grey),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  : null,
           title: Align(
             alignment: Alignment.center,
             child: Text(
@@ -138,16 +145,14 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
         ),
         body: _isLoading
             ? const Center(
-                child: CircularProgressIndicator(
-                    color: Color(0xFF2864ff))) // Indicador de carregamento
+                child: CircularProgressIndicator(color: Color(0xFF2864ff)))
             : FutureBuilder<List<Appointment>>(
                 future: appointmentsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                         child: CircularProgressIndicator(
-                            color: Color(
-                                0xFF2864ff))); // Indicador de carregamento enquanto espera
+                            color: Color(0xFF2864ff)));
                   } else if (snapshot.hasError) {
                     return const Center(
                         child: Text("Erro ao carregar os dados"));
@@ -175,8 +180,7 @@ class _AppointmentHistoryPageState extends State<AppointmentHistoryPage>
                     return TabBarView(
                       controller: _tabController,
                       children: [
-                        _userInfo!.userRole.userRoleId ==
-                                2 // Condição para mostrar o nested TabController
+                        _userInfo!.userRole.userRoleId == 2
                             ? DefaultTabController(
                                 length: 2, // Número de abas secundárias
                                 child: Column(
@@ -259,7 +263,7 @@ class AppointmentListView extends StatelessWidget {
       this.showFinalizarButton = false,
       this.showCancelarButton = false,
       this.showAvaliarButton = false,
-      required this.onUpdated, // Default é false
+      required this.onUpdated,
       super.key});
 
   @override
@@ -323,10 +327,10 @@ class AppointmentListView extends StatelessWidget {
                           Text("Serviço: ${appointment.service!.name}",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text("Duração: $duration",
+                          Text("Duração: $duration minutos",
                               style: const TextStyle(fontSize: 16)),
                           Text(
-                              "Responsável: ${appointment.establishmentEmployeeId}",
+                              "Responsável: ${appointment.establishmentEmployee!.name}",
                               style: const TextStyle(fontSize: 16)),
                         ],
                       ),
@@ -365,7 +369,7 @@ class AppointmentListView extends StatelessWidget {
                       children: [
                         if (showAvaliar &&
                             userInfo.userRole.userRoleId == 3 &&
-                            showAvaliarButton) // Verifica se showAvaliar é true
+                            showAvaliarButton)
                           InkWell(
                             onTap: () async {
                               try {
@@ -381,7 +385,6 @@ class AppointmentListView extends StatelessWidget {
                                   );
                                 });
                               } catch (e) {
-                                // Você pode mostrar um alerta ou logar o erro
                                 print(
                                     'Erro ao obter informações do usuário: $e');
                               }

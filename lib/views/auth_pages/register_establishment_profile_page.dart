@@ -203,8 +203,7 @@ class _RegisterEstablishmentProfilePageState
                 SizedBox(
                   width: double.infinity,
                   child: DropdownButton<int>(
-                    value:
-                        selectedCategoryId, // Assegure-se de que selectedCategoryId seja declarado e inicializado corretamente
+                    value: selectedCategoryId,
                     onChanged: (newValue) {
                       setState(() {
                         selectedCategoryId = newValue;

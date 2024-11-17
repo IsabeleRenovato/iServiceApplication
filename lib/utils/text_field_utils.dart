@@ -86,7 +86,6 @@ class Utils {
             initialTime: TimeOfDay.now(),
           );
           if (pickedTime != null) {
-            // ignore: use_build_context_synchronously
             controller.text = pickedTime.format(context);
           }
         },

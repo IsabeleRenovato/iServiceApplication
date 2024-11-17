@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DurationSelector extends StatefulWidget {
-  final Function(int) onDurationSelected; // Adicione este parâmetro
+  final Function(int) onDurationSelected;
 
   const DurationSelector({required this.onDurationSelected, super.key});
   @override

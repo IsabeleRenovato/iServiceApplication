@@ -1,3 +1,4 @@
+import 'package:service_app/models/establishment_employee.dart';
 import 'package:service_app/models/feedback.dart';
 import 'package:service_app/models/service.dart';
 import 'package:service_app/models/user_info.dart';
@@ -19,25 +20,26 @@ class Appointment {
   UserInfo? establishmentUserInfo;
   Service? service;
   FeedbackModel? feedback;
+  EstablishmentEmployee? establishmentEmployee;
 
-  Appointment({
-    required this.appointmentId,
-    required this.serviceId,
-    required this.clientUserProfileId,
-    required this.establishmentUserProfileId,
-    required this.appointmentStatusId,
-    required this.establishmentEmployeeId,
-    required this.start,
-    required this.end,
-    required this.active,
-    required this.deleted,
-    required this.creationDate,
-    required this.lastUpdateDate,
-    this.clientUserInfo,
-    this.establishmentUserInfo,
-    this.service,
-    this.feedback,
-  });
+  Appointment(
+      {required this.appointmentId,
+      required this.serviceId,
+      required this.clientUserProfileId,
+      required this.establishmentUserProfileId,
+      required this.appointmentStatusId,
+      required this.establishmentEmployeeId,
+      required this.start,
+      required this.end,
+      required this.active,
+      required this.deleted,
+      required this.creationDate,
+      required this.lastUpdateDate,
+      this.clientUserInfo,
+      this.establishmentUserInfo,
+      this.service,
+      this.feedback,
+      this.establishmentEmployee});
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
     return Appointment(
@@ -66,6 +68,9 @@ class Appointment {
       feedback: json['feedback'] != null
           ? FeedbackModel.fromJson(json['feedback'] as Map<String, dynamic>)
           : null,
+      establishmentEmployee: json['establishmentEmployee'] != null
+          ? EstablishmentEmployee.fromJson(json['establishmentEmployee'])
+          : null,
     );
   }
 
@@ -87,6 +92,7 @@ class Appointment {
       'establishmentUserInfo': establishmentUserInfo?.toJson(),
       'service': service?.toJson(),
       'feedback': feedback?.toJson(),
+      'establishmentEmployee': establishmentEmployee?.toJson(),
     };
   }
 }

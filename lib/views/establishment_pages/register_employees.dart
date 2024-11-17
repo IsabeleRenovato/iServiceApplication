@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:scroll_date_picker/scroll_date_picker.dart';
 import 'package:service_app/utils/token_provider.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:provider/provider.dart';
@@ -49,19 +50,55 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
   Map<String, dynamic> payload = {};
   int userProfileId = 0;
 
-  Future<void> _selecionarData(BuildContext context) async {
-    final DateTime? dataEscolhida = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
+  Future<void> _showScrollDatePicker(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
 
-    if (dataEscolhida != null) {
-      setState(() {
-        birthController.text = DateFormat('dd/MM/yyyy').format(dataEscolhida);
-      });
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 200,
+                  child: ScrollDatePicker(
+                    selectedDate: selectedDate,
+                    locale: Locale('pt', 'BR'),
+                    onDateTimeChanged: (DateTime value) {
+                      selectedDate = value;
+                    },
+                    minimumDate: DateTime(1900),
+                    maximumDate: DateTime.now(),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      birthController.text =
+                          '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}';
+                    });
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2864ff),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(fontSize: 16),
+                  ),
+                  child: Text(
+                    'Selecionar',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _getImage(ImageSource source) async {
@@ -113,8 +150,7 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
   Future<void> fetchDataToken() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: true);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
-    print(tokenProvider.token!);
+
     if (payload['UserId'] != null) {
       userProfileId = int.tryParse(payload['UserProfileId']) ?? 0;
     }
@@ -122,7 +158,7 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
 
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Mova a lógica para o didChangeDependencies.
+
     fetchDataToken();
   }
 
@@ -217,7 +253,6 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                                 fit: BoxFit.cover,
                                 errorBuilder: (BuildContext context,
                                     Object exception, StackTrace? stackTrace) {
-                                  // Retornar um widget para exibir em caso de erro
                                   return Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20),
@@ -337,7 +372,10 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: birthController,
-                      onTap: () => _selecionarData(context),
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        _showScrollDatePicker(context);
+                      },
                       style: const TextStyle(
                         color: Colors.black,
                       ),
@@ -368,7 +406,6 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                         ),
                       ),
                       validator: (birthController) {
-                        // Usando a validação de idade da classe ValidationUtils
                         return ValidationUtils.validateAge(birthController);
                       },
                     ),

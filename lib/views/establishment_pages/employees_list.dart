@@ -12,6 +12,7 @@ import 'package:service_app/services/appointment_services.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/views/appointment_history_pages/review_page.dart';
 import 'package:service_app/views/establishment_pages/register_employees.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class EmployeesListPage extends StatefulWidget {
   const EmployeesListPage({Key? key}) : super(key: key);
@@ -63,7 +64,6 @@ class _EmployeesListPageState extends State<EmployeesListPage>
 
   Future<void> fetchData() async {
     try {
-      print("Starting fetchData");
       var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
       payload = Jwt.parseJwt(tokenProvider.token!);
       List<EstablishmentEmployee?> serviceEmployees =
@@ -159,7 +159,6 @@ class _EmployeesListPageState extends State<EmployeesListPage>
       ),
       body: Column(
         children: [
-          // Botão "Cadastrar Funcionário" sempre visível
           Padding(
             padding: const EdgeInsets.all(15),
             child: InkWell(
@@ -224,8 +223,9 @@ class EmployeeListView extends StatelessWidget {
   final UserInfo userInfo;
   final List<EstablishmentEmployee?> employees;
   final VoidCallback onUpdated;
+  final cpfFormatter = MaskTextInputFormatter(mask: '###.###.###-##');
 
-  const EmployeeListView({
+  EmployeeListView({
     required this.userInfo,
     required this.employees,
     required this.onUpdated,
@@ -283,7 +283,7 @@ class EmployeeListView extends StatelessWidget {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(employee.document,
+                                Text(cpfFormatter.maskText(employee.document),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16)),
@@ -337,7 +337,7 @@ class EmployeeListView extends StatelessWidget {
                             var result = await EstablishmentEmployeeServices()
                                 .delete(employee.establishmentEmployeeId);
                             if (result) {
-                              onUpdated(); // Chama o callback após retornar com sucesso
+                              onUpdated();
                             }
                           },
                           child: Container(

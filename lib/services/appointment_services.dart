@@ -29,7 +29,7 @@ class AppointmentServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers appointment: $headers');
+
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
@@ -50,7 +50,7 @@ class AppointmentServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers appointment 2: $headers');
+
     var response = await http.get(url, headers: headers);
     if (response.statusCode == 200 || response.statusCode == 201) {
       List jsonResponse = jsonDecode(response.body) as List;
@@ -71,7 +71,7 @@ class AppointmentServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers appointment 3: $headers');
+
     var response = await http.post(
       url,
       headers: headers,
@@ -98,7 +98,7 @@ class AppointmentServices {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
-    print('Headers appointment 4: $headers');
+
     var response = await http.put(
       url,
       headers: headers,

@@ -45,8 +45,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     super.didChangeDependencies();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -60,7 +59,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-    print(payload);
+
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()
@@ -134,8 +133,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
     }
     if (_isLoading) {
       return Scaffold(
-        backgroundColor:
-            Colors.transparent, // Define o fundo da tela como branco
+        backgroundColor: Colors.transparent,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),

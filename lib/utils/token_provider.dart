@@ -8,7 +8,6 @@ class TokenProvider with ChangeNotifier {
   Map<String, dynamic>? _decodedToken;
 
   TokenProvider() {
-    // Inicializar o token ao criar a instância do TokenProvider
     _initToken();
   }
 
@@ -20,10 +19,8 @@ class TokenProvider with ChangeNotifier {
       _decodedToken = Jwt.parseJwt(_token!);
     }
     notifyListeners();
-    // Notificar os ouvintes sobre qualquer alteração no token
   }
 
-  // Método para salvar o token
   Future<void> saveToken(String token) async {
     final _storage = FlutterSecureStorage();
 

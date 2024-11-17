@@ -15,7 +15,6 @@ class ViaCep {
     this.uf,
   });
 
-  // Factory constructor to create a ViaCep instance from a map
   factory ViaCep.fromJson(Map<String, dynamic> json) {
     return ViaCep(
       cep: json['cep'] as String?,

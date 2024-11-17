@@ -6,7 +6,8 @@ class Service {
   int serviceCategoryId;
   String name;
   String description;
-  double price; // Dart uses double for floating point numbers
+  double price;
+  String? priceNet;
   int estimatedDuration;
   String? serviceImage;
   bool active;
@@ -24,6 +25,7 @@ class Service {
     required this.name,
     required this.description,
     required this.price,
+    this.priceNet,
     required this.estimatedDuration,
     this.serviceImage,
     required this.active,
@@ -46,6 +48,7 @@ class Service {
       name: json['name'] as String,
       description: json['description'] as String,
       price: (json['price'] as num).toDouble(),
+      priceNet: json['priceNet'] as String?,
       estimatedDuration: json['estimatedDuration'] as int,
       serviceImage: json['serviceImage'] as String?,
       active: json['active'] as bool,
@@ -71,6 +74,7 @@ class Service {
       'description': description,
       'price': price,
       'estimatedDuration': estimatedDuration,
+      'priceNet': priceNet,
       'serviceImage': serviceImage,
       //'totalPages': totalPages,
       'active': active,

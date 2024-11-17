@@ -30,8 +30,7 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
     super.initState();
     fetchData().then((_) {
       setState(() {
-        _isLoading =
-            false; // Atualiza o estado para refletir que o loading está completo
+        _isLoading = false;
       });
     });
   }
@@ -56,7 +55,7 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white, // Define o fundo da tela como branco
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF2864ff)),
         ),
@@ -148,7 +147,7 @@ class _EstablishmentCategoryPageState extends State<EstablishmentCategoryPage> {
                                 Text(
                                   establishmentProfile.rating != null
                                       ? '${establishmentProfile.rating!.value.toStringAsFixed(1)} ★'
-                                      : "Sem Avaliação", // Use a avaliação real aqui
+                                      : "Sem Avaliação",
                                   style:
                                       const TextStyle(color: Color(0xFFe6ac27)),
                                 ),
