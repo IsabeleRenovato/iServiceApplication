@@ -9,6 +9,7 @@ import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/user_info_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class EditClientProfilePage extends StatefulWidget {
   const EditClientProfilePage({Key? key}) : super(key: key);
@@ -29,6 +30,11 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
   bool filledFields = false;
   Map<String, dynamic> payload = {};
   bool _isLoading = true;
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   @override
   void initState() {
@@ -78,7 +84,13 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
 
           if (_isLoading) {
             nameController.text = initialData['name'];
-            cpfController.text = initialData['cpf'];
+            cpfController.text = maskFormatter
+                .formatEditUpdate(
+                  TextEditingValue(text: ""),
+                  TextEditingValue(text: initialData['cpf']),
+                )
+                .text;
+
             birthController.text = initialData['birth'];
             celController.text = initialData['cel'];
             _isLoading = false;
@@ -194,6 +206,7 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
                 ),
                 TextFormField(
                   controller: cpfController,
+                  inputFormatters: [maskFormatter],
                   style: const TextStyle(
                     color: Colors.black,
                   ),
@@ -305,7 +318,9 @@ class _EditClientProfilePageState extends State<EditClientProfilePage> {
                       _userInfo.userProfile = UserProfile(
                         userProfileId: int.parse(payload['UserProfileId']),
                         userId: int.parse(payload['UserId']),
-                        document: cpfController.text,
+                        document: cpfController.text
+                            .replaceAll(".", "")
+                            .replaceAll("-", ""),
                         dateOfBirth: DateFormat("dd/MM/yyyy")
                             .parse(birthController.text),
                         phone: celController.text,

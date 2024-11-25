@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:service_app/Services/auth_services.dart';
 import 'package:service_app/models/establishment_category.dart';
 import 'package:service_app/models/user_info.dart';
@@ -6,6 +7,7 @@ import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
 import 'package:service_app/views/auth_pages/register_address_page.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class RegisterEstablishmentProfilePage extends StatefulWidget {
   final UserInfo userInfo;
@@ -29,6 +31,11 @@ class _RegisterEstablishmentProfilePageState
   int? selectedCategoryId;
   String mensagemErro = '';
   bool filledFields = false;
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '##.###.###/####-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   @override
   void initState() {
@@ -126,6 +133,7 @@ class _RegisterEstablishmentProfilePageState
                 ),
                 Utils.buildTextField(
                   controller: cnpjController,
+                  inputFormatters: [maskFormatter],
                   hintText: 'CNPJ',
                   prefixIcon: Icons.document_scanner_outlined,
                 ),
@@ -142,6 +150,7 @@ class _RegisterEstablishmentProfilePageState
                 ),
                 Utils.buildTextField(
                   controller: commercialContactController,
+                  inputFormatters: [LengthLimitingTextInputFormatter(11)],
                   hintText: 'Contato comercial',
                   prefixIcon: Icons.local_phone,
                 ),
@@ -246,7 +255,10 @@ class _RegisterEstablishmentProfilePageState
                           userProfileId: 0,
                           userId: widget.userInfo.user.userId,
                           establishmentCategoryId: selectedCategoryId,
-                          document: cnpjController.text,
+                          document: cnpjController.text
+                              .replaceAll(".", "")
+                              .replaceAll("-", "")
+                              .replaceAll("/", ""),
                           commercialName: establishmntNameController.text,
                           commercialEmail: commercialEmailController.text,
                           commercialPhone: commercialContactController.text,

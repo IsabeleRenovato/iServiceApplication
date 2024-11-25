@@ -52,10 +52,10 @@ class AuthServices {
 
   Future<UserInfo> _postRequest(String path, dynamic request) async {
     var url = Uri.parse('$_baseUrl$path');
-    var token = await storage.read(key: 'token');
+    //var token = await storage.read(key: 'token');
     var headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      //'Authorization': 'Bearer $token',
     };
     var response = await http.post(
       url,
@@ -65,7 +65,6 @@ class AuthServices {
     if (response.statusCode == 200 || response.statusCode == 201) {
       return UserInfo.fromJson(jsonDecode(response.body));
     } else if (response.statusCode == 401 || response.statusCode == 403) {
-      // Tratamento de erro de autenticação
       await storage.delete(key: 'token'); // Limpa o token inválido ou expirado
       Navigator.push(
         _context,

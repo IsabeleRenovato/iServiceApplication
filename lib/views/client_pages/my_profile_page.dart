@@ -51,7 +51,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
   Future<void> fetchData() async {
     var tokenProvider = Provider.of<TokenProvider>(context, listen: false);
     payload = Jwt.parseJwt(tokenProvider.token!);
-
     if (payload['UserId'] != null) {
       int userId = int.tryParse(payload['UserId'].toString()) ?? 0;
       await UserInfoServices()

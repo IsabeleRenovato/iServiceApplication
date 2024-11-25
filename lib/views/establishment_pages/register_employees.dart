@@ -19,6 +19,7 @@ import 'package:service_app/utils/text_field_utils.dart';
 import 'package:service_app/utils/validation_utils.dart';
 import 'package:service_app/views/establishment_pages/employees_list.dart';
 import 'package:service_app/views/establishment_pages/establishment_catalog_page.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class RegisterEmployeesPage extends StatefulWidget {
   final int establishmentEmployeeId;
@@ -49,6 +50,11 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
   DateTime? selectedDate = DateTime.now();
   Map<String, dynamic> payload = {};
   int userProfileId = 0;
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   Future<void> _showScrollDatePicker(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
@@ -132,7 +138,12 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
               _image = employee.employeeImage;
               imagePath = employee.employeeImage;
               nameController.text = employee.name.toString();
-              cpfController.text = employee.document;
+              cpfController.text = maskFormatter
+                  .formatEditUpdate(
+                    TextEditingValue(text: ""),
+                    TextEditingValue(text: employee.document),
+                  )
+                  .text;
               birthController.text =
                   DateFormat('dd/MM/yyyy').format(employee.dateOfBirth!);
             });
@@ -338,7 +349,7 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: cpfController,
-                      inputFormatters: [LengthLimitingTextInputFormatter(11)],
+                      inputFormatters: [maskFormatter],
                       style: const TextStyle(
                         color: Colors.black,
                       ),
@@ -428,7 +439,9 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                                 establishmentEmployeeId:
                                     widget.establishmentEmployeeId,
                                 name: nameController.text,
-                                document: cpfController.text,
+                                document: cpfController.text
+                                    .replaceAll(".", "")
+                                    .replaceAll("-", ""),
                                 dateOfBirth: DateFormat("dd/MM/yyyy")
                                     .parse(birthController.text),
                                 employeeImage: imagePath,
@@ -452,7 +465,9 @@ class _RegisterEmployeesPageState extends State<RegisterEmployeesPage> {
                               var request = EstablishmentEmployee(
                                 establishmentEmployeeId: 0,
                                 name: nameController.text,
-                                document: cpfController.text,
+                                document: cpfController.text
+                                    .replaceAll(".", "")
+                                    .replaceAll("-", ""),
                                 dateOfBirth: DateFormat("dd/MM/yyyy")
                                     .parse(birthController.text),
                                 employeeImage: imagePath,

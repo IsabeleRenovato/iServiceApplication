@@ -7,6 +7,7 @@ import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/auth_services.dart';
 import 'package:service_app/utils/validation_utils.dart';
 import 'package:service_app/views/home_pages/home_page.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class RegisterClientProfilePage extends StatefulWidget {
   final UserInfo userInfo;
@@ -25,6 +26,11 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
   DateTime? selectedDate = DateTime.now();
   String mensagemErro = '';
   bool filledFields = false;
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   Future<void> _showScrollDatePicker(BuildContext context) async {
     DateTime selectedDate = DateTime.now();
@@ -153,7 +159,7 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                 ),
                 TextFormField(
                   controller: cpfController,
-                  inputFormatters: [LengthLimitingTextInputFormatter(11)],
+                  inputFormatters: [maskFormatter],
                   style: const TextStyle(
                     color: Colors.black,
                   ),
@@ -271,7 +277,9 @@ class _RegisterClientProfilePageState extends State<RegisterClientProfilePage> {
                       widget.userInfo.userProfile = UserProfile(
                           userProfileId: 0,
                           userId: widget.userInfo.user.userId,
-                          document: cpfController.text,
+                          document: cpfController.text
+                              .replaceAll(".", "")
+                              .replaceAll("-", ""),
                           phone: celController.text,
                           dateOfBirth: DateFormat("dd/MM/yyyy")
                               .parse(birthController.text),

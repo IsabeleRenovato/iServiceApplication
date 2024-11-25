@@ -9,6 +9,7 @@ import 'package:service_app/models/user_profile.dart';
 import 'package:service_app/services/establishment_category_services.dart';
 import 'package:service_app/services/user_profile_services.dart';
 import 'package:service_app/utils/text_field_utils.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class EditEstablishmentProfilePage extends StatefulWidget {
   const EditEstablishmentProfilePage({Key? key}) : super(key: key);
@@ -34,6 +35,11 @@ class _EditEstablishmentProfilePageState
   String mensagemErro = '';
   bool filledFields = false;
   Map<String, dynamic> payload = {};
+  final maskFormatter = MaskTextInputFormatter(
+    mask: '##.###.###/####-##',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   @override
   void initState() {
@@ -96,7 +102,12 @@ class _EditEstablishmentProfilePageState
           .then((UserInfo userInfo) {
         _userInfo = userInfo;
         commercialNameController.text = userInfo.user.name;
-        cnpjController.text = userInfo.userProfile!.document;
+        cnpjController.text = maskFormatter
+            .formatEditUpdate(
+              TextEditingValue(text: ""),
+              TextEditingValue(text: userInfo.userProfile!.document),
+            )
+            .text;
         establishmntNameController.text = userInfo.userProfile!.commercialName!;
         commercialContactController.text =
             userInfo.userProfile!.commercialPhone!;
@@ -190,6 +201,7 @@ class _EditEstablishmentProfilePageState
                 ),
                 Utils.buildTextField(
                   controller: cnpjController,
+                  inputFormatters: [maskFormatter],
                   hintText: 'CNPJ',
                   prefixIcon: Icons.document_scanner_outlined,
                 ),
@@ -310,7 +322,10 @@ class _EditEstablishmentProfilePageState
                       _userInfo.userProfile = UserProfile(
                           userProfileId: int.parse(payload['UserProfileId']),
                           userId: int.parse(payload['UserId']),
-                          document: cnpjController.text,
+                          document: cnpjController.text
+                              .replaceAll(".", "")
+                              .replaceAll("-", "")
+                              .replaceAll("/", ""),
                           establishmentCategoryId: selectedCategoryId,
                           addressId: _userInfo.address!.addressId,
                           commercialName: establishmntNameController.text,
