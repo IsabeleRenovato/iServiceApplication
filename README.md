@@ -4,7 +4,7 @@ Este é um sistema integrado para agendamento e gestão de serviços, destinado 
 
 Linguagens utilizadas:
 
-- C# (Link para API)
+- C# [(Link para API)](https://github.com/IsabeleRenovato/iServiceApi.git)
 - Dart
 - Flutter
 - MySQL
@@ -50,5 +50,7 @@ Funcionalidades para Clientes:
 - Visualizar Agendamento: Proporciona uma lista dos serviços agendados, bem como os agendamentos finalizados e cancelados;
   
 - Avaliar Agendamento: Permitir que os clientes deixem feedback sobre os serviços recebidos após a conclusão do atendimento.
+
+  [Confira o video da aplicação em funcionamento](https://github.com/IsabeleRenovato/iServiceApplication/blob/main/Video_TCC.mp4)
 
 ![iservice](./Desenvolvimento%20de%20Sistema%20Integrado%20para%20Agendamento%20e%20Gerenciamento%20de%20Serviços.jpg)
